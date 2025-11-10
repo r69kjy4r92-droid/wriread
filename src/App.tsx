@@ -19,6 +19,15 @@ function num(n: number) {
 const DICT = {
   ru: {
     slogan: "Я творец, это моё пространство.",
+    description:
+      "WriRead — пространство для поэтов, писателей и музыкантов. Публикуй стихи, истории и музыку, получай донаты и продвигай своё творчество.",
+    feedPreview: "Мини-превью ленты",
+    filters: "Фильтры",
+    emptyWork: "Выберите публикацию из ленты.",
+    mockPaymentNote: "Mock-платёж, позже — реальный провайдер.",
+    audioUnavailable: "Аудиофайл недоступен.",
+    footerLine: "Политика контента · Условия · Контакты",
+
     cta_create: "Опубликовать",
     cta_read: "Читать лучшее",
     donate: "Поддержать автора",
@@ -55,6 +64,15 @@ const DICT = {
   },
   en: {
     slogan: "I’m a creator — this is my space.",
+    description:
+      "WriRead is a home for poets, writers and musicians. Publish poems, stories and music, receive support and grow your audience.",
+    feedPreview: "Feed preview",
+    filters: "Filters",
+    emptyWork: "Select a publication from the feed.",
+    mockPaymentNote: "Mock payment, later — real provider.",
+    audioUnavailable: "Audio file is unavailable.",
+    footerLine: "Content policy · Terms · Contacts",
+
     cta_create: "Publish",
     cta_read: "Read top",
     donate: "Support author",
@@ -145,7 +163,8 @@ function makeMockWorks(): WorkItem[] {
       likes: Math.floor(Math.random() * 120) + 12,
       donations: Math.floor(Math.random() * 80),
       cover: `https://picsum.photos/seed/wc${i}/900/600`,
-      excerpt: "Огонь гудит в пустых сосудах тишины, и ночь дышит янтарём...",
+      excerpt:
+        "Огонь гудит в пустых сосудах тишины, и ночь дышит янтарём...",
       paywalled: i % 3 === 0,
       price: [2.99, 3.99, 4.99][i % 3],
       promo: i % 4 === 0,
@@ -231,6 +250,7 @@ type HeaderProps = {
   theme: "light" | "dark";
   onToggleTheme: () => void;
   lang: string;
+  onChangeLang: (value: string) => void;
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -240,6 +260,7 @@ const Header: React.FC<HeaderProps> = ({
   theme,
   onToggleTheme,
   lang,
+  onChangeLang,
 }) => {
   const nav = [
     { k: "landing", label: "WriRead" },
@@ -271,7 +292,26 @@ const Header: React.FC<HeaderProps> = ({
           <GhostButton onClick={onToggleTheme}>
             {theme === "dark" ? "🌙 " + t.dark : "🌞 " + t.light}
           </GhostButton>
-          <GhostButton>{(lang || "ru").toUpperCase()} ▾</GhostButton>
+
+          <span className="text-xs text-neutral-500">
+            [{lang.toUpperCase()}]
+          </span>
+
+          <div className={cx(CARD, "px-2 py-1 flex items-center gap-1")}>
+            <span className="text-xs text-neutral-500">{t.language}:</span>
+            <select
+              className="bg-transparent text-sm outline-none"
+              value={lang}
+              onChange={(e) => onChangeLang(e.target.value)}
+            >
+              {LANGS.map((l) => (
+                <option key={l.k} value={l.k}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <Button className="hidden sm:inline-flex">{t.signIn}</Button>
         </div>
       </div>
@@ -283,7 +323,7 @@ const Footer: React.FC = () => (
   <footer className="mt-10 border-t border-neutral-200 dark:border-neutral-800">
     <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-neutral-600 dark:text-neutral-400 flex flex-col md:flex-row gap-2 md:gap-6">
       <span>© {new Date().getFullYear()} WriRead</span>
-      <span>Политика контента · Условия · Контакты</span>
+      <span>{DICT.ru.footerLine}</span>
     </div>
   </footer>
 );
@@ -295,7 +335,7 @@ const Landing: React.FC<{ t: any; onGetStarted: (page: string) => void }> = ({
 }) => (
   <section>
     <div className="relative overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-100 via-rose-50 to-white" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-100 via-rose-50 to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950" />
       <div className="max-w-6xl mx-auto px-4 py-14">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
@@ -305,10 +345,8 @@ const Landing: React.FC<{ t: any; onGetStarted: (page: string) => void }> = ({
                 {t.slogan}
               </span>
             </h1>
-            <p className="mt-4 text-neutral-600 text-lg max-w-xl">
-              WriRead — пространство для поэтов, писателей и музыкантов.
-              Публикуй стихи, истории и музыку, получай донаты и продвигай своё
-              творчество.
+            <p className="mt-4 text-neutral-600 dark:text-neutral-300 text-lg max-w-xl">
+              {t.description}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button
@@ -325,13 +363,13 @@ const Landing: React.FC<{ t: any; onGetStarted: (page: string) => void }> = ({
               </GhostButton>
             </div>
           </div>
-          <div className={cx(CARD, "p-4 bg-white/80")}>
+          <div className={cx(CARD, "p-4 bg-white/80 dark:bg-neutral-900/80")}>
             <GradientBar />
             <div className="grid grid-cols-2 gap-3 mt-4">
               {MOCK_WORKS.slice(0, 4).map((w) => (
                 <div
                   key={w.id}
-                  className="rounded-xl overflow-hidden border"
+                  className="rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700"
                 >
                   <img
                     src={w.cover}
@@ -340,8 +378,8 @@ const Landing: React.FC<{ t: any; onGetStarted: (page: string) => void }> = ({
                 </div>
               ))}
             </div>
-            <div className="mt-4 text-sm text-neutral-600">
-              Мини-превью ленты
+            <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
+              {t.feedPreview}
             </div>
           </div>
         </div>
@@ -365,8 +403,8 @@ const Tabs: React.FC<{
           RADIUS,
           "border",
           current === t.k
-            ? "bg-white border-amber-300 text-amber-700"
-            : "bg-white hover:bg-neutral-50 border-neutral-300"
+            ? "bg-white border-amber-300 text-amber-700 dark:bg-neutral-900"
+            : "bg-white hover:bg-neutral-50 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:border-neutral-700"
         )}
       >
         {t.label}
@@ -402,7 +440,7 @@ const WorkCard: React.FC<{
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
-          <div className="text-sm text-neutral-600 mt-1">
+          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
         </div>
@@ -411,7 +449,9 @@ const WorkCard: React.FC<{
           <Pill>★ {num(item.donations)}</Pill>
         </div>
       </div>
-      <p className="text-neutral-700 mt-3 line-clamp-2">{item.excerpt}</p>
+      <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
+        {item.excerpt}
+      </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button onClick={() => onOpen(item)} className="px-4 py-2 text-sm">
           {t.cta_read}
@@ -452,7 +492,7 @@ const Feed: React.FC<{
     <section className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-4">
         <Tabs tabs={tabs} current={tab} onChange={setTab} />
-        <GhostButton>Фильтры</GhostButton>
+        <GhostButton>{t.filters}</GhostButton>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {items.map((item) => (
@@ -478,8 +518,8 @@ const Work: React.FC<{
 }> = ({ t, item, onDonate }) => {
   if (!item) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600">
-        Выберите публикацию из ленты.
+      <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600 dark:text-neutral-300">
+        {t.emptyWork}
       </div>
     );
   }
@@ -492,10 +532,10 @@ const Work: React.FC<{
         />
         <div className="p-5">
           <h1 className="text-2xl font-bold">{item.title}</h1>
-          <div className="text-sm text-neutral-600 mt-1">
+          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
-          <p className="mt-4 text-neutral-800">
+          <p className="mt-4 text-neutral-800 dark:text-neutral-100">
             <strong>{t.excerpt}:</strong> {item.excerpt}
           </p>
           {item.audioUrl && (
@@ -526,16 +566,20 @@ const Publish: React.FC<{ t: any }> = ({ t }) => {
         <h2 className="text-xl font-semibold mb-4">{t.publishWork}</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm text-neutral-600">{t.title}</label>
+            <label className="text-sm text-neutral-600 dark:text-neutral-300">
+              {t.title}
+            </label>
             <input
-              className="w-full mt-1 px-4 py-3 border rounded-2xl"
+              className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               placeholder="…"
             />
           </div>
           <div>
-            <label className="text-sm text-neutral-600">{t.genre}</label>
+            <label className="text-sm text-neutral-600 dark:text-neutral-300">
+              {t.genre}
+            </label>
             <select
-              className="w-full mt-1 px-4 py-3 border rounded-2xl"
+              className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
             >
@@ -549,13 +593,13 @@ const Publish: React.FC<{ t: any }> = ({ t }) => {
           <div className="md:col-span-2">
             {isMusic ? (
               <div>
-                <label className="text-sm text-neutral-600">
+                <label className="text-sm text-neutral-600 dark:text-neutral-300">
                   {t.audioFile}
                 </label>
                 <input
                   type="file"
                   accept="audio/*"
-                  className="w-full mt-1 px-4 py-3 border rounded-2xl"
+                  className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
                 />
                 <p className="text-xs text-neutral-500 mt-1">
                   {t.uploadAudio}
@@ -563,10 +607,12 @@ const Publish: React.FC<{ t: any }> = ({ t }) => {
               </div>
             ) : (
               <div>
-                <label className="text-sm text-neutral-600">{t.text}</label>
+                <label className="text-sm text-neutral-600 dark:text-neutral-300">
+                  {t.text}
+                </label>
                 <textarea
                   rows={6}
-                  className="w-full mt-1 px-4 py-3 border rounded-2xl"
+                  className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
                   placeholder="Начните писать…"
                 />
               </div>
@@ -589,10 +635,14 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
           <div className="h-14 w-14 bg-gradient-to-br from-amber-300 to-rose-300 rounded-2xl" />
           <div>
             <div className="font-semibold">Михаил</div>
-            <div className="text-sm text-neutral-600">Автор</div>
+            <div className="text-sm text-neutral-600 dark:text-neutral-300">
+              Автор
+            </div>
           </div>
         </div>
-        <div className="mt-4 text-sm text-neutral-600">{t.yourBalance}</div>
+        <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
+          {t.yourBalance}
+        </div>
         <div className="mt-1 text-3xl font-extrabold">$ 124.50</div>
         <div className="mt-4 flex gap-2">
           <Button className="px-4 py-2 text-sm">Вывести</Button>
@@ -605,7 +655,7 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
           {MOCK_WORKS.slice(0, 4).map((w) => (
             <div
               key={w.id}
-              className="border rounded-xl overflow-hidden"
+              className="border rounded-xl overflow-hidden dark:border-neutral-700"
             >
               <img
                 src={w.cover}
@@ -613,7 +663,7 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
               />
               <div className="p-3">
                 <div className="font-medium">{w.title}</div>
-                <div className="text-xs text-neutral-600 mt-1">
+                <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
                   ❤ {num(w.likes)} · ★ {num(w.donations)}
                 </div>
               </div>
@@ -636,11 +686,11 @@ const Modal: React.FC<{
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
       <div className={cx("w-full max-w-lg", CARD)}>
-        <div className="p-4 border-b border-neutral-200 flex items-center justify-between">
+        <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button
             onClick={onClose}
-            className="text-neutral-500 hover:text-neutral-800"
+            className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
           >
             ✕
           </button>
@@ -675,14 +725,12 @@ const DonateModal: React.FC<{
           onChange={(e) =>
             setAmount(parseFloat(e.target.value || "0") || 0)
           }
-          className="w-32 px-3 py-2 border rounded-xl"
+          className="w-32 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700"
         />
         <Button onClick={onClose}>{t.pay}</Button>
         <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
       </div>
-      <p className="text-xs text-neutral-500 mt-3">
-        Mock-платёж, позже — реальный провайдер.
-      </p>
+      <p className="text-xs text-neutral-500 mt-3">{t.mockPaymentNote}</p>
     </Modal>
   );
 };
@@ -701,7 +749,9 @@ const ListenModal: React.FC<{
           <source src={item.audioUrl} type="audio/mpeg" />
         </audio>
       ) : (
-        <p className="text-sm text-neutral-600">Аудиофайл недоступен.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          {t.audioUnavailable}
+        </p>
       )}
       <div className="mt-4 flex gap-3">
         <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
@@ -712,21 +762,23 @@ const ListenModal: React.FC<{
 
 // ===== App =====
 export default function App() {
-  const [lang, setLang] = useState(() => {
+  const [lang, setLang] = useState<string>(() => {
     try {
       return localStorage.getItem("wriread:lang") || "ru";
     } catch {
       return "ru";
     }
   });
+
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     try {
-      return (localStorage.getItem("wriread:theme") as "light" | "dark") ||
-        "light";
+      const stored = localStorage.getItem("wriread:theme");
+      return stored === "dark" ? "dark" : "light";
     } catch {
       return "light";
     }
   });
+
   const [page, setPage] = useState("landing");
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
@@ -734,9 +786,10 @@ export default function App() {
   const [donateOpen, setDonateOpen] = useState(false);
   const [listenOpen, setListenOpen] = useState(false);
 
-  const t =
-    (DICT as any)[(DICT as any)[lang] ? (lang as keyof typeof DICT) : "en"] ||
-    DICT.en;
+  const currentLangKey = (
+    Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
+  ) as keyof typeof DICT;
+  const t = DICT[currentLangKey];
 
   useEffect(() => {
     try {
@@ -771,6 +824,7 @@ export default function App() {
           setTheme((prev) => (prev === "dark" ? "light" : "dark"))
         }
         lang={lang}
+        onChangeLang={setLang}
       />
 
       {page === "landing" && <Landing t={t} onGetStarted={setPage} />}
@@ -816,28 +870,6 @@ export default function App() {
         t={t}
         item={current}
       />
-
-      {/* Переключатель языка снизу справа */}
-      <div className="fixed bottom-4 right-4">
-        <div
-          className={cx(
-            CARD,
-            "p-2 flex gap-2 items-center bg-white/90 dark:bg-neutral-900/90"
-          )}
-        >
-          <select
-            className="px-3 py-2 bg-transparent outline-none"
-            value={lang}
-            onChange={(e) => setLang(e.target.value)}
-          >
-            {LANGS.map((l) => (
-              <option key={l.k} value={l.k}>
-                {l.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
     </div>
   );
 }

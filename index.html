@@ -2,24 +2,33 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <title>WriRead — я творец, это моё пространство</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
 
-    <!-- Tailwind через CDN + включаем dark mode по классу -->
+    <!-- Ставим dark-класс по сохранённой теме ДО React -->
     <script>
-      tailwind = {
-        config: {
-          darkMode: "class",
-        },
-      };
+      try {
+        const stored = localStorage.getItem("wriread:theme");
+        if (stored === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
     </script>
+
+    <!-- Сначала подключаем Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <title>WriRead — я творец, это моё пространство</title>
+    <!-- Потом конфигурируем: darkMode по классу .dark -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
   </head>
-  <body>
+  <body class="min-h-screen bg-white text-neutral-900">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
