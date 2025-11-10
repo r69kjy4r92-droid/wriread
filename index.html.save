@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WriRead — я творец, это моё пространство</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <!-- Включаем сохранённую тему до загрузки React -->
+    <script>
+      try {
+        const stored = localStorage.getItem("wriread:theme");
+        if (stored === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
+
+      // Настройка Tailwind через CDN: dark режим через класс .dark
+      tailwind = {};
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 
+dark:text-neutral-100">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WriRead — я творец, это моё пространство</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <!-- Включаем сохранённую тему до загрузки React -->
+    <script>
+      try {
+        const stored = localStorage.getItem("wriread:theme");
+        if (stored === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
+
+      // Настройка Tailwind через CDN: dark режим через класс .dark
+      tailwind = {};
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 
+dark:text-neutral-100">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

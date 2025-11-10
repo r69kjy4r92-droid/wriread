@@ -23,6 +23,10 @@ const DICT = {
       "WriRead — пространство для поэтов, писателей и музыкантов. Публикуй стихи, истории и музыку, получай донаты и продвигай своё творчество.",
     feedPreview: "Мини-превью ленты",
     filters: "Фильтры",
+    allGenres: "Все жанры",
+    onlyPromoted: "Только промо",
+    onlyMusic: "Только музыка/биты",
+    clearFilters: "Сбросить фильтры",
     emptyWork: "Выберите публикацию из ленты.",
     mockPaymentNote: "Mock-платёж, позже — реальный провайдер.",
     audioUnavailable: "Аудиофайл недоступен.",
@@ -68,6 +72,10 @@ const DICT = {
       "WriRead is a home for poets, writers and musicians. Publish poems, stories and music, receive support and grow your audience.",
     feedPreview: "Feed preview",
     filters: "Filters",
+    allGenres: "All genres",
+    onlyPromoted: "Only promoted",
+    onlyMusic: "Only music/beats",
+    clearFilters: "Clear filters",
     emptyWork: "Select a publication from the feed.",
     mockPaymentNote: "Mock payment, later — real provider.",
     audioUnavailable: "Audio file is unavailable.",
@@ -476,24 +484,100 @@ const Feed: React.FC<{
   onListen: (item: WorkItem) => void;
 }> = ({ t, onOpen, onDonate, onBoost, onListen }) => {
   const [tab, setTab] = useState("top");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [genreFilter, setGenreFilter] = useState<string | "all">("all");
+  const [onlyPromo, setOnlyPromo] = useState(false);
+  const [onlyMusic, setOnlyMusic] = useState(false);
+
   const tabs = [
     { k: "top", label: t.top },
     { k: "new", label: t.new },
     { k: "following", label: t.following },
   ];
+
+  const hasActiveFilter =
+    genreFilter !== "all" || onlyPromo || onlyMusic;
+
   const items = useMemo(() => {
     let arr = [...MOCK_WORKS];
     if (tab === "new") arr = [...MOCK_WORKS].reverse();
     if (tab === "following") arr = MOCK_WORKS.filter((_, i) => i % 2 === 0);
+
+    if (genreFilter !== "all") {
+      arr = arr.filter((w) => w.genre === genreFilter);
+    }
+    if (onlyPromo) {
+      arr = arr.filter((w) => w.promo);
+    }
+    if (onlyMusic) {
+      arr = arr.filter((w) => w.genre === "Музыка/Бит");
+    }
     return arr;
-  }, [tab]);
+  }, [tab, genreFilter, onlyPromo, onlyMusic]);
+
+  const handleClearFilters = () => {
+    setGenreFilter("all");
+    setOnlyPromo(false);
+    setOnlyMusic(false);
+  };
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-4">
         <Tabs tabs={tabs} current={tab} onChange={setTab} />
-        <GhostButton>{t.filters}</GhostButton>
+        <GhostButton onClick={() => setFilterOpen((o) => !o)}>
+          {t.filters}
+          {hasActiveFilter && <span className="ml-1 text-amber-500">●</span>}
+        </GhostButton>
       </div>
+
+      {filterOpen && (
+        <div className={cx(CARD, "mb-4 p-4 flex flex-wrap gap-4 items-center")}>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-neutral-500">{t.genre}</span>
+            <select
+              className="px-3 py-2 border rounded-xl text-sm dark:bg-neutral-900 dark:border-neutral-700"
+              value={genreFilter}
+              onChange={(e) =>
+                setGenreFilter(e.target.value as string | "all")
+              }
+            >
+              <option value="all">{t.allGenres}</option>
+              {GENRES.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 text-sm">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={onlyPromo}
+                onChange={(e) => setOnlyPromo(e.target.checked)}
+              />
+              <span>{t.onlyPromoted}</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={onlyMusic}
+                onChange={(e) => setOnlyMusic(e.target.checked)}
+              />
+              <span>{t.onlyMusic}</span>
+            </label>
+          </div>
+
+          <div className="ml-auto">
+            <GhostButton onClick={handleClearFilters}>
+              {t.clearFilters}
+            </GhostButton>
+          </div>
+        </div>
+      )}
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {items.map((item) => (
           <WorkCard
