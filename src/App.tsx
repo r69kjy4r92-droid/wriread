@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Logo } from "./components/Logo";
 
 // ===== Helpers =====
 const ACCENT = "from-rose-400 via-orange-300 to-amber-300";
@@ -279,12 +280,12 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-2">
-        <div className="flex items-center gap-2">
-          <div
-            className={cx("h-8 w-8 bg-gradient-to-br", ACCENT, "rounded-xl")}
-          />
-          <div className="font-black tracking-tight">WriRead</div>
-        </div>
+        <button
+          className="flex items-center gap-2"
+          onClick={() => onNav("landing")}
+        >
+          <Logo />
+        </button>
         <nav className="ml-6 hidden md:flex gap-2">
           {nav.map((n) => (
             <GhostButton
