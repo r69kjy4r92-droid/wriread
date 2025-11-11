@@ -278,35 +278,43 @@ const Header: React.FC<HeaderProps> = ({
     { k: "profile", label: t.profile },
   ];
   return (
-    <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-2">
+    <header className="sticky top-0 z-40 bg-white/90 dark:bg-neutral-950/80 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
+      <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2">
+        {/* Логотип */}
         <button
           className="flex items-center gap-2"
           onClick={() => onNav("landing")}
         >
           <Logo />
         </button>
-        <nav className="ml-6 hidden md:flex gap-2">
-          {nav.map((n) => (
-            <GhostButton
-              key={n.k}
-              onClick={() => onNav(n.k)}
-              className={cx(current === n.k && "ring-2 ring-amber-300")}
-            >
-              {n.label}
-            </GhostButton>
-          ))}
-        </nav>
-        <div className="ml-auto flex items-center gap-2">
-          <GhostButton onClick={onToggleTheme}>
-            {theme === "dark" ? "🌙 " + t.dark : "🌞 " + t.light}
+
+        {/* Правые контролы */}
+        <div className="ml-auto flex items-center gap-2 order-2 md:order-2">
+          <GhostButton
+            onClick={onToggleTheme}
+            className="px-3 py-1 text-xs sm:text-sm"
+          >
+            {theme === "dark" ? "🌙" : "🌞"}
+            <span className="hidden sm:inline ml-1">
+              {theme === "dark" ? t.dark : t.light}
+            </span>
           </GhostButton>
 
-          <span className="text-xs text-neutral-500">
-            [{lang.toUpperCase()}]
-          </span>
+          {/* Быстрая смена языка на мобилке (такая же кнопка как [RU]) */}
+          <button
+            type="button"
+            className="sm:hidden px-2 py-1 text-xs rounded-xl border border-neutral-300 dark:border-neutral-700"
+            onClick={() => {
+              const idx = LANGS.findIndex((l) => l.k === lang);
+              const next = LANGS[(idx + 1 + LANGS.length) % LANGS.length];
+              onChangeLang(next.k);
+            }}
+          >
+            {lang.toUpperCase()}
+          </button>
 
-          <div className={cx(CARD, "px-2 py-1 flex items-center gap-1")}>
+          {/* Полный селект языка — только на >= sm */}
+          <div className={cx(CARD, "px-2 py-1 hidden sm:flex items-center gap-1")}>
             <span className="text-xs text-neutral-500">{t.language}:</span>
             <select
               className="bg-transparent text-sm outline-none"
@@ -323,6 +331,24 @@ const Header: React.FC<HeaderProps> = ({
 
           <Button className="hidden sm:inline-flex">{t.signIn}</Button>
         </div>
+
+        {/* Навигация — отдельной полосой, удобно пальцем скроллить */}
+        <nav className="w-full order-3 mt-1 overflow-x-auto">
+          <div className="flex gap-2 min-w-max">
+            {nav.map((n) => (
+              <GhostButton
+                key={n.k}
+                onClick={() => onNav(n.k)}
+                className={cx(
+                  "px-3 py-1 text-xs sm:text-sm whitespace-nowrap",
+                  current === n.k && "ring-2 ring-amber-300"
+                )}
+              >
+                {n.label}
+              </GhostButton>
+            ))}
+          </div>
+        </nav>
       </div>
     </header>
   );
