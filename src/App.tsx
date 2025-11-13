@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
-
-
 import { Logo } from "./components/Logo";
 
 // ===== Helpers =====
@@ -20,78 +18,7 @@ function num(n: number) {
   return (n ?? 0).toLocaleString();
 }
 
-// ===== i18n =====
-
-
-// ===== Data =====
-
-
-
-// ===== Atoms =====
-const GradientBar: React.FC = () => (
-  <div className={cx("h-8 w-full", "bg-gradient-to-r", ACCENT, RADIUS)} />
-);
-
-type ButtonProps = {
-  children: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
-};
-
-const Button: React.FC<ButtonProps> = ({ children, className, onClick }) => (
-  <button
-    onClick={onClick}
-    className={cx(
-      "inline-flex items-center justify-center px-5 py-3 text-base font-semibold",
-      "bg-gradient-to-r text-white",
-      ACCENT,
-      RADIUS,
-      SHADOW,
-      "hover:opacity-90 active:opacity-85 transition",
-      className
-    )}
-  >
-    {children}
-  </button>
-);
-
-type GhostButtonProps = {
-  children: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
-};
-
-const GhostButton: React.FC<GhostButtonProps> = ({
-  children,
-  className,
-  onClick,
-}) => (
-  <button
-    onClick={onClick}
-    className={cx(
-      "inline-flex items-center justify-center px-4 py-2 text-sm font-medium",
-      RADIUS,
-      "border border-neutral-300 bg-white hover:bg-neutral-50 transition",
-      "dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100 hover:dark:bg-neutral-800",
-      className
-    )}
-  >
-    {children}
-  </button>
-);
-
-const Pill: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span
-    className={cx(
-      "px-3 py-1 text-xs font-semibold",
-      "bg-neutral-100 text-neutral-700 rounded-full border border-neutral-200"
-    )}
-  >
-    {children}
-  </span>
-);
-
-// ===== Layout =====
+// ===== Layout: Header / Footer / Mobile Tabs =====
 type HeaderProps = {
   t: any;
   onNav: (k: string) => void;
@@ -118,46 +45,49 @@ const Header: React.FC<HeaderProps> = ({
     { k: "profile", label: t.profile },
   ];
   return (
-    <header className="sticky top-0 z-40 bg-white/90 dark:bg-neutral-950/80 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
-      <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2">
-        {/* Логотип */}
+    <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2">
         <button
-          className="flex items-center gap-2"
           onClick={() => onNav("landing")}
+          className="flex items-center gap-2 hover:opacity-90 transition"
         >
           <Logo />
         </button>
 
-        {/* Правые контролы */}
-        <div className="ml-auto flex items-center gap-2 order-2 md:order-2">
-          <GhostButton
-            onClick={onToggleTheme}
-            className="px-3 py-1 text-xs sm:text-sm"
-          >
-            {theme === "dark" ? "🌙" : "🌞"}
-            <span className="hidden sm:inline ml-1">
-              {theme === "dark" ? t.dark : t.light}
-            </span>
-          </GhostButton>
+        <nav className="ml-4 hidden md:flex gap-2">
+          {nav.map((n) => (
+            <button
+              key={n.k}
+              onClick={() => onNav(n.k)}
+              className={cx(
+                "px-3 py-1.5 text-sm font-medium rounded-full border transition",
+                current === n.k
+                  ? "bg-neutral-900 text-white border-neutral-900 dark:bg-amber-400 dark:text-neutral-900 dark:border-amber-400"
+                  : "bg-white hover:bg-neutral-50 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-100"
+              )}
+            >
+              {n.label}
+            </button>
+          ))}
+        </nav>
 
-          {/* Быстрая смена языка на мобилке (такая же кнопка как [RU]) */}
+        <div className="ml-auto flex items-center gap-2">
           <button
-            type="button"
-            className="sm:hidden px-2 py-1 text-xs rounded-xl border border-neutral-300 dark:border-neutral-700"
-            onClick={() => {
-              const idx = LANGS.findIndex((l) => l.k === lang);
-              const next = LANGS[(idx + 1 + LANGS.length) % LANGS.length];
-              onChangeLang(next.k);
-            }}
+            onClick={onToggleTheme}
+            className={cx(
+              "px-3 py-1.5 text-xs sm:text-sm rounded-full border flex items-center gap-1",
+              "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+            )}
           >
-            {lang.toUpperCase()}
+            {theme === "dark" ? "🌙 " + t.dark : "🌞 " + t.light}
           </button>
 
-          {/* Полный селект языка — только на >= sm */}
-          <div className={cx(CARD, "px-2 py-1 hidden sm:flex items-center gap-1")}>
-            <span className="text-xs text-neutral-500">{t.language}:</span>
+          <div className={cx(CARD, "px-2 py-1 flex items-center gap-1")}>
+            <span className="hidden sm:inline text-xs text-neutral-500">
+              {t.language}:
+            </span>
             <select
-              className="bg-transparent text-sm outline-none"
+              className="bg-transparent text-xs sm:text-sm outline-none"
               value={lang}
               onChange={(e) => onChangeLang(e.target.value)}
             >
@@ -168,65 +98,9 @@ const Header: React.FC<HeaderProps> = ({
               ))}
             </select>
           </div>
-
-          <Button className="hidden sm:inline-flex">{t.signIn}</Button>
         </div>
-
-        {/* Навигация — отдельной полосой, удобно пальцем скроллить */}
-        <nav className="w-full order-3 mt-1 overflow-x-auto">
-          <div className="flex gap-2 min-w-max">
-            {nav.map((n) => (
-              <GhostButton
-                key={n.k}
-                onClick={() => onNav(n.k)}
-                className={cx(
-                  "px-3 py-1 text-xs sm:text-sm whitespace-nowrap",
-                  current === n.k && "ring-2 ring-amber-300"
-                )}
-              >
-                {n.label}
-              </GhostButton>
-            ))}
-          </div>
-        </nav>
       </div>
     </header>
-  );
-};
-
-const MobileTabBar: React.FC<{
-  current: string;
-  onNav: (k: string) => void;
-  t: any;
-}> = ({ current, onNav, t }) => {
-  const tabs = [
-    { k: "landing", label: "Home", emoji: "🏠" },
-    { k: "feed", label: t.feed, emoji: "📰" },
-    { k: "publish", label: t.publish, emoji: "➕" },
-    { k: "profile", label: t.profile, emoji: "👤" },
-  ];
-  return (
-    <nav className="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white/90 dark:bg-neutral-950/80 backdrop-blur border-t border-neutral-200 dark:border-neutral-800 pb-[env(safe-area-inset-bottom)]">
-      <div className="max-w-6xl mx-auto px-3">
-        <div className="grid grid-cols-4 gap-1 py-2">
-          {tabs.map((tbi) => (
-            <button
-              key={tbi.k}
-              onClick={() => onNav(tbi.k)}
-              className={[
-                "flex flex-col items-center justify-center rounded-xl px-2 py-2 text-[11px]",
-                current === tbi.k
-                  ? "bg-neutral-100 dark:bg-neutral-900 ring-1 ring-amber-300"
-                  : "bg-transparent"
-              ].join(" ")}
-            >
-              <span className="text-base leading-none">{tbi.emoji}</span>
-              <span className="mt-1 leading-none">{tbi.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </nav>
   );
 };
 
@@ -241,24 +115,125 @@ const Footer: React.FC<FooterProps> = ({ t }) => (
   </footer>
 );
 
-// ===== Pages =====
-const Landing: React.FC<{ t: any; onGetStarted: (page: string) => void }> = ({
-  t,
-  onGetStarted,
+type MobileTabBarProps = {
+  t: any;
+  page: string;
+  onNav: (p: string) => void;
+};
+
+const MobileTabBar: React.FC<MobileTabBarProps> = ({ t, page, onNav }) => {
+  const tabs = [
+    { k: "landing", label: "Home", icon: "🏠" },
+    { k: "feed", label: t.feed, icon: "📜" },
+    { k: "publish", label: t.publish, icon: "➕" },
+    { k: "profile", label: t.profile, icon: "👤" },
+  ];
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white/95 dark:bg-neutral-950/95 border-t border-neutral-200 dark:border-neutral-800 backdrop-blur">
+      <div className="max-w-6xl mx-auto px-2 py-1.5 flex justify-around">
+        {tabs.map((tab) => (
+          <button
+            key={tab.k}
+            onClick={() => onNav(tab.k)}
+            className={cx(
+              "flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl text-[11px]",
+              page === tab.k
+                ? "text-amber-600 dark:text-amber-400"
+                : "text-neutral-500 dark:text-neutral-400"
+            )}
+          >
+            <span className="text-lg">{tab.icon}</span>
+            <span className="leading-none">{tab.label}</span>
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+// ===== Pages & Components =====
+const GradientBar: React.FC = () => (
+  <div className={cx("h-8 w-full", "bg-gradient-to-r", ACCENT, RADIUS)} />
+);
+
+type ButtonProps = {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+};
+
+const Button: React.FC<ButtonProps> = ({ children, className, onClick }) => (
+  <button
+    onClick={onClick}
+    className={cx(
+      "inline-flex items-center justify-center px-5 py-3 text-sm sm:text-base font-semibold",
+      "bg-gradient-to-r text-white",
+      ACCENT,
+      RADIUS,
+      SHADOW,
+      "hover:opacity-90 active:opacity-85 transition",
+      className
+    )}
+  >
+    {children}
+  </button>
+);
+
+type GhostButtonProps = {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+};
+
+const GhostButton: React.FC<GhostButtonProps> = ({
+  children,
+  className,
+  onClick,
 }) => (
+  <button
+    onClick={onClick}
+    className={cx(
+      "inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium",
+      RADIUS,
+      "border border-neutral-300 bg-white hover:bg-neutral-50 transition",
+      "dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100 hover:dark:bg-neutral-800",
+      className
+    )}
+  >
+    {children}
+  </button>
+);
+
+const Pill: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span
+    className={cx(
+      "px-3 py-1 text-xs font-semibold",
+      "bg-neutral-100 text-neutral-700 rounded-full border border-neutral-200",
+      "dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-700"
+    )}
+  >
+    {children}
+  </span>
+);
+
+const Landing: React.FC<{
+  t: any;
+  lang: string;
+  onGetStarted: (page: string) => void;
+}> = ({ t, lang, onGetStarted }) => (
   <section>
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-100 via-rose-50 to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950" />
-      <div className="max-w-6xl mx-auto px-4 py-14">
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black leading-tight">
+            <h1 className="text-3xl md:text-5xl font-black leading-tight tracking-tight">
               WriRead
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-orange-500">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-orange-500 mt-1">
                 {t.slogan}
               </span>
             </h1>
-            <p className="mt-4 text-neutral-600 dark:text-neutral-300 text-lg max-w-xl">
+            <p className="mt-4 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-xl">
               {t.description}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -287,6 +262,7 @@ const Landing: React.FC<{ t: any; onGetStarted: (page: string) => void }> = ({
                   <img
                     src={w.cover}
                     className="w-full aspect-[3/2] object-cover"
+                    loading="lazy"
                   />
                 </div>
               ))}
@@ -317,7 +293,7 @@ const Tabs: React.FC<{
           "border",
           current === t.k
             ? "bg-white border-amber-300 text-amber-700 dark:bg-neutral-900"
-            : "bg-white hover:bg-neutral-50 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:border-neutral-700"
+            : "bg-white hover:bg-neutral-50 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-100"
         )}
       >
         {t.label}
@@ -326,13 +302,22 @@ const Tabs: React.FC<{
   </div>
 );
 
-const WorkCard: React.FC<{ t: any; lang: string; item: WorkItem; onOpen: (item: WorkItem) => void; onDonate: (item: WorkItem) => void; onBoost: (item: WorkItem) => void; onListen: (item: WorkItem) => void; }> = ({ t, lang, item, onOpen, onDonate, onBoost, onListen }) => (
+const WorkCard: React.FC<{
+  t: any;
+  lang: string;
+  item: WorkItem;
+  onOpen: (item: WorkItem) => void;
+  onDonate: (item: WorkItem) => void;
+  onBoost: (item: WorkItem) => void;
+  onListen: (item: WorkItem) => void;
+}> = ({ t, lang, item, onOpen, onDonate, onBoost, onListen }) => (
   <div className={CARD}>
     <div className={cx("relative", RADIUS)}>
       <img
         src={item.cover}
         alt="cover"
         className={cx("w-full aspect-[3/2] object-cover", RADIUS)}
+        loading="lazy"
       />
       {item.promo && (
         <div className="absolute left-3 top-3">
@@ -346,8 +331,9 @@ const WorkCard: React.FC<{ t: any; lang: string; item: WorkItem; onOpen: (item: 
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
-          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} · {genreLabel(lang, item.genre as GenreKey)} · {item.date}
+          <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">
+            {t.byAuthor} {item.author} ·{" "}
+            {genreLabel(lang, item.genre as GenreKey)} · {item.date}
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -355,7 +341,7 @@ const WorkCard: React.FC<{ t: any; lang: string; item: WorkItem; onOpen: (item: 
           <Pill>★ {num(item.donations)}</Pill>
         </div>
       </div>
-      <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
+      <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2 text-sm">
         {item.excerpt}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
@@ -374,10 +360,18 @@ const WorkCard: React.FC<{ t: any; lang: string; item: WorkItem; onOpen: (item: 
   </div>
 );
 
-const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; onDonate: (item: WorkItem) => void; onBoost: (item: WorkItem) => void; onListen: (item: WorkItem) => void; }> = ({ t, lang, onOpen, onDonate, onBoost, onListen }) => {
+const Feed: React.FC<{
+  t: any;
+  lang: string;
+  items: WorkItem[];
+  onOpen: (item: WorkItem) => void;
+  onDonate: (item: WorkItem) => void;
+  onBoost: (item: WorkItem) => void;
+  onListen: (item: WorkItem) => void;
+}> = ({ t, lang, items, onOpen, onDonate, onBoost, onListen }) => {
   const [tab, setTab] = useState("top");
   const [filterOpen, setFilterOpen] = useState(false);
-  const [genreFilter, setGenreFilter] = useState<string | "all">("all");
+  const [genreFilter, setGenreFilter] = useState<GenreKey | "all">("all");
   const [onlyPromo, setOnlyPromo] = useState(false);
   const [onlyMusic, setOnlyMusic] = useState(false);
 
@@ -390,10 +384,10 @@ const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; o
   const hasActiveFilter =
     genreFilter !== "all" || onlyPromo || onlyMusic;
 
-  const items = useMemo(() => {
-    let arr = [...MOCK_WORKS];
-    if (tab === "new") arr = [...MOCK_WORKS].reverse();
-    if (tab === "following") arr = MOCK_WORKS.filter((_, i) => i % 2 === 0);
+  const filteredItems = useMemo(() => {
+    let arr = [...items];
+    if (tab === "new") arr = [...items].reverse();
+    if (tab === "following") arr = items.filter((_, i) => i % 2 === 0);
 
     if (genreFilter !== "all") {
       arr = arr.filter((w) => w.genre === genreFilter);
@@ -405,7 +399,7 @@ const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; o
       arr = arr.filter((w) => w.genre === "music");
     }
     return arr;
-  }, [tab, genreFilter, onlyPromo, onlyMusic]);
+  }, [items, tab, genreFilter, onlyPromo, onlyMusic]);
 
   const handleClearFilters = () => {
     setGenreFilter("all");
@@ -414,7 +408,7 @@ const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; o
   };
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-8">
+    <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className="flex items-center justify-between mb-4">
         <Tabs tabs={tabs} current={tab} onChange={setTab} />
         <GhostButton onClick={() => setFilterOpen((o) => !o)}>
@@ -431,7 +425,7 @@ const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; o
               className="px-3 py-2 border rounded-xl text-sm dark:bg-neutral-900 dark:border-neutral-700"
               value={genreFilter}
               onChange={(e) =>
-                setGenreFilter(e.target.value as string | "all")
+                setGenreFilter(e.target.value as GenreKey | "all")
               }
             >
               <option value="all">{t.allGenres}</option>
@@ -470,8 +464,8 @@ const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; o
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {filteredItems.map((item) => (
           <WorkCard
             key={item.id}
             t={t}
@@ -488,31 +482,36 @@ const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; o
   );
 };
 
-const Work: React.FC<{ t: any; lang: string; item: WorkItem | null; onDonate: (item: WorkItem) => void; }> = ({ t, lang, item, onDonate }) => {
+const Work: React.FC<{
+  t: any;
+  lang: string;
+  item: WorkItem | null;
+  onDonate: (item: WorkItem) => void;
+}> = ({ t, lang, item, onDonate }) => {
   if (!item) {
     return (
-      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-neutral-600 dark:text-neutral-300">
+      <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600 dark:text-neutral-300">
         {t.emptyWork}
       </div>
     );
   }
   return (
-    <section className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+    <section className="max-w-3xl mx-auto px-4 py-8">
       <div className={CARD}>
         <img
           src={item.cover}
-          className={cx("w-full object-cover", RADIUS, "aspect-[4/3] sm:aspect-[3/2]")}
-          alt="cover"
+          className={cx("w-full aspect-[3/2] object-cover", RADIUS)}
+          loading="lazy"
         />
-        <div className="p-4 sm:p-5">
-          <h1 className="text-xl sm:text-2xl font-bold leading-tight">{item.title}</h1>
-          <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} · {genreLabel(lang, item.genre as GenreKey)} · {item.date}
+        <div className="p-5">
+          <h1 className="text-2xl font-bold">{item.title}</h1>
+          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
+            {t.byAuthor} {item.author} ·{" "}
+            {genreLabel(lang, item.genre as GenreKey)} · {item.date}
           </div>
-          <p className="mt-3 sm:mt-4 text-[15px] sm:text-base text-neutral-800 dark:text-neutral-100">
-            <strong className="font-semibold">{t.excerpt}:</strong> {item.excerpt}
+          <p className="mt-4 text-neutral-800 dark:text-neutral-100 text-sm sm:text-base">
+            <strong>{t.excerpt}:</strong> {item.excerpt}
           </p>
-
           {item.audioUrl && (
             <div className="mt-4">
               <audio controls className="w-full">
@@ -520,15 +519,11 @@ const Work: React.FC<{ t: any; lang: string; item: WorkItem | null; onDonate: (i
               </audio>
             </div>
           )}
-
-          {/* Действия: на мобиле в столбик с full-width, на >=sm в ряд */}
-          <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row gap-2">
-            <Button className="w-full sm:w-auto px-5 py-3 text-base" onClick={() => onDonate(item)}>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <GhostButton onClick={() => onDonate(item)}>
               {t.donate}
-            </Button>
-            <GhostButton className="w-full sm:w-auto px-5 py-3 text-base">
-              {t.share}
             </GhostButton>
+            <GhostButton>{t.share}</GhostButton>
           </div>
         </div>
       </div>
@@ -537,8 +532,7 @@ const Work: React.FC<{ t: any; lang: string; item: WorkItem | null; onDonate: (i
 };
 
 const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
-  const initialGenre = (GENRE_KEYS && GENRE_KEYS.length ? GENRE_KEYS[0] : "poetry") as GenreKey;
-  const [genre, setGenre] = useState<GenreKey>(initialGenre);
+  const [genre, setGenre] = useState<GenreKey>(GENRE_KEYS[0]);
   const [audioFileName, setAudioFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -550,13 +544,15 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
       return;
     }
     setError(null);
-    // TODO: здесь позже будет реальная отправка на сервер
+    // TODO: позже здесь будет реальная отправка на сервер и добавление в works
   };
 
   return (
     <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className={cx(CARD, "p-4 sm:p-5")}>
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">{t.publishWork}</h2>
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+          {t.publishWork}
+        </h2>
 
         <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
           <div>
@@ -616,7 +612,9 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-neutral-500 mt-1">{t.uploadAudio}</p>
+                <p className="text-xs text-neutral-500 mt-1">
+                  {t.uploadAudio}
+                </p>
                 {error && (
                   <p className="mt-2 text-xs text-red-500">{error}</p>
                 )}
@@ -649,8 +647,15 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
   );
 };
 
-const Profile: React.FC<{ t: any }> = ({ t }) => (
-  <section className="max-w-5xl mx-auto px-4 py-8">
+const Profile: React.FC<{
+  t: any;
+  items: WorkItem[];
+  stats: { totalLikes: number; totalDonations: number };
+  ratingScore: number;
+  onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
+}> = ({ t, items, stats, ratingScore, onDelete, onEdit }) => (
+  <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
     <div className="grid md:grid-cols-3 gap-5">
       <div className={cx(CARD, "p-5")}>
         <div className="flex items-center gap-3">
@@ -666,6 +671,18 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
           {t.yourBalance}
         </div>
         <div className="mt-1 text-3xl font-extrabold">$ 124.50</div>
+
+        <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
+          {t.authorRating}
+        </div>
+        <div className="mt-1 text-2xl font-semibold">
+          {num(ratingScore)}
+        </div>
+        <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+          {t.totalLikes}: {num(stats.totalLikes)} · {t.totalDonations}:{" "}
+          {num(stats.totalDonations)}
+        </div>
+
         <div className="mt-4 flex gap-2">
           <Button className="px-4 py-2 text-sm">{t.withdraw}</Button>
           <GhostButton>{t.history}</GhostButton>
@@ -674,7 +691,7 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
       <div className={cx(CARD, "p-5 md:col-span-2")}>
         <h3 className="font-semibold mb-3">{t.posts}</h3>
         <div className="grid sm:grid-cols-2 gap-3">
-          {MOCK_WORKS.slice(0, 4).map((w) => (
+          {items.map((w) => (
             <div
               key={w.id}
               className="border rounded-xl overflow-hidden dark:border-neutral-700"
@@ -682,11 +699,30 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
               <img
                 src={w.cover}
                 className="w-full aspect-[3/2] object-cover"
+                loading="lazy"
               />
-              <div className="p-3">
-                <div className="font-medium">{w.title}</div>
-                <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
-                  ❤ {num(w.likes)} · ★ {num(w.donations)}
+              <div className="p-3 flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-medium">{w.title}</div>
+                  <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
+                    ❤ {num(w.likes)} · ★ {num(w.donations)}
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <button
+                    onClick={() => onEdit(w.id)}
+                    className="text-xs text-neutral-400 hover:text-amber-500 transition"
+                    title={t.edit}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => onDelete(w.id)}
+                    className="text-xs text-neutral-400 hover:text-red-500 transition"
+                    title="Delete"
+                  >
+                    🗑
+                  </button>
                 </div>
               </div>
             </div>
@@ -704,45 +740,42 @@ const Modal: React.FC<{
   title: string;
   children: React.ReactNode;
 }> = ({ open, onClose, title, children }) => {
-  // Блокируем скролл документа, пока модалка открыта
   useEffect(() => {
-    if (open) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
   }, [open]);
 
   if (!open) return null;
+
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40">
-      {/* Панель: на мобиле bottom-sheet почти фуллскрин, на десктопе — карточка по центру */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center sm:items-center bg-black/40">
       <div
         className={cx(
-          "w-full max-w-none sm:max-w-lg",
-          "rounded-t-3xl sm:rounded-2xl",
-          "h-[85vh] sm:h-auto",
-          "mx-auto sm:mx-0",
-          "bg-white dark:bg-neutral-900",
-          "pb-[env(safe-area-inset-bottom)]",
-          "overflow-auto",
-          CARD
+          "w-full max-w-lg",
+          CARD,
+          isMobile
+            ? "fixed bottom-0 left-0 right-0 rounded-b-none max-h-[85vh]"
+            : "max-h-[90vh]"
         )}
       >
-        {/* Липкий заголовок */}
-        <div className="sticky top-0 z-10 bg-white/90 dark:bg-neutral-900/90 backdrop-blur p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl">
-          <h3 className="text-base sm:text-lg font-semibold">{title}</h3>
+        <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between sticky top-0 bg-white/90 dark:bg-neutral-900/90 backdrop-blur rounded-t-2xl">
+          <h3 className="text-lg font-semibold">{title}</h3>
           <button
             onClick={onClose}
             className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
-            aria-label="Close"
           >
             ✕
           </button>
         </div>
-        <div className="p-4 sm:p-4">{children}</div>
+        <div className="p-4 overflow-y-auto max-h-[70vh] sm:max-h-[65vh]">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -755,40 +788,29 @@ const DonateModal: React.FC<{
   item: WorkItem | null;
 }> = ({ open, onClose, t, item }) => {
   const [amount, setAmount] = useState(5);
-  if (!item) return null;
+  if (!open || !item) return null;
+
   return (
     <Modal open={open} onClose={onClose} title={`${t.donate}: ${item.title}`}>
-      {/* пресеты сумм – переносится на две строки при узком экране */}
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
         {[3, 5, 10, 20].map((v) => (
-          <GhostButton
-            key={v}
-            onClick={() => setAmount(v)}
-            className="px-4 py-2 text-sm"
-          >
+          <GhostButton key={v} onClick={() => setAmount(v)}>
             {`$${v}`}
           </GhostButton>
         ))}
       </div>
-
-      {/* ввод суммы + действия: на мобиле в столбик, на >=sm — в ряд */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <input
           type="number"
           value={amount}
           onChange={(e) =>
             setAmount(parseFloat(e.target.value || "0") || 0)
           }
-          className="w-full sm:w-28 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700"
+          className="w-32 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700 text-sm"
         />
-        <Button className="w-full sm:w-auto" onClick={onClose}>
-          {t.pay}
-        </Button>
-        <GhostButton className="w-full sm:w-auto" onClick={onClose}>
-          {t.cancel}
-        </GhostButton>
+        <Button onClick={onClose}>{t.pay}</Button>
+        <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
       </div>
-
       <p className="text-xs text-neutral-500 mt-3">{t.mockPaymentNote}</p>
     </Modal>
   );
@@ -800,7 +822,7 @@ const ListenModal: React.FC<{
   t: any;
   item: WorkItem | null;
 }> = ({ open, onClose, t, item }) => {
-  if (!item) return null;
+  if (!open || !item) return null;
   return (
     <Modal open={open} onClose={onClose} title={`${t.listen}: ${item.title}`}>
       {item.audioUrl ? (
@@ -812,10 +834,97 @@ const ListenModal: React.FC<{
           {t.audioUnavailable}
         </p>
       )}
-      <div className="mt-4 flex flex-col sm:flex-row gap-2">
-        <GhostButton className="w-full sm:w-auto" onClick={onClose}>
-          {t.cancel}
-        </GhostButton>
+      <div className="mt-4 flex gap-3">
+        <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
+      </div>
+    </Modal>
+  );
+};
+
+const EditWorkModal: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  t: any;
+  lang: string;
+  item: WorkItem | null;
+  onSave: (item: WorkItem) => void;
+}> = ({ open, onClose, t, lang, item, onSave }) => {
+  const [title, setTitle] = useState("");
+  const [genre, setGenre] = useState<GenreKey>("poetry");
+  const [excerpt, setExcerpt] = useState("");
+
+  useEffect(() => {
+    if (item && open) {
+      setTitle(item.title);
+      setGenre((item.genre as GenreKey) || "poetry");
+      setExcerpt(item.excerpt || "");
+    }
+  }, [item, open]);
+
+  if (!open || !item) return null;
+
+  const handleSave = () => {
+    onSave({
+      ...item,
+      title,
+      genre,
+      excerpt,
+    });
+    onClose();
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title={t.edit}>
+      <div className="flex flex-col gap-3">
+        <div>
+          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+            {t.title}
+          </label>
+          <input
+            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+            {t.genre}
+          </label>
+          <select
+            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            value={genre}
+            onChange={(e) => setGenre(e.target.value as GenreKey)}
+          >
+            {GENRE_KEYS.map((g) => (
+              <option key={g} value={g}>
+                {genreLabel(lang, g as GenreKey)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+            {t.text}
+          </label>
+          <textarea
+            rows={4}
+            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            placeholder={t.startWriting}
+          />
+        </div>
+
+        <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
+          <GhostButton onClick={onClose} className="w-full sm:w-auto">
+            {t.cancel}
+          </GhostButton>
+          <Button onClick={handleSave} className="w-full sm:w-auto">
+            {t.save}
+          </Button>
+        </div>
       </div>
     </Modal>
   );
@@ -844,13 +953,26 @@ export default function App() {
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
+  const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
+  const [stats] = useState(() => {
+    let totalLikes = 0;
+    let totalDonations = 0;
+    for (const w of MOCK_WORKS) {
+      totalLikes += w.likes;
+      totalDonations += w.donations;
+    }
+    return { totalLikes, totalDonations };
+  });
   const [donateOpen, setDonateOpen] = useState(false);
   const [listenOpen, setListenOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editing, setEditing] = useState<WorkItem | null>(null);
 
   const currentLangKey = (
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
   ) as keyof typeof DICT;
   const t = DICT[currentLangKey];
+  const ratingScore = stats.totalLikes + stats.totalDonations;
 
   useEffect(() => {
     try {
@@ -874,8 +996,27 @@ export default function App() {
     setPage("work");
   };
 
+  const handleDeleteWork = (id: string) => {
+    setWorks((prev) => prev.filter((w) => w.id !== id));
+    setCurrent((prev) => (prev && prev.id === id ? null : prev));
+    // Важно: stats не трогаем — рейтинг считается по всем лайкам/донатам за жизнь автора
+  };
+
+  const handleEditWorkClick = (id: string) => {
+    const found = works.find((w) => w.id === id);
+    if (found) {
+      setEditing(found);
+      setEditOpen(true);
+    }
+  };
+
+  const handleSaveEditedWork = (updated: WorkItem) => {
+    setWorks((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
+    setCurrent((prev) => (prev && prev.id === updated.id ? updated : prev));
+  };
+
   return (
-    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
       <Header
         t={t}
         current={page}
@@ -888,11 +1029,14 @@ export default function App() {
         onChangeLang={setLang}
       />
 
-      {page === "landing" && <Landing t={t} onGetStarted={setPage} />}
+      {page === "landing" && (
+        <Landing t={t} lang={lang} onGetStarted={setPage} />
+      )}
       {page === "feed" && (
         <Feed
           t={t}
           lang={lang}
+          items={works}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
@@ -917,12 +1061,20 @@ export default function App() {
         />
       )}
       {page === "publish" && <Publish t={t} lang={lang} />}
-      {page === "profile" && <Profile t={t} />}
+      {page === "profile" && (
+        <Profile
+          t={t}
+          items={works}
+          stats={stats}
+          ratingScore={ratingScore}
+          onDelete={handleDeleteWork}
+          onEdit={handleEditWorkClick}
+        />
+      )}
 
       <div className="h-16 sm:hidden" />
       <Footer t={t} />
-
-      <MobileTabBar current={page} onNav={setPage} t={t} />
+      <MobileTabBar t={t} page={page} onNav={setPage} />
 
       <DonateModal
         open={donateOpen}
@@ -935,6 +1087,14 @@ export default function App() {
         onClose={() => setListenOpen(false)}
         t={t}
         item={current}
+      />
+      <EditWorkModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        t={t}
+        lang={lang}
+        item={editing}
+        onSave={handleSaveEditedWork}
       />
     </div>
   );
