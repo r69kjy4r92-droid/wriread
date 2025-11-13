@@ -605,7 +605,7 @@ const Feed: React.FC<{
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <WorkCard
             key={item.id}
@@ -796,7 +796,7 @@ const Modal: React.FC<{
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-      <div className={cx("w-full max-w-lg", CARD)}>
+      <div className={cx("w-full max-w-[min(100%,_420px)] sm:max-w-lg mx-auto", CARD)}>
         <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button
@@ -822,25 +822,37 @@ const DonateModal: React.FC<{
   if (!item) return null;
   return (
     <Modal open={open} onClose={onClose} title={`${t.donate}: ${item.title}`}>
-      <div className="flex items-center gap-2 mb-3">
+      {/* пресеты сумм – переносится на две строки при узком экране */}
+      <div className="flex flex-wrap gap-2 mb-3">
         {[3, 5, 10, 20].map((v) => (
-          <GhostButton key={v} onClick={() => setAmount(v)}>
+          <GhostButton
+            key={v}
+            onClick={() => setAmount(v)}
+            className="px-4 py-2 text-sm"
+          >
             {`$${v}`}
           </GhostButton>
         ))}
       </div>
-      <div className="flex items-center gap-3">
+
+      {/* ввод суммы + действия: на мобиле в столбик, на >=sm — в ряд */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <input
           type="number"
           value={amount}
           onChange={(e) =>
             setAmount(parseFloat(e.target.value || "0") || 0)
           }
-          className="w-32 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700"
+          className="w-full sm:w-28 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700"
         />
-        <Button onClick={onClose}>{t.pay}</Button>
-        <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
+        <Button className="w-full sm:w-auto" onClick={onClose}>
+          {t.pay}
+        </Button>
+        <GhostButton className="w-full sm:w-auto" onClick={onClose}>
+          {t.cancel}
+        </GhostButton>
       </div>
+
       <p className="text-xs text-neutral-500 mt-3">{t.mockPaymentNote}</p>
     </Modal>
   );
