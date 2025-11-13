@@ -354,6 +354,42 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
+const MobileTabBar: React.FC<{
+  current: string;
+  onNav: (k: string) => void;
+  t: any;
+}> = ({ current, onNav, t }) => {
+  const tabs = [
+    { k: "landing", label: "Home", emoji: "🏠" },
+    { k: "feed", label: t.feed, emoji: "📰" },
+    { k: "publish", label: t.publish, emoji: "➕" },
+    { k: "profile", label: t.profile, emoji: "👤" },
+  ];
+  return (
+    <nav className="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white/90 dark:bg-neutral-950/80 backdrop-blur border-t border-neutral-200 dark:border-neutral-800 pb-[env(safe-area-inset-bottom)]">
+      <div className="max-w-6xl mx-auto px-3">
+        <div className="grid grid-cols-4 gap-1 py-2">
+          {tabs.map((tbi) => (
+            <button
+              key={tbi.k}
+              onClick={() => onNav(tbi.k)}
+              className={[
+                "flex flex-col items-center justify-center rounded-xl px-2 py-2 text-[11px]",
+                current === tbi.k
+                  ? "bg-neutral-100 dark:bg-neutral-900 ring-1 ring-amber-300"
+                  : "bg-transparent"
+              ].join(" ")}
+            >
+              <span className="text-base leading-none">{tbi.emoji}</span>
+              <span className="mt-1 leading-none">{tbi.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+};
+
 const Footer: React.FC = () => (
   <footer className="mt-10 border-t border-neutral-200 dark:border-neutral-800">
     <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-neutral-600 dark:text-neutral-400 flex flex-col md:flex-row gap-2 md:gap-6">
@@ -987,7 +1023,10 @@ export default function App() {
       {page === "publish" && <Publish t={t} />}
       {page === "profile" && <Profile t={t} />}
 
+      <div className="h-16 sm:hidden" />
       <Footer />
+
+      <MobileTabBar current={page} onNav={setPage} t={t} />
 
       <DonateModal
         open={donateOpen}
