@@ -132,19 +132,67 @@ const LANGS = [
 ];
 
 // ===== Data =====
-const GENRES = [
-  "Стихи",
-  "Роман",
-  "Поэма",
-  "Рассказ",
-  "Детектив",
-  "Фэнтези",
-  "Игры",
-  "Сценарии",
-  "Басни",
-  "Другое",
-  "Музыка/Бит",
-];
+const GENRE_KEYS = [
+  "poetry",
+  "novel",
+  "poem",
+  "short",
+  "detective",
+  "fantasy",
+  "games",
+  "screenplay",
+  "fable",
+  "other",
+  "music",
+] as const;
+type GenreKey = typeof GENRE_KEYS[number];
+
+const GENRE_I18N = {
+  ru: {
+    poetry: "Стихи",
+    novel: "Роман",
+    poem: "Поэма",
+    short: "Рассказ",
+    detective: "Детектив",
+    fantasy: "Фэнтези",
+    games: "Игры",
+    screenplay: "Сценарии",
+    fable: "Басни",
+    other: "Другое",
+    music: "Музыка/Бит",
+  },
+  en: {
+    poetry: "Poetry",
+    novel: "Novel",
+    poem: "Poem",
+    short: "Short story",
+    detective: "Detective",
+    fantasy: "Fantasy",
+    games: "Games",
+    screenplay: "Screenplays",
+    fable: "Fables",
+    other: "Other",
+    music: "Music/Beat",
+  },
+  tr: {
+    poetry: "Şiir",
+    novel: "Roman",
+    poem: "Manzume",
+    short: "Öykü",
+    detective: "Polisiye",
+    fantasy: "Fantastik",
+    games: "Oyunlar",
+    screenplay: "Senaryolar",
+    fable: "Fabllar",
+    other: "Diğer",
+    music: "Müzik/Beat",
+  },
+} as const;
+
+function genreLabel(lang: string, key: GenreKey) {
+  const L = (Object.prototype.hasOwnProperty.call(GENRE_I18N, lang) ? lang : "en") as keyof typeof GENRE_I18N;
+  return (GENRE_I18N[L] as any)[key] ?? (GENRE_I18N["en"] as any)[key];
+}
 
 type WorkItem = {
   id: string;
@@ -165,7 +213,7 @@ type WorkItem = {
 function makeMockWorks(): WorkItem[] {
   const res: WorkItem[] = [];
   for (let i = 0; i < 12; i++) {
-    const genre = GENRES[i % GENRES.length];
+    const genre = GENRE_KEYS[i % GENRE_KEYS.length] as GenreKey;
     res.push({
       id: `w${i + 1}`,
       title: `Ночное пламя #${i + 1}`,
@@ -181,7 +229,7 @@ function makeMockWorks(): WorkItem[] {
       price: [2.99, 3.99, 4.99][i % 3],
       promo: i % 4 === 0,
       audioUrl:
-        genre === "Музыка/Бит"
+        genre === "music"
           ? "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
           : null,
     });
@@ -487,14 +535,7 @@ const Tabs: React.FC<{
   </div>
 );
 
-const WorkCard: React.FC<{
-  t: any;
-  item: WorkItem;
-  onOpen: (item: WorkItem) => void;
-  onDonate: (item: WorkItem) => void;
-  onBoost: (item: WorkItem) => void;
-  onListen: (item: WorkItem) => void;
-}> = ({ t, item, onOpen, onDonate, onBoost, onListen }) => (
+const WorkCard: React.FC<{ t: any; lang: string; item: WorkItem; onOpen: (item: WorkItem) => void; onDonate: (item: WorkItem) => void; onBoost: (item: WorkItem) => void; onListen: (item: WorkItem) => void; }> = ({ t, lang, item, onOpen, onDonate, onBoost, onListen }) => (
   <div className={CARD}>
     <div className={cx("relative", RADIUS)}>
       <img
@@ -515,7 +556,7 @@ const WorkCard: React.FC<{
         <div>
           <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
           <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} · {item.genre} · {item.date}
+            {t.byAuthor} {item.author} · {genreLabel(lang, item.genre as GenreKey)} · {item.date}
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -542,13 +583,7 @@ const WorkCard: React.FC<{
   </div>
 );
 
-const Feed: React.FC<{
-  t: any;
-  onOpen: (item: WorkItem) => void;
-  onDonate: (item: WorkItem) => void;
-  onBoost: (item: WorkItem) => void;
-  onListen: (item: WorkItem) => void;
-}> = ({ t, onOpen, onDonate, onBoost, onListen }) => {
+const Feed: React.FC<{ t: any; lang: string; onOpen: (item: WorkItem) => void; onDonate: (item: WorkItem) => void; onBoost: (item: WorkItem) => void; onListen: (item: WorkItem) => void; }> = ({ t, lang, onOpen, onDonate, onBoost, onListen }) => {
   const [tab, setTab] = useState("top");
   const [filterOpen, setFilterOpen] = useState(false);
   const [genreFilter, setGenreFilter] = useState<string | "all">("all");
@@ -576,7 +611,7 @@ const Feed: React.FC<{
       arr = arr.filter((w) => w.promo);
     }
     if (onlyMusic) {
-      arr = arr.filter((w) => w.genre === "Музыка/Бит");
+      arr = arr.filter((w) => w.genre === "music");
     }
     return arr;
   }, [tab, genreFilter, onlyPromo, onlyMusic]);
@@ -609,9 +644,9 @@ const Feed: React.FC<{
               }
             >
               <option value="all">{t.allGenres}</option>
-              {GENRES.map((g) => (
+              {GENRE_KEYS.map((g) => (
                 <option key={g} value={g}>
-                  {g}
+                  {genreLabel(lang, g as GenreKey)}
                 </option>
               ))}
             </select>
@@ -649,6 +684,7 @@ const Feed: React.FC<{
           <WorkCard
             key={item.id}
             t={t}
+            lang={lang}
             item={item}
             onOpen={onOpen}
             onDonate={onDonate}
@@ -661,11 +697,7 @@ const Feed: React.FC<{
   );
 };
 
-const Work: React.FC<{
-  t: any;
-  item: WorkItem | null;
-  onDonate: (item: WorkItem) => void;
-}> = ({ t, item, onDonate }) => {
+const Work: React.FC<{ t: any; lang: string; item: WorkItem | null; onDonate: (item: WorkItem) => void; }> = ({ t, lang, item, onDonate }) => {
   if (!item) {
     return (
       <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-neutral-600 dark:text-neutral-300">
@@ -684,7 +716,7 @@ const Work: React.FC<{
         <div className="p-4 sm:p-5">
           <h1 className="text-xl sm:text-2xl font-bold leading-tight">{item.title}</h1>
           <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} · {item.genre} · {item.date}
+            {t.byAuthor} {item.author} · {genreLabel(lang, item.genre as GenreKey)} · {item.date}
           </div>
           <p className="mt-3 sm:mt-4 text-[15px] sm:text-base text-neutral-800 dark:text-neutral-100">
             <strong className="font-semibold">{t.excerpt}:</strong> {item.excerpt}
@@ -713,9 +745,12 @@ const Work: React.FC<{
   );
 };
 
-const Publish: React.FC<{ t: any }> = ({ t }) => {
-  const [genre, setGenre] = useState(GENRES[0]);
-  const isMusic = genre === "Музыка/Бит";
+const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
+  // Защита: если по какой-то причине GENRE_KEYS пустой — подставим "poetry"
+  const initialGenre = (GENRE_KEYS && GENRE_KEYS.length ? GENRE_KEYS[0] : "poetry") as GenreKey;
+  const [genre, setGenre] = useState<GenreKey>(initialGenre);
+  const isMusic = genre === "music";
+
   return (
     <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className={cx(CARD, "p-4 sm:p-5")}>
@@ -739,11 +774,12 @@ const Publish: React.FC<{ t: any }> = ({ t }) => {
             <select
               className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={genre}
-              onChange={(e) => setGenre(e.target.value)}
+              onChange={(e) => setGenre(e.target.value as GenreKey)}
             >
-              {GENRES.map((g) => (
+              {/* all option НЕ нужен в форме, только в фильтрах */}
+              {GENRE_KEYS.map((g) => (
                 <option key={g} value={g}>
-                  {g}
+                  {genreLabel(lang, g as GenreKey)}
                 </option>
               ))}
             </select>
@@ -1028,6 +1064,7 @@ export default function App() {
       {page === "feed" && (
         <Feed
           t={t}
+          lang={lang}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
@@ -1043,6 +1080,7 @@ export default function App() {
       {page === "work" && (
         <Work
           t={t}
+          lang={lang}
           item={current}
           onDonate={(it) => {
             setCurrent(it);
@@ -1050,7 +1088,7 @@ export default function App() {
           }}
         />
       )}
-      {page === "publish" && <Publish t={t} />}
+      {page === "publish" && <Publish t={t} lang={lang} />}
       {page === "profile" && <Profile t={t} />}
 
       <div className="h-16 sm:hidden" />
