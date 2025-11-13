@@ -866,6 +866,37 @@ const ListenModal: React.FC<{
   );
 };
 
+const DeleteConfirmModal: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  t: any;
+  lang: string;
+  item: WorkItem | null;
+  onConfirm: () => void;
+}> = ({ open, onClose, t, lang, item, onConfirm }) => {
+  if (!open || !item) return null;
+  const message = getDeleteConfirmMessage(lang);
+
+  return (
+    <Modal open={open} onClose={onClose} title={item.title}>
+      <p className="text-sm text-neutral-700 dark:text-neutral-200 mb-4">
+        {message}
+      </p>
+      <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
+        <GhostButton onClick={onClose} className="w-full sm:w-auto">
+          {t.cancel}
+        </GhostButton>
+        <Button
+          onClick={onConfirm}
+          className="w-full sm:w-auto"
+        >
+          🗑
+        </Button>
+      </div>
+    </Modal>
+  );
+};
+
 const EditWorkModal: React.FC<{
   open: boolean;
   onClose: () => void;
@@ -992,6 +1023,8 @@ export default function App() {
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<WorkItem | null>(null);
 
   const currentLangKey = (
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
@@ -1027,14 +1060,11 @@ export default function App() {
     // Важно: stats не трогаем — рейтинг считается по всем лайкам/донатам за жизнь автора
   };
 
-  const handleDeleteWorkWithConfirm = (id: string) => {
-    const message = getDeleteConfirmMessage(lang);
-    if (typeof window === "undefined") {
-      handleDeleteWork(id);
-      return;
-    }
-    if (window.confirm(message)) {
-      handleDeleteWork(id);
+  const handleDeleteWorkClick = (id: string) => {
+    const found = works.find((w) => w.id === id);
+    if (found) {
+      setDeleteTarget(found);
+      setDeleteOpen(true);
     }
   };
 
@@ -1103,7 +1133,7 @@ export default function App() {
           items={works}
           stats={stats}
           ratingScore={ratingScore}
-          onDelete={handleDeleteWorkWithConfirm}
+          onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
         />
       )}
@@ -1123,6 +1153,20 @@ export default function App() {
         onClose={() => setListenOpen(false)}
         t={t}
         item={current}
+      />
+      <DeleteConfirmModal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        t={t}
+        lang={lang}
+        item={deleteTarget}
+        onConfirm={() => {
+          if (deleteTarget) {
+            handleDeleteWork(deleteTarget.id);
+            setDeleteOpen(false);
+            setDeleteTarget(null);
+          }
+        }}
       />
       <EditWorkModal
         open={editOpen}
