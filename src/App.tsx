@@ -63,6 +63,11 @@ const DICT = {
     audioFile: "Аудиофайл",
     uploadAudio: "Загрузить аудио",
     listen: "Прослушать",
+    startWriting: "Начните писать…",
+    chooseFile: "Выбрать файл",
+    fileRequired: "Пожалуйста, загрузите аудиофайл.",
+    withdraw: "Вывести",
+    history: "История",
     theme: "Тема",
     light: "Светлая",
     dark: "Тёмная",
@@ -112,9 +117,446 @@ const DICT = {
     audioFile: "Audio file",
     uploadAudio: "Upload audio",
     listen: "Listen",
+    startWriting: "Start writing…",
+    chooseFile: "Choose file",
+    fileRequired: "Please upload an audio file.",
+    withdraw: "Withdraw",
+    history: "History",
     theme: "Theme",
     light: "Light",
     dark: "Dark",
+  },
+  tr: {
+    slogan: "Ben bir yaratıcıyım — burası benim alanım.",
+    description:
+      "WriRead şairler, yazarlar ve müzisyenler için bir alan. Şiir, hikâye ve müzik paylaş; destek al ve kitleni büyüt.",
+    feedPreview: "Akış önizlemesi",
+    filters: "Filtreler",
+    allGenres: "Tüm türler",
+    onlyPromoted: "Sadece öne çıkanlar",
+    onlyMusic: "Sadece müzik/beat",
+    clearFilters: "Filtreleri temizle",
+    emptyWork: "Lütfen akıştan bir yayını seçin.",
+    mockPaymentNote: "Deneme ödemesi, sonra gerçek sağlayıcı bağlanacak.",
+    audioUnavailable: "Ses dosyası kullanılamıyor.",
+    footerLine: "İçerik politikası · Şartlar · İletişim",
+
+    cta_create: "Yayınla",
+    cta_read: "En iyileri oku",
+    donate: "Yazarı destekle",
+    like: "Beğen",
+    boost: "Öne çıkar",
+    fullAccess: "Tam erişim aç",
+    excerpt: "Alıntı",
+    byAuthor: "Yazar",
+    publish: "Yayınla",
+    feed: "Akış",
+    top: "En iyi",
+    new: "Yeni",
+    following: "Takip ettiklerin",
+    profile: "Profil",
+    signIn: "Giriş",
+    price: "Fiyat",
+    pay: "Öde",
+    cancel: "İptal",
+    promoted: "Promosyonlu",
+    share: "Paylaş",
+    yourBalance: "Bakiyen",
+    posts: "Yayınlar",
+    language: "Dil",
+    publishWork: "Eseri yayınla",
+    title: "Başlık",
+    genre: "Tür",
+    text: "Metin",
+    audioFile: "Ses dosyası",
+    uploadAudio: "Ses yükle",
+    listen: "Dinle",
+    startWriting: "Yazmaya başlayın…",
+    chooseFile: "Dosya seç",
+    fileRequired: "Lütfen bir ses dosyası yükleyin.",
+    withdraw: "Çek",
+    history: "Geçmiş",
+    theme: "Tema",
+    light: "Açık",
+    dark: "Koyu",
+  },
+  es: {
+    slogan: "Soy creador: este es mi espacio.",
+    description:
+      "WriRead es un hogar para poetas, escritores y músicos. Publica poemas, historias y música, recibe apoyo y haz crecer tu audiencia.",
+    feedPreview: "Vista previa del feed",
+    filters: "Filtros",
+    allGenres: "Todos los géneros",
+    onlyPromoted: "Solo promocionados",
+    onlyMusic: "Solo música/beats",
+    clearFilters: "Limpiar filtros",
+    emptyWork: "Elige una publicación del feed.",
+    mockPaymentNote: "Pago de prueba, luego conectaremos un proveedor real.",
+    audioUnavailable: "El archivo de audio no está disponible.",
+    footerLine: "Política de contenido · Términos · Contacto",
+
+    cta_create: "Publicar",
+    cta_read: "Leer lo mejor",
+    donate: "Apoyar al autor",
+    like: "Me gusta",
+    boost: "Impulsar",
+    fullAccess: "Desbloquear acceso completo",
+    excerpt: "Fragmento",
+    byAuthor: "Por",
+    publish: "Publicar",
+    feed: "Feed",
+    top: "Top",
+    new: "Nuevos",
+    following: "Siguiendo",
+    profile: "Perfil",
+    signIn: "Entrar",
+    price: "Precio",
+    pay: "Pagar",
+    cancel: "Cancelar",
+    promoted: "Promocionado",
+    share: "Compartir",
+    yourBalance: "Tu saldo",
+    posts: "Publicaciones",
+    language: "Idioma",
+    publishWork: "Publicar obra",
+    title: "Título",
+    genre: "Género",
+    text: "Texto",
+    audioFile: "Archivo de audio",
+    uploadAudio: "Subir audio",
+    listen: "Escuchar",
+    startWriting: "Empieza a escribir…",
+    chooseFile: "Elegir archivo",
+    fileRequired: "Por favor, sube un archivo de audio.",
+    withdraw: "Retirar",
+    history: "Historial",
+    theme: "Tema",
+    light: "Claro",
+    dark: "Oscuro",
+  },
+  de: {
+    slogan: "Ich bin Creator – das ist mein Raum.",
+    description:
+      "WriRead ist ein Zuhause für Dichter, Autor:innen und Musiker:innen. Veröffentliche Texte und Musik, erhalte Support und baue dein Publikum auf.",
+    feedPreview: "Feed-Vorschau",
+    filters: "Filter",
+    allGenres: "Alle Genres",
+    onlyPromoted: "Nur beworben",
+    onlyMusic: "Nur Musik/Beats",
+    clearFilters: "Filter zurücksetzen",
+    emptyWork: "Wähle eine Veröffentlichung aus dem Feed.",
+    mockPaymentNote: "Testzahlung, später echter Provider.",
+    audioUnavailable: "Audiodatei nicht verfügbar.",
+    footerLine: "Inhaltspolitik · AGB · Kontakt",
+
+    cta_create: "Veröffentlichen",
+    cta_read: "Beste lesen",
+    donate: "Autor unterstützen",
+    like: "Like",
+    boost: "Pushen",
+    fullAccess: "Vollen Zugriff freischalten",
+    excerpt: "Auszug",
+    byAuthor: "Von",
+    publish: "Veröffentlichen",
+    feed: "Feed",
+    top: "Top",
+    new: "Neu",
+    following: "Folge ich",
+    profile: "Profil",
+    signIn: "Anmelden",
+    price: "Preis",
+    pay: "Zahlen",
+    cancel: "Abbrechen",
+    promoted: "Beworben",
+    share: "Teilen",
+    yourBalance: "Dein Kontostand",
+    posts: "Veröffentlichungen",
+    language: "Sprache",
+    publishWork: "Werk veröffentlichen",
+    title: "Titel",
+    genre: "Genre",
+    text: "Text",
+    audioFile: "Audiodatei",
+    uploadAudio: "Audio hochladen",
+    listen: "Anhören",
+    startWriting: "Fang an zu schreiben…",
+    chooseFile: "Datei wählen",
+    fileRequired: "Bitte eine Audiodatei hochladen.",
+    withdraw: "Auszahlen",
+    history: "Verlauf",
+    theme: "Theme",
+    light: "Hell",
+    dark: "Dunkel",
+  },
+  fr: {
+    slogan: "Je suis créateur·rice — ici c’est mon espace.",
+    description:
+      "WriRead est un espace pour poètes, auteur·rice·s et musicien·ne·s. Publie des textes et de la musique, reçois du soutien et fais grandir ton public.",
+    feedPreview: "Aperçu du flux",
+    filters: "Filtres",
+    allGenres: "Tous les genres",
+    onlyPromoted: "Uniquement promus",
+    onlyMusic: "Uniquement musique/beats",
+    clearFilters: "Réinitialiser",
+    emptyWork: "Choisis une publication dans le flux.",
+    mockPaymentNote: "Paiement de test, plus tard — vrai prestataire.",
+    audioUnavailable: "Fichier audio indisponible.",
+    footerLine: "Politique de contenu · Conditions · Contact",
+
+    cta_create: "Publier",
+    cta_read: "Lire le meilleur",
+    donate: "Soutenir l'auteur",
+    like: "J’aime",
+    boost: "Booster",
+    fullAccess: "Débloquer l’accès complet",
+    excerpt: "Extrait",
+    byAuthor: "Par",
+    publish: "Publier",
+    feed: "Flux",
+    top: "Top",
+    new: "Nouveaux",
+    following: "Abonnements",
+    profile: "Profil",
+    signIn: "Se connecter",
+    price: "Prix",
+    pay: "Payer",
+    cancel: "Annuler",
+    promoted: "Mis en avant",
+    share: "Partager",
+    yourBalance: "Ton solde",
+    posts: "Publications",
+    language: "Langue",
+    publishWork: "Publier une œuvre",
+    title: "Titre",
+    genre: "Genre",
+    text: "Texte",
+    audioFile: "Fichier audio",
+    uploadAudio: "Téléverser un audio",
+    listen: "Écouter",
+    startWriting: "Commence à écrire…",
+    chooseFile: "Choisir un fichier",
+    fileRequired: "Merci de télécharger un fichier audio.",
+    withdraw: "Retirer",
+    history: "Historique",
+    theme: "Thème",
+    light: "Clair",
+    dark: "Sombre",
+  },
+  it: {
+    slogan: "Sono un creator — questo è il mio spazio.",
+    description:
+      "WriRead è una casa per poeti, scrittori e musicisti. Pubblica testi e musica, ricevi supporto e fai crescere il tuo pubblico.",
+    feedPreview: "Anteprima feed",
+    filters: "Filtri",
+    allGenres: "Tutti i generi",
+    onlyPromoted: "Solo in evidenza",
+    onlyMusic: "Solo musica/beat",
+    clearFilters: "Pulisci filtri",
+    emptyWork: "Seleziona una pubblicazione dal feed.",
+    mockPaymentNote: "Pagamento di prova, in seguito provider reale.",
+    audioUnavailable: "File audio non disponibile.",
+    footerLine: "Policy contenuti · Termini · Contatti",
+
+    cta_create: "Pubblica",
+    cta_read: "Leggi il top",
+    donate: "Supporta l’autore",
+    like: "Mi piace",
+    boost: "Boost",
+    fullAccess: "Sblocca accesso completo",
+    excerpt: "Estratto",
+    byAuthor: "Di",
+    publish: "Pubblica",
+    feed: "Feed",
+    top: "Top",
+    new: "Nuovi",
+    following: "Seguiti",
+    profile: "Profilo",
+    signIn: "Accedi",
+    price: "Prezzo",
+    pay: "Paga",
+    cancel: "Annulla",
+    promoted: "In evidenza",
+    share: "Condividi",
+    yourBalance: "Il tuo saldo",
+    posts: "Pubblicazioni",
+    language: "Lingua",
+    publishWork: "Pubblica opera",
+    title: "Titolo",
+    genre: "Genere",
+    text: "Testo",
+    audioFile: "File audio",
+    uploadAudio: "Carica audio",
+    listen: "Ascolta",
+    startWriting: "Inizia a scrivere…",
+    chooseFile: "Scegli file",
+    fileRequired: "Carica un file audio.",
+    withdraw: "Preleva",
+    history: "Storico",
+    theme: "Tema",
+    light: "Chiaro",
+    dark: "Scuro",
+  },
+  pt: {
+    slogan: "Sou criador — este é o meu espaço.",
+    description:
+      "WriRead é um espaço para poetas, escritores e músicos. Publique textos e música, receba apoio e aumente o seu público.",
+    feedPreview: "Pré-visualização do feed",
+    filters: "Filtros",
+    allGenres: "Todos os gêneros",
+    onlyPromoted: "Apenas promovidos",
+    onlyMusic: "Apenas música/beats",
+    clearFilters: "Limpar filtros",
+    emptyWork: "Selecione uma publicação do feed.",
+    mockPaymentNote: "Pagamento de teste, depois teremos provedor real.",
+    audioUnavailable: "Arquivo de áudio indisponível.",
+    footerLine: "Política de conteúdo · Termos · Contato",
+
+    cta_create: "Publicar",
+    cta_read: "Ler o melhor",
+    donate: "Apoiar o autor",
+    like: "Curtir",
+    boost: "Impulsionar",
+    fullAccess: "Desbloquear acesso completo",
+    excerpt: "Trecho",
+    byAuthor: "De",
+    publish: "Publicar",
+    feed: "Feed",
+    top: "Top",
+    new: "Novos",
+    following: "Seguindo",
+    profile: "Perfil",
+    signIn: "Entrar",
+    price: "Preço",
+    pay: "Pagar",
+    cancel: "Cancelar",
+    promoted: "Promovido",
+    share: "Compartilhar",
+    yourBalance: "Seu saldo",
+    posts: "Publicações",
+    language: "Idioma",
+    publishWork: "Publicar obra",
+    title: "Título",
+    genre: "Gênero",
+    text: "Texto",
+    audioFile: "Arquivo de áudio",
+    uploadAudio: "Enviar áudio",
+    listen: "Ouvir",
+    startWriting: "Comece a escrever…",
+    chooseFile: "Escolher arquivo",
+    fileRequired: "Por favor, envie um arquivo de áudio.",
+    withdraw: "Sacar",
+    history: "Histórico",
+    theme: "Tema",
+    light: "Claro",
+    dark: "Escuro",
+  },
+  uk: {
+    slogan: "Я творець — це мій простір.",
+    description:
+      "WriRead — простір для поетів, письменників та музикантів. Публікуй тексти й музику, отримуй підтримку та зростай.",
+    feedPreview: "Міні-прев’ю стрічки",
+    filters: "Фільтри",
+    allGenres: "Усі жанри",
+    onlyPromoted: "Лише промо",
+    onlyMusic: "Лише музика/біти",
+    clearFilters: "Скинути фільтри",
+    emptyWork: "Виберіть публікацію зі стрічки.",
+    mockPaymentNote: "Тестовий платіж, пізніше — реальний провайдер.",
+    audioUnavailable: "Аудіофайл недоступний.",
+    footerLine: "Політика контенту · Умови · Контакти",
+
+    cta_create: "Опублікувати",
+    cta_read: "Читати найкраще",
+    donate: "Підтримати автора",
+    like: "Лайк",
+    boost: "Підняти",
+    fullAccess: "Відкрити повний доступ",
+    excerpt: "Уривок",
+    byAuthor: "Автор",
+    publish: "Видати",
+    feed: "Стрічка",
+    top: "Топ",
+    new: "Нові",
+    following: "Підписки",
+    profile: "Профіль",
+    signIn: "Увійти",
+    price: "Ціна",
+    pay: "Сплатити",
+    cancel: "Скасувати",
+    promoted: "Промо",
+    share: "Поділитися",
+    yourBalance: "Ваш баланс",
+    posts: "Публікації",
+    language: "Мова",
+    publishWork: "Опублікувати роботу",
+    title: "Заголовок",
+    genre: "Жанр",
+    text: "Текст",
+    audioFile: "Аудіофайл",
+    uploadAudio: "Завантажити аудіо",
+    listen: "Прослухати",
+    startWriting: "Почніть писати…",
+    chooseFile: "Обрати файл",
+    fileRequired: "Будь ласка, завантажте аудіофайл.",
+    withdraw: "Вивести",
+    history: "Історія",
+    theme: "Тема",
+    light: "Світла",
+    dark: "Темна",
+  },
+  kk: {
+    slogan: "Мен шығармашымын — бұл менің кеңістігім.",
+    description:
+      "WriRead — ақындар, жазушылар және музыканттар үшін орын. Өлеңдер, әңгімелер мен музыканы жариялап, қолдау алып, аудиторияңды өсір.",
+    feedPreview: "Лента алдын ала қарау",
+    filters: "Фильтрлер",
+    allGenres: "Барлық жанрлар",
+    onlyPromoted: "Тек промо",
+    onlyMusic: "Тек музыка/биттер",
+    clearFilters: "Фильтрлерді тазарту",
+    emptyWork: "Лентадан жарияланымды таңдаңыз.",
+    mockPaymentNote: "Сынақ төлемі, кейін нақты провайдер қосылады.",
+    audioUnavailable: "Аудио файлы қолжетімсіз.",
+    footerLine: "Контент саясаты · Шарттар · Байланыс",
+
+    cta_create: "Жариялау",
+    cta_read: "Үздіктерді оқу",
+    donate: "Авторды қолдау",
+    like: "Лайк",
+    boost: "Алға жылжыту",
+    fullAccess: "Толық қолжетімділікті ашу",
+    excerpt: "Үзінді",
+    byAuthor: "Автор",
+    publish: "Шығару",
+    feed: "Лента",
+    top: "Топ",
+    new: "Жаңалар",
+    following: "Жазылымдар",
+    profile: "Профиль",
+    signIn: "Кіру",
+    price: "Баға",
+    pay: "Төлеу",
+    cancel: "Бас тарту",
+    promoted: "Промо",
+    share: "Бөлісу",
+    yourBalance: "Сіздің балансыңыз",
+    posts: "Жарияланымдар",
+    language: "Тіл",
+    publishWork: "Жұмысты жариялау",
+    title: "Тақырып",
+    genre: "Жанр",
+    text: "Мәтін",
+    audioFile: "Аудио файл",
+    uploadAudio: "Аудио жүктеу",
+    listen: "Тыңдау",
+    startWriting: "Жазуды бастаңыз…",
+    chooseFile: "Файл таңдау",
+    fileRequired: "Аудио файлды жүктеңіз.",
+    withdraw: "Шығаруға",
+    history: "Тарих",
+    theme: "Тема",
+    light: "Жарық",
+    dark: "Қараңғы",
   },
 };
 
@@ -532,11 +974,13 @@ const MobileTabBar: React.FC<{
   );
 };
 
-const Footer: React.FC = () => (
+type FooterProps = { t: any };
+
+const Footer: React.FC<FooterProps> = ({ t }) => (
   <footer className="mt-10 border-t border-neutral-200 dark:border-neutral-800">
     <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-neutral-600 dark:text-neutral-400 flex flex-col md:flex-row gap-2 md:gap-6">
       <span>© {new Date().getFullYear()} WriRead</span>
-      <span>{DICT.ru.footerLine}</span>
+      <span>{t.footerLine}</span>
     </div>
   </footer>
 );
@@ -837,10 +1281,21 @@ const Work: React.FC<{ t: any; lang: string; item: WorkItem | null; onDonate: (i
 };
 
 const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
-  // Защита: если по какой-то причине GENRE_KEYS пустой — подставим "poetry"
   const initialGenre = (GENRE_KEYS && GENRE_KEYS.length ? GENRE_KEYS[0] : "poetry") as GenreKey;
   const [genre, setGenre] = useState<GenreKey>(initialGenre);
+  const [audioFileName, setAudioFileName] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const isMusic = genre === "music";
+
+  const handlePublish = () => {
+    if (isMusic && !audioFileName) {
+      setError(t.fileRequired);
+      return;
+    }
+    setError(null);
+    // TODO: здесь позже будет реальная отправка на сервер
+  };
 
   return (
     <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
@@ -867,7 +1322,6 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
               value={genre}
               onChange={(e) => setGenre(e.target.value as GenreKey)}
             >
-              {/* all option НЕ нужен в форме, только в фильтрах */}
               {GENRE_KEYS.map((g) => (
                 <option key={g} value={g}>
                   {genreLabel(lang, g as GenreKey)}
@@ -882,12 +1336,34 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
                 <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
                   {t.audioFile}
                 </label>
-                <input
-                  type="file"
-                  accept="audio/*"
-                  className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-                />
+                <div className="mt-1 flex flex-col sm:flex-row gap-2">
+                  <label className="inline-flex items-center justify-center px-4 py-3 text-[15px] rounded-2xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 cursor-pointer">
+                    {t.chooseFile}
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setAudioFileName(file.name);
+                          setError(null);
+                        } else {
+                          setAudioFileName(null);
+                        }
+                      }}
+                    />
+                  </label>
+                  {audioFileName && (
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                      {audioFileName}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-neutral-500 mt-1">{t.uploadAudio}</p>
+                {error && (
+                  <p className="mt-2 text-xs text-red-500">{error}</p>
+                )}
               </div>
             ) : (
               <div>
@@ -897,7 +1373,7 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
                 <textarea
                   rows={6}
                   className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-                  placeholder="Начните писать…"
+                  placeholder={t.startWriting}
                 />
               </div>
             )}
@@ -905,7 +1381,12 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
         </div>
 
         <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
-          <Button className="w-full sm:w-auto px-6 py-3 text-base">{t.publish}</Button>
+          <Button
+            className="w-full sm:w-auto px-6 py-3 text-base"
+            onClick={handlePublish}
+          >
+            {t.publish}
+          </Button>
         </div>
       </div>
     </section>
@@ -930,8 +1411,8 @@ const Profile: React.FC<{ t: any }> = ({ t }) => (
         </div>
         <div className="mt-1 text-3xl font-extrabold">$ 124.50</div>
         <div className="mt-4 flex gap-2">
-          <Button className="px-4 py-2 text-sm">Вывести</Button>
-          <GhostButton>История</GhostButton>
+          <Button className="px-4 py-2 text-sm">{t.withdraw}</Button>
+          <GhostButton>{t.history}</GhostButton>
         </div>
       </div>
       <div className={cx(CARD, "p-5 md:col-span-2")}>
@@ -1183,7 +1664,7 @@ export default function App() {
       {page === "profile" && <Profile t={t} />}
 
       <div className="h-16 sm:hidden" />
-      <Footer />
+      <Footer t={t} />
 
       <MobileTabBar current={page} onNav={setPage} t={t} />
 
