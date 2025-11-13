@@ -837,20 +837,45 @@ const Modal: React.FC<{
   title: string;
   children: React.ReactNode;
 }> = ({ open, onClose, title, children }) => {
+  // Блокируем скролл документа, пока модалка открыта
+  useEffect(() => {
+    if (open) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [open]);
+
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-      <div className={cx("w-full max-w-[min(100%,_420px)] sm:max-w-lg mx-auto", CARD)}>
-        <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40">
+      {/* Панель: на мобиле bottom-sheet почти фуллскрин, на десктопе — карточка по центру */}
+      <div
+        className={cx(
+          "w-full max-w-none sm:max-w-lg",
+          "rounded-t-3xl sm:rounded-2xl",
+          "h-[85vh] sm:h-auto",
+          "mx-auto sm:mx-0",
+          "bg-white dark:bg-neutral-900",
+          "pb-[env(safe-area-inset-bottom)]",
+          "overflow-auto",
+          CARD
+        )}
+      >
+        {/* Липкий заголовок */}
+        <div className="sticky top-0 z-10 bg-white/90 dark:bg-neutral-900/90 backdrop-blur p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl">
+          <h3 className="text-base sm:text-lg font-semibold">{title}</h3>
           <button
             onClick={onClose}
             className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
+            aria-label="Close"
           >
             ✕
           </button>
         </div>
-        <div className="p-4">{children}</div>
+        <div className="p-4 sm:p-4">{children}</div>
       </div>
     </div>
   );
@@ -920,8 +945,10 @@ const ListenModal: React.FC<{
           {t.audioUnavailable}
         </p>
       )}
-      <div className="mt-4 flex gap-3">
-        <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
+      <div className="mt-4 flex flex-col sm:flex-row gap-2">
+        <GhostButton className="w-full sm:w-auto" onClick={onClose}>
+          {t.cancel}
+        </GhostButton>
       </div>
     </Modal>
   );
