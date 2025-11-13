@@ -18,6 +18,32 @@ function num(n: number) {
   return (n ?? 0).toLocaleString();
 }
 
+
+function getDeleteConfirmMessage(lang: string): string {
+  switch (lang) {
+    case "en":
+      return "Delete this publication? This action cannot be undone.";
+    case "tr":
+      return "Bu paylaşımı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.";
+    case "es":
+      return "¿Seguro que quieres eliminar esta publicación? Esta acción no se puede deshacer.";
+    case "de":
+      return "Diese Veröffentlichung wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.";
+    case "fr":
+      return "Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.";
+    case "it":
+      return "Sei sicuro di voler eliminare questa pubblicazione? Questa azione non può essere annullata.";
+    case "pt":
+      return "Tem certeza de que deseja excluir esta publicação? Esta ação não pode ser desfeita.";
+    case "uk":
+      return "Справді видалити публікацію? Цю дію не можна скасувати.";
+    case "kk":
+      return "Жарияланымды шынымен өшіргіңіз келе ме? Бұл әрекетті болдырмау мүмкін емес.";
+    default:
+      return "Удалить публикацию? Это действие нельзя отменить.";
+  }
+}
+
 // ===== Layout: Header / Footer / Mobile Tabs =====
 type HeaderProps = {
   t: any;
@@ -1001,6 +1027,17 @@ export default function App() {
     // Важно: stats не трогаем — рейтинг считается по всем лайкам/донатам за жизнь автора
   };
 
+  const handleDeleteWorkWithConfirm = (id: string) => {
+    const message = getDeleteConfirmMessage(lang);
+    if (typeof window === "undefined") {
+      handleDeleteWork(id);
+      return;
+    }
+    if (window.confirm(message)) {
+      handleDeleteWork(id);
+    }
+  };
+
   const handleEditWorkClick = (id: string) => {
     const found = works.find((w) => w.id === id);
     if (found) {
@@ -1066,7 +1103,7 @@ export default function App() {
           items={works}
           stats={stats}
           ratingScore={ratingScore}
-          onDelete={handleDeleteWork}
+          onDelete={handleDeleteWorkWithConfirm}
           onEdit={handleEditWorkClick}
         />
       )}
