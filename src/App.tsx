@@ -218,9 +218,8 @@ const Pill: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const Landing: React.FC<{
   t: any;
-  lang: string;
   onGetStarted: (page: string) => void;
-}> = ({ t, lang, onGetStarted }) => (
+}> = ({ t, onGetStarted }) => (
   <section>
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-100 via-rose-50 to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950" />
@@ -1030,7 +1029,7 @@ export default function App() {
       />
 
       {page === "landing" && (
-        <Landing t={t} lang={lang} onGetStarted={setPage} />
+        <Landing t={t} onGetStarted={setPage} />
       )}
       {page === "feed" && (
         <Feed
