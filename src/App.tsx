@@ -629,26 +629,28 @@ const Work: React.FC<{
 }> = ({ t, item, onDonate }) => {
   if (!item) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600 dark:text-neutral-300">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-10 text-neutral-600 dark:text-neutral-300">
         {t.emptyWork}
       </div>
     );
   }
   return (
-    <section className="max-w-3xl mx-auto px-4 py-8">
+    <section className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className={CARD}>
         <img
           src={item.cover}
-          className={cx("w-full aspect-[3/2] object-cover", RADIUS)}
+          className={cx("w-full object-cover", RADIUS, "aspect-[4/3] sm:aspect-[3/2]")}
+          alt="cover"
         />
-        <div className="p-5">
-          <h1 className="text-2xl font-bold">{item.title}</h1>
-          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
+        <div className="p-4 sm:p-5">
+          <h1 className="text-xl sm:text-2xl font-bold leading-tight">{item.title}</h1>
+          <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
-          <p className="mt-4 text-neutral-800 dark:text-neutral-100">
-            <strong>{t.excerpt}:</strong> {item.excerpt}
+          <p className="mt-3 sm:mt-4 text-[15px] sm:text-base text-neutral-800 dark:text-neutral-100">
+            <strong className="font-semibold">{t.excerpt}:</strong> {item.excerpt}
           </p>
+
           {item.audioUrl && (
             <div className="mt-4">
               <audio controls className="w-full">
@@ -656,11 +658,15 @@ const Work: React.FC<{
               </audio>
             </div>
           )}
-          <div className="mt-5 flex flex-wrap gap-2">
-            <GhostButton onClick={() => onDonate(item)}>
+
+          {/* Действия: на мобиле в столбик с full-width, на >=sm в ряд */}
+          <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row gap-2">
+            <Button className="w-full sm:w-auto px-5 py-3 text-base" onClick={() => onDonate(item)}>
               {t.donate}
+            </Button>
+            <GhostButton className="w-full sm:w-auto px-5 py-3 text-base">
+              {t.share}
             </GhostButton>
-            <GhostButton>{t.share}</GhostButton>
           </div>
         </div>
       </div>
@@ -672,25 +678,27 @@ const Publish: React.FC<{ t: any }> = ({ t }) => {
   const [genre, setGenre] = useState(GENRES[0]);
   const isMusic = genre === "Музыка/Бит";
   return (
-    <section className="max-w-4xl mx-auto px-4 py-8">
-      <div className={cx(CARD, "p-5")}>
-        <h2 className="text-xl font-semibold mb-4">{t.publishWork}</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+    <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+      <div className={cx(CARD, "p-4 sm:p-5")}>
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">{t.publishWork}</h2>
+
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
           <div>
-            <label className="text-sm text-neutral-600 dark:text-neutral-300">
+            <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
               {t.title}
             </label>
             <input
-              className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               placeholder="…"
             />
           </div>
+
           <div>
-            <label className="text-sm text-neutral-600 dark:text-neutral-300">
+            <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
               {t.genre}
             </label>
             <select
-              className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
             >
@@ -701,37 +709,37 @@ const Publish: React.FC<{ t: any }> = ({ t }) => {
               ))}
             </select>
           </div>
-          <div className="md:col-span-2">
+
+          <div className="sm:col-span-2">
             {isMusic ? (
               <div>
-                <label className="text-sm text-neutral-600 dark:text-neutral-300">
+                <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
                   {t.audioFile}
                 </label>
                 <input
                   type="file"
                   accept="audio/*"
-                  className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+                  className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
                 />
-                <p className="text-xs text-neutral-500 mt-1">
-                  {t.uploadAudio}
-                </p>
+                <p className="text-xs text-neutral-500 mt-1">{t.uploadAudio}</p>
               </div>
             ) : (
               <div>
-                <label className="text-sm text-neutral-600 dark:text-neutral-300">
+                <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
                   {t.text}
                 </label>
                 <textarea
                   rows={6}
-                  className="w-full mt-1 px-4 py-3 border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+                  className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
                   placeholder="Начните писать…"
                 />
               </div>
             )}
           </div>
         </div>
-        <div className="mt-4 flex justify-end">
-          <Button className="px-6">{t.publish}</Button>
+
+        <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
+          <Button className="w-full sm:w-auto px-6 py-3 text-base">{t.publish}</Button>
         </div>
       </div>
     </section>
