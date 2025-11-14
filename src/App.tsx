@@ -557,9 +557,16 @@ const Work: React.FC<{
   );
 };
 
-const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
+const Publish: React.FC<{
+  t: any;
+  lang: string;
+  onPublish: (work: WorkItem) => void;
+}> = ({ t, lang, onPublish }) => {
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
   const [genre, setGenre] = useState<GenreKey>(GENRE_KEYS[0]);
   const [audioFileName, setAudioFileName] = useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isMusic = genre === "music";
@@ -570,7 +577,33 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
       return;
     }
     setError(null);
-    // TODO: реальная отправка на сервер позже
+
+    const now = new Date();
+
+    const newWork: WorkItem = {
+      id: `user-${now.getTime()}`,
+      title: title,
+      author: "Михаил",
+      genre,
+      date: now.toLocaleDateString(),
+      likes: 0,
+      donations: 0,
+      cover: `https://picsum.photos/seed/user${now.getTime()}/900/600`,
+      excerpt: isMusic ? "" : text,
+      paywalled: false,
+      price: 0,
+      promo: false,
+      audioUrl: isMusic ? audioUrl : null,
+    };
+
+    onPublish(newWork);
+
+    setTitle("");
+    setText("");
+    setGenre(GENRE_KEYS[0]);
+    setAudioFileName(null);
+    setAudioUrl(null);
+    setError(null);
   };
 
   return (
@@ -588,6 +621,8 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
             <input
               className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               placeholder="…"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
@@ -625,9 +660,11 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           setAudioFileName(file.name);
+                          setAudioUrl(URL.createObjectURL(file));
                           setError(null);
                         } else {
                           setAudioFileName(null);
+                          setAudioUrl(null);
                         }
                       }}
                     />
@@ -654,6 +691,8 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
                   rows={6}
                   className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
                   placeholder={t.startWriting}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
                 />
               </div>
             )}
@@ -672,6 +711,7 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
     </section>
   );
 };
+
 
 const Profile: React.FC<{
   t: any;
@@ -1082,6 +1122,12 @@ export default function App() {
     setCurrent((prev) => (prev && prev.id === updated.id ? updated : prev));
   };
 
+  const handleCreateWork = (work: WorkItem) => {
+    setWorks((prev) => [work, ...prev]);
+    setCurrent(work);
+    setPage("profile");
+  };
+
   return (
     <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
       <Header
@@ -1127,7 +1173,7 @@ export default function App() {
           }}
         />
       )}
-      {page === "publish" && <Publish t={t} lang={lang} />}
+      {page === "publish" && <Publish t={t} lang={lang} onPublish={handleCreateWork} />}
       {page === "profile" && (
         <Profile
           t={t}
