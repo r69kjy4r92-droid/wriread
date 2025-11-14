@@ -186,11 +186,18 @@ type ButtonProps = {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = ({ children, className, onClick }) => (
+const Button: React.FC<ButtonProps> = ({
+  children,
+  className,
+  onClick,
+  disabled,
+}) => (
   <button
     onClick={onClick}
+    disabled={disabled}
     className={cx(
       "inline-flex items-center justify-center px-5 py-3 text-sm sm:text-base font-semibold",
       "bg-gradient-to-r text-white",
@@ -198,6 +205,8 @@ const Button: React.FC<ButtonProps> = ({ children, className, onClick }) => (
       RADIUS,
       SHADOW,
       "hover:opacity-90 active:opacity-85 transition",
+      disabled &&
+        "opacity-50 cursor-not-allowed hover:opacity-50 active:opacity-50",
       className
     )}
   >
@@ -571,7 +580,13 @@ const Publish: React.FC<{
 
   const isMusic = genre === "music";
 
+  const canPublish = isMusic
+    ? Boolean(title.trim() && audioFileName)
+    : Boolean(title.trim() && text.trim());
+
   const handlePublish = () => {
+    if (!canPublish) return;
+
     if (isMusic && !audioFileName) {
       setError(t.fileRequired);
       return;
@@ -703,6 +718,7 @@ const Publish: React.FC<{
           <Button
             className="w-full sm:w-auto px-6 py-3 text-base"
             onClick={handlePublish}
+            disabled={!canPublish}
           >
             {t.publish}
           </Button>
