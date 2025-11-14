@@ -591,7 +591,8 @@ const Publish: React.FC<{
   t: any;
   lang: string;
   onPublish: (work: WorkItem) => void;
-}> = ({ t, lang, onPublish }) => {
+  onBack: () => void;
+}> = ({ t, lang, onPublish, onBack }) => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [genre, setGenre] = useState<GenreKey>(GENRE_KEYS[0]);
@@ -602,38 +603,49 @@ const Publish: React.FC<{
   const isMusic = genre === "music";
 
   const canPublish = isMusic
-    ? Boolean(title.trim() && audioFileName)
+    ? Boolean(title.trim() && audioUrl)
     : Boolean(title.trim() && text.trim());
 
-  const handlePublish = () => {
-    if (!canPublish) return;
-
-    if (isMusic && !audioFileName) {
-      setError(t.fileRequired);
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setAudioFileName(null);
+      setAudioUrl(null);
       return;
     }
-    setError(null);
+    setAudioFileName(file.name);
+    const url = URL.createObjectURL(file);
+    setAudioUrl(url);
+  };
 
+  const handleSubmit = () => {
+    if (!canPublish) {
+      setError("Заполните обязательные поля.");
+      return;
+    }
     const now = new Date();
 
-    const newWork: WorkItem = {
-      id: `user-${now.getTime()}`,
-      title: title,
-      author: "Михаил",
+    const work: WorkItem = {
+      id: "user-" + now.getTime(),
+      title: title.trim(),
+      author: "Автор",
       genre,
       date: now.toLocaleDateString(),
       likes: 0,
       donations: 0,
-      cover: `https://picsum.photos/seed/user${now.getTime()}/900/600`,
-      excerpt: isMusic ? "" : text,
+      cover: `https://picsum.photos/seed/u${now.getTime()}/900/600`,
+      excerpt: isMusic ? "" : text.trim(),
       paywalled: false,
       price: 0,
       promo: false,
       audioUrl: isMusic ? audioUrl : null,
     };
 
-    onPublish(newWork);
+    onPublish(work);
 
+    // очистка формы
     setTitle("");
     setText("");
     setGenre(GENRE_KEYS[0]);
@@ -644,32 +656,37 @@ const Publish: React.FC<{
 
   return (
     <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+      <div className="mb-3">
+        <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
+          ← {t.back}
+        </GhostButton>
+      </div>
       <div className={cx(CARD, "p-4 sm:p-5")}>
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
           {t.publishWork}
         </h2>
-
-        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+        <div className="grid md:grid-cols-2 gap-4">
           <div>
             <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
               {t.title}
             </label>
             <input
-              className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               placeholder="…"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-
           <div>
             <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
               {t.genre}
             </label>
             <select
-              className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={genre}
-              onChange={(e) => setGenre(e.target.value as GenreKey)}
+              onChange={(e) =>
+                setGenre(e.target.value as GenreKey)
+              }
             >
               {GENRE_KEYS.map((g) => (
                 <option key={g} value={g}>
@@ -679,44 +696,28 @@ const Publish: React.FC<{
             </select>
           </div>
 
-          <div className="sm:col-span-2">
+          <div className="md:col-span-2">
             {isMusic ? (
               <div>
                 <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
                   {t.audioFile}
                 </label>
-                <div className="mt-1 flex flex-col sm:flex-row gap-2">
-                  <label className="inline-flex items-center justify-center px-4 py-3 text-[15px] rounded-2xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 cursor-pointer">
-                    {t.chooseFile}
+                <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-2">
+                  <label className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-2xl border border-neutral-300 bg-white dark:bg-neutral-900 dark:border-neutral-700 cursor-pointer">
+                    {t.uploadAudio}
                     <input
                       type="file"
                       accept="audio/*"
                       className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setAudioFileName(file.name);
-                          setAudioUrl(URL.createObjectURL(file));
-                          setError(null);
-                        } else {
-                          setAudioFileName(null);
-                          setAudioUrl(null);
-                        }
-                      }}
+                      onChange={handleFileChange}
                     />
                   </label>
                   {audioFileName && (
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                    <p className="text-xs text-neutral-500">
                       {audioFileName}
-                    </span>
+                    </p>
                   )}
                 </div>
-                <p className="text-xs text-neutral-500 mt-1">
-                  {t.uploadAudio}
-                </p>
-                {error && (
-                  <p className="mt-2 text-xs text-red-500">{error}</p>
-                )}
               </div>
             ) : (
               <div>
@@ -725,7 +726,7 @@ const Publish: React.FC<{
                 </label>
                 <textarea
                   rows={6}
-                  className="w-full mt-1 px-4 py-3 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+                  className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
                   placeholder={t.startWriting}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -734,11 +735,13 @@ const Publish: React.FC<{
             )}
           </div>
         </div>
-
-        <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
+        {error && (
+          <p className="mt-3 text-xs text-red-500">{error}</p>
+        )}
+        <div className="mt-4 flex justify-end">
           <Button
-            className="w-full sm:w-auto px-6 py-3 text-base"
-            onClick={handlePublish}
+            className="px-6 py-2 text-sm sm:text-base"
+            onClick={handleSubmit}
             disabled={!canPublish}
           >
             {t.publish}
@@ -748,7 +751,6 @@ const Publish: React.FC<{
     </section>
   );
 };
-
 
 const Profile: React.FC<{
   t: any;
@@ -1089,7 +1091,23 @@ export default function App() {
   });
 
   const [page, setPage] = useState("landing");
-  const [current, setCurrent] = useState<WorkItem | null>(
+  const [prevPage, setPrevPage] = useState<string | null>(null);
+
+  const goTo = (next: string) => {
+    setPrevPage(page);
+    setPage(next);
+  };
+
+  const goBack = () => {
+    if (prevPage) {
+      setPage(prevPage);
+      setPrevPage(null);
+    } else {
+      setPage("feed");
+    }
+  };
+ const 
+[current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
   const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
@@ -1134,7 +1152,7 @@ export default function App() {
 
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
-    setPage("work");
+    goTo("work");
   };
 
   const handleDeleteWork = (id: string) => {
@@ -1178,7 +1196,7 @@ export default function App() {
       <Header
         t={t}
         current={page}
-        onNav={setPage}
+        onNav={goTo}
         theme={theme}
         onToggleTheme={() =>
           setTheme((prev) => (prev === "dark" ? "light" : "dark"))
@@ -1188,7 +1206,7 @@ export default function App() {
       />
 
       {page === "landing" && (
-        <Landing t={t} onGetStarted={setPage} />
+        <Landing t={t} onGetStarted={goTo} />
       )}
       {page === "feed" && (
         <Feed
@@ -1215,13 +1233,13 @@ export default function App() {
             setCurrent(it);
             setDonateOpen(true);
           }}
-          onBack={() => setPage("feed")}
+          onBack={goBack}
         />
       )}
       {page === "publish" && 
 <Publish 
 t={t} 
-lang={lang} onPublish={handleCreateWork} />}
+lang={lang} onPublish={handleCreateWork}onBack={goBack} />}
       {page === "profile" && (
         <Profile
           t={t}
