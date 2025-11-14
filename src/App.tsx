@@ -339,20 +339,18 @@ const Tabs: React.FC<{
 
 const WorkCard: React.FC<{
   t: any;
-  lang: string;
   item: WorkItem;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-}> = ({ t, lang, item, onOpen, onDonate, onBoost, onListen }) => (
+}> = ({ t, item, onOpen, onDonate, onBoost, onListen }) => (
   <div className={CARD}>
     <div className={cx("relative", RADIUS)}>
       <img
         src={item.cover}
         alt="cover"
         className={cx("w-full aspect-[3/2] object-cover", RADIUS)}
-        loading="lazy"
       />
       {item.promo && (
         <div className="absolute left-3 top-3">
@@ -366,9 +364,8 @@ const WorkCard: React.FC<{
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
-          <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} ·{" "}
-            {genreLabel(lang, item.genre as GenreKey)} · {item.date}
+          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
+            {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -376,17 +373,35 @@ const WorkCard: React.FC<{
           <Pill>★ {num(item.donations)}</Pill>
         </div>
       </div>
-      <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2 text-sm">
+      <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
         {item.excerpt}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button onClick={() => onOpen(item)} className="px-4 py-2 text-sm">
-          {t.cta_read}
-        </Button>
-        {item.audioUrl && (
-          <GhostButton onClick={() => onListen(item)}>
-            {t.listen}
-          </GhostButton>
+        {item.genre === "music" ? (
+          <>
+            {item.audioUrl && (
+              <Button
+                onClick={() => onListen(item)}
+                className="px-4 py-2 text-sm"
+              >
+                {t.listen}
+              </Button>
+            )}
+          </>
+        ) : (
+          <>
+            <Button
+              onClick={() => onOpen(item)}
+              className="px-4 py-2 text-sm"
+            >
+              {t.cta_read}
+            </Button>
+            {item.audioUrl && (
+              <GhostButton onClick={() => onListen(item)}>
+                {t.listen}
+              </GhostButton>
+            )}
+          </>
         )}
         <GhostButton onClick={() => onDonate(item)}>{t.donate}</GhostButton>
         <GhostButton onClick={() => onBoost(item)}>{t.boost}</GhostButton>
@@ -504,7 +519,6 @@ const Feed: React.FC<{
           <WorkCard
             key={item.id}
             t={t}
-            lang={lang}
             item={item}
             onOpen={onOpen}
             onDonate={onDonate}
@@ -519,10 +533,10 @@ const Feed: React.FC<{
 
 const Work: React.FC<{
   t: any;
-  lang: string;
   item: WorkItem | null;
   onDonate: (item: WorkItem) => void;
-}> = ({ t, lang, item, onDonate }) => {
+  onBack: () => void;
+}> = ({ t, item, onDonate, onBack }) => {
   if (!item) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600 dark:text-neutral-300">
@@ -532,26 +546,33 @@ const Work: React.FC<{
   }
   return (
     <section className="max-w-3xl mx-auto px-4 py-8">
+      <div className="mb-3">
+        <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
+          ← {t.back}
+        </GhostButton>
+      </div>
       <div className={CARD}>
         <img
           src={item.cover}
           className={cx("w-full aspect-[3/2] object-cover", RADIUS)}
-          loading="lazy"
         />
         <div className="p-5">
           <h1 className="text-2xl font-bold">{item.title}</h1>
           <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} ·{" "}
-            {genreLabel(lang, item.genre as GenreKey)} · {item.date}
+            {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
-          <p className="mt-4 text-neutral-800 dark:text-neutral-100 text-sm sm:text-base">
-            <strong>{t.excerpt}:</strong> {item.excerpt}
-          </p>
+          {!item.audioUrl && (
+            <p className="mt-4 text-neutral-800 dark:text-neutral-100">
+              <strong>{t.excerpt}:</strong> {item.excerpt}
+            </p>
+          )}
           {item.audioUrl && (
             <div className="mt-4">
-              <audio controls className="w-full">
-                <source src={item.audioUrl} type="audio/mpeg" />
-              </audio>
+              <audio
+                controls
+                className="w-full"
+                src={item.audioUrl ?? ""}
+              />
             </div>
           )}
           <div className="mt-5 flex flex-wrap gap-2">
@@ -908,9 +929,7 @@ const ListenModal: React.FC<{
   return (
     <Modal open={open} onClose={onClose} title={`${t.listen}: ${item.title}`}>
       {item.audioUrl ? (
-        <audio controls className="w-full">
-          <source src={item.audioUrl} type="audio/mpeg" />
-        </audio>
+        <audio controls className="w-full" src={item.audioUrl ?? ""} />
       ) : (
         <p className="text-sm text-neutral-600 dark:text-neutral-300">
           {t.audioUnavailable}
@@ -945,12 +964,14 @@ const EditWorkModal: React.FC<{
 
   if (!open || !item) return null;
 
+  const isMusic = genre === "music";
+
   const handleSave = () => {
     onSave({
       ...item,
       title,
       genre,
-      excerpt,
+      excerpt: isMusic ? "" : excerpt,
     });
     onClose();
   };
@@ -959,22 +980,26 @@ const EditWorkModal: React.FC<{
     <Modal open={open} onClose={onClose} title={t.edit}>
       <div className="flex flex-col gap-3">
         <div>
-          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+          <label className="text-xs sm:text-sm text-neutral-600 
+dark:text-neutral-300">
             {t.title}
           </label>
           <input
-            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            className="w-full mt-1 px-3 py-2 text-[15px] border 
+rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
         <div>
-          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+          <label className="text-xs sm:text-sm text-neutral-600 
+dark:text-neutral-300">
             {t.genre}
           </label>
           <select
-            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            className="w-full mt-1 px-3 py-2 text-[15px] border 
+rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
             value={genre}
             onChange={(e) => setGenre(e.target.value as GenreKey)}
           >
@@ -986,20 +1011,25 @@ const EditWorkModal: React.FC<{
           </select>
         </div>
 
-        <div>
-          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-            {t.text}
-          </label>
-          <textarea
-            rows={4}
-            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-            value={excerpt}
-            onChange={(e) => setExcerpt(e.target.value)}
-            placeholder={t.startWriting}
-          />
-        </div>
+        {!isMusic && (
+          <div>
+            <label className="text-xs sm:text-sm text-neutral-600 
+dark:text-neutral-300">
+              {t.text}
+            </label>
+            <textarea
+              rows={4}
+              className="w-full mt-1 px-3 py-2 text-[15px] border 
+rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              placeholder={t.startWriting}
+            />
+          </div>
+        )}
 
-        <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
+        <div className="mt-2 flex flex-col sm:flex-row gap-2 
+sm:justify-end">
           <GhostButton onClick={onClose} className="w-full sm:w-auto">
             {t.cancel}
           </GhostButton>
@@ -1010,8 +1040,7 @@ const EditWorkModal: React.FC<{
       </div>
     </Modal>
   );
-};
-
+}; 
 const DeleteConfirmModal: React.FC<{
   open: boolean;
   onClose: () => void;
@@ -1181,15 +1210,18 @@ export default function App() {
       {page === "work" && (
         <Work
           t={t}
-          lang={lang}
           item={current}
           onDonate={(it) => {
             setCurrent(it);
             setDonateOpen(true);
           }}
+          onBack={() => setPage("feed")}
         />
       )}
-      {page === "publish" && <Publish t={t} lang={lang} onPublish={handleCreateWork} />}
+      {page === "publish" && 
+<Publish 
+t={t} 
+lang={lang} onPublish={handleCreateWork} />}
       {page === "profile" && (
         <Profile
           t={t}

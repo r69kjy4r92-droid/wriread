@@ -84,6 +84,7 @@ export const DICT: Record<
     cancel: string;
     promoted: string;
     share: string;
+    back: string;
     yourBalance: string;
     posts: string;
     language: string;
@@ -127,7 +128,7 @@ export const DICT: Record<
     footerLine: "Политика контента · Условия · Контакты",
 
     cta_create: "Опубликовать",
-    cta_read: "Читать лучшее",
+    cta_read: "Читать",
     donate: "Поддержать автора",
     like: "Лайк",
     boost: "Продвинуть",
@@ -146,6 +147,7 @@ export const DICT: Record<
     cancel: "Отмена",
     promoted: "Промо",
     share: "Поделиться",
+    back: "Назад",
     yourBalance: "Ваш баланс",
     posts: "Публикации",
     language: "Язык",
@@ -187,7 +189,7 @@ export const DICT: Record<
     footerLine: "Content policy · Terms · Contacts",
 
     cta_create: "Publish",
-    cta_read: "Read top",
+    cta_read: "Read",
     donate: "Support author",
     like: "Like",
     boost: "Boost",
@@ -206,6 +208,7 @@ export const DICT: Record<
     cancel: "Cancel",
     promoted: "Promoted",
     share: "Share",
+    back: "Back",
     yourBalance: "Your balance",
     posts: "Posts",
     language: "Language",
@@ -266,6 +269,7 @@ export const DICT: Record<
     cancel: "İptal",
     promoted: "Promosyon",
     share: "Paylaş",
+    back: "Back",
     yourBalance: "Bakiyen",
     posts: "Gönderiler",
     language: "Dil",
@@ -326,6 +330,7 @@ export const DICT: Record<
     cancel: "Cancelar",
     promoted: "Promocionado",
     share: "Compartir",
+    back: "Back",
     yourBalance: "Tu saldo",
     posts: "Publicaciones",
     language: "Idioma",
@@ -386,6 +391,7 @@ export const DICT: Record<
     cancel: "Abbrechen",
     promoted: "Promoted",
     share: "Teilen",
+    back: "Back",                                                                
     yourBalance: "Dein Guthaben",
     posts: "Beiträge",
     language: "Sprache",
@@ -446,6 +452,7 @@ export const DICT: Record<
     cancel: "Annuler",
     promoted: "Promu",
     share: "Partager",
+    back: "Back",
     yourBalance: "Votre solde",
     posts: "Publications",
     language: "Langue",
@@ -506,6 +513,7 @@ export const DICT: Record<
     cancel: "Annulla",
     promoted: "Promosso",
     share: "Condividi",
+    back: "Back",                                                 
     yourBalance: "Il tuo saldo",
     posts: "Pubblicazioni",
     language: "Lingua",
@@ -566,6 +574,7 @@ export const DICT: Record<
     cancel: "Cancelar",
     promoted: "Promovido",
     share: "Compartilhar",
+    back: "Back",                                                  
     yourBalance: "Seu saldo",
     posts: "Publicações",
     language: "Idioma",
@@ -626,6 +635,7 @@ export const DICT: Record<
     cancel: "Скасувати",
     promoted: "Промо",
     share: "Поділитися",
+    back: "Назад",                                              
     yourBalance: "Ваш баланс",
     posts: "Публікації",
     language: "Мова",
@@ -686,6 +696,7 @@ export const DICT: Record<
     cancel: "Бас тарту",
     promoted: "Промо",
     share: "Бөлісу",
+    back: "Артқа",                                                                
     yourBalance: "Сіздің балансыңыз",
     posts: "Жарияланымдар",
     language: "Тіл",
