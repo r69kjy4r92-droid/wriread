@@ -18,7 +18,7 @@ function num(n: number) {
   return (n ?? 0).toLocaleString();
 }
 
-
+// Локализованный текст подтверждения удаления
 function getDeleteConfirmMessage(lang: string): string {
   switch (lang) {
     case "en":
@@ -177,7 +177,7 @@ const MobileTabBar: React.FC<MobileTabBarProps> = ({ t, page, onNav }) => {
   );
 };
 
-// ===== Pages & Components =====
+// ===== Atoms & small components =====
 const GradientBar: React.FC = () => (
   <div className={cx("h-8 w-full", "bg-gradient-to-r", ACCENT, RADIUS)} />
 );
@@ -242,6 +242,7 @@ const Pill: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </span>
 );
 
+// ===== Pages =====
 const Landing: React.FC<{
   t: any;
   onGetStarted: (page: string) => void;
@@ -569,7 +570,7 @@ const Publish: React.FC<{ t: any; lang: string }> = ({ t, lang }) => {
       return;
     }
     setError(null);
-    // TODO: позже здесь будет реальная отправка на сервер и добавление в works
+    // TODO: реальная отправка на сервер позже
   };
 
   return (
@@ -866,37 +867,6 @@ const ListenModal: React.FC<{
   );
 };
 
-const DeleteConfirmModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  t: any;
-  lang: string;
-  item: WorkItem | null;
-  onConfirm: () => void;
-}> = ({ open, onClose, t, lang, item, onConfirm }) => {
-  if (!open || !item) return null;
-  const message = getDeleteConfirmMessage(lang);
-
-  return (
-    <Modal open={open} onClose={onClose} title={item.title}>
-      <p className="text-sm text-neutral-700 dark:text-neutral-200 mb-4">
-        {message}
-      </p>
-      <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
-        <GhostButton onClick={onClose} className="w-full sm:w-auto">
-          {t.cancel}
-        </GhostButton>
-        <Button
-          onClick={onConfirm}
-          className="w-full sm:w-auto"
-        >
-          🗑
-        </Button>
-      </div>
-    </Modal>
-  );
-};
-
 const EditWorkModal: React.FC<{
   open: boolean;
   onClose: () => void;
@@ -986,6 +956,34 @@ const EditWorkModal: React.FC<{
   );
 };
 
+const DeleteConfirmModal: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  t: any;
+  lang: string;
+  item: WorkItem | null;
+  onConfirm: () => void;
+}> = ({ open, onClose, t, lang, item, onConfirm }) => {
+  if (!open || !item) return null;
+  const message = getDeleteConfirmMessage(lang);
+
+  return (
+    <Modal open={open} onClose={onClose} title={item.title}>
+      <p className="text-sm text-neutral-700 dark:text-neutral-200 mb-4">
+        {message}
+      </p>
+      <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
+        <GhostButton onClick={onClose} className="w-full sm:w-auto">
+          {t.cancel}
+        </GhostButton>
+        <Button onClick={onConfirm} className="w-full sm:w-auto">
+          🗑
+        </Button>
+      </div>
+    </Modal>
+  );
+};
+
 // ===== App =====
 export default function App() {
   const [lang, setLang] = useState<string>(() => {
@@ -1057,14 +1055,17 @@ export default function App() {
   const handleDeleteWork = (id: string) => {
     setWorks((prev) => prev.filter((w) => w.id !== id));
     setCurrent((prev) => (prev && prev.id === id ? null : prev));
-    // Важно: stats не трогаем — рейтинг считается по всем лайкам/донатам за жизнь автора
+    // рейтинг не трогаем — считается по всем лайкам/донатам за жизнь автора
   };
 
   const handleDeleteWorkClick = (id: string) => {
-    const found = works.find((w) => w.id === id);
-    if (found) {
-      setDeleteTarget(found);
-      setDeleteOpen(true);
+    const message = getDeleteConfirmMessage(lang);
+    if (typeof window === "undefined") {
+      handleDeleteWork(id);
+      return;
+    }
+    if (window.confirm(message)) {
+      handleDeleteWork(id);
     }
   };
 
@@ -1156,16 +1157,19 @@ export default function App() {
       />
       <DeleteConfirmModal
         open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
+        onClose={() => {
+          setDeleteOpen(false);
+          setDeleteTarget(null);
+        }}
         t={t}
         lang={lang}
         item={deleteTarget}
         onConfirm={() => {
           if (deleteTarget) {
             handleDeleteWork(deleteTarget.id);
-            setDeleteOpen(false);
-            setDeleteTarget(null);
           }
+          setDeleteOpen(false);
+          setDeleteTarget(null);
         }}
       />
       <EditWorkModal
