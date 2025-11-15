@@ -32,7 +32,6 @@ export const GENRE_KEYS: GenreKey[] = [
   "script",
   "fable",
   "other",
-  "music",
 ];
 
 export const LANGS = [
