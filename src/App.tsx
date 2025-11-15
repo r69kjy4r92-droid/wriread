@@ -479,12 +479,13 @@ const Feed: React.FC<{
               }
             >
               <option value="all">{t.allGenres}</option>
-              {GENRE_KEYS.map((g) => (
+              {GENRE_KEYS.filter((g) => g !== "music").map((g) => (
                 <option key={g} value={g}>
                   {genreLabel(lang, g as GenreKey)}
                 </option>
               ))}
-            </select>
+            
+</select>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">
