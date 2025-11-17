@@ -1,3 +1,4 @@
+
 import React, { useEffect, useMemo, useState } from "react";
 import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
@@ -423,7 +424,6 @@ const Feed: React.FC<{
   const [filterOpen, setFilterOpen] = useState(false);
   const [genreFilter, setGenreFilter] = useState<GenreKey | "all">("all");
   const [onlyPromo, setOnlyPromo] = useState(false);
-  const [onlyMusic, setOnlyMusic] = useState(false);
 
   const tabs = [
     { k: "top", label: t.top },
@@ -432,7 +432,7 @@ const Feed: React.FC<{
   ];
 
   const hasActiveFilter =
-    genreFilter !== "all" || onlyPromo || onlyMusic;
+    genreFilter !== "all" || onlyPromo;
 
   const filteredItems = useMemo(() => {
     let arr = [...items];
@@ -445,16 +445,12 @@ const Feed: React.FC<{
     if (onlyPromo) {
       arr = arr.filter((w) => w.promo);
     }
-    if (onlyMusic) {
-      arr = arr.filter((w) => w.genre === "music");
-    }
     return arr;
-  }, [items, tab, genreFilter, onlyPromo, onlyMusic]);
+  }, [items, tab, genreFilter, onlyPromo]);
 
   const handleClearFilters = () => {
     setGenreFilter("all");
     setOnlyPromo(false);
-    setOnlyMusic(false);
   };
 
   return (
@@ -496,14 +492,6 @@ const Feed: React.FC<{
                 onChange={(e) => setOnlyPromo(e.target.checked)}
               />
               <span>{t.onlyPromoted}</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={onlyMusic}
-                onChange={(e) => setOnlyMusic(e.target.checked)}
-              />
-              <span>{t.onlyMusic}</span>
             </label>
           </div>
 
