@@ -259,7 +259,9 @@ const Landing: React.FC<{
 }> = ({ t, onGetStarted }) => (
   <section>
     <div className="relative overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-100 via-rose-50 to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950" />
+       <div className="absolute inset-0 -z-10 bg-gradient-to-br 
+         from-amber-50 via-orange-50 to-rose-100 dark:from-neutral-900 
+          dark:via-neutral-950 dark:to-neutral-950" />
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
@@ -1181,7 +1183,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-rose-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
       <Header
         t={t}
         current={page}
