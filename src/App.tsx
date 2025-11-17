@@ -10,9 +10,9 @@ const RADIUS = "rounded-2xl";
 const SHADOW = "shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)]";
 const CARD =
   `${RADIUS} ${SHADOW} bg-white dark:bg-neutral-900 ` +
-  "border border-neutral-200 dark:border-neutral-700";
-
-function cx(...c: (string | false | null | undefined)[]) {
+  "border border-amber-100 dark:border-neutral-700";
+function cx(...c: 
+(string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
 }
 function num(n: number) {
@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({
     { k: "profile", label: t.profile },
   ];
   return (
-    <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
+    <header className="sticky top-0 z-40 bg-gradient-to-r from-amber-50 via-rose-50 to-white dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2">
         <button
           onClick={() => onNav("landing")}
@@ -231,9 +231,9 @@ const GhostButton: React.FC<GhostButtonProps> = ({
     className={cx(
       "inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium",
       RADIUS,
-      "border border-neutral-300 bg-white hover:bg-neutral-50 transition",
-      "dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100 hover:dark:bg-neutral-800",
-      className
+      "border border-amber-100 bg-white hover:bg-neutral-50 transition",      
+      "dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100 hover:dark:bg-neutral-800",      
+className
     )}
   >
     {children}
@@ -346,8 +346,8 @@ const WorkCard: React.FC<{
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
 }> = ({ t, item, onOpen, onDonate, onBoost, onListen }) => (
-  <div className={CARD}>
-    <div className={cx("relative", RADIUS)}>
+  <div className={cx(CARD, "transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.4)]")}>    
+<div className={cx("relative", RADIUS)}>
       <img
         src={item.cover}
         alt="cover"
@@ -1181,7 +1181,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50/40 via-white to-rose-50/40 text-neutral-900 dark:bg-gradient-to-b dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900 dark:text-neutral-100 pb-16 sm:pb-0">
+
       <Header
         t={t}
         current={page}
