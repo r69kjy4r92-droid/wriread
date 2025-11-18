@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState } from "react";
 import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
@@ -10,9 +9,9 @@ const RADIUS = "rounded-2xl";
 const SHADOW = "shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)]";
 const CARD =
   `${RADIUS} ${SHADOW} bg-white dark:bg-neutral-900 ` +
-  "border border-amber-100 dark:border-neutral-700";
-function cx(...c: 
-(string | false | null | undefined)[]) {
+  "border border-neutral-200 dark:border-neutral-700";
+
+function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
 }
 function num(n: number) {
@@ -72,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({
     { k: "profile", label: t.profile },
   ];
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-amber-50 via-rose-50 to-white dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
+    <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2">
         <button
           onClick={() => onNav("landing")}
@@ -231,9 +230,9 @@ const GhostButton: React.FC<GhostButtonProps> = ({
     className={cx(
       "inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium",
       RADIUS,
-      "border border-amber-100 bg-white hover:bg-neutral-50 transition",      
-      "dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100 hover:dark:bg-neutral-800",      
-className
+      "border border-neutral-300 bg-white hover:bg-neutral-50 transition",
+      "dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100 hover:dark:bg-neutral-800",
+      className
     )}
   >
     {children}
@@ -341,13 +340,20 @@ const Tabs: React.FC<{
 const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
+  isFavorite: boolean;
+  onToggleFavorite: (item: WorkItem) => void;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-}> = ({ t, item, onOpen, onDonate, onBoost, onListen }) => (
-  <div className={cx(CARD, "transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.4)]")}>    
-<div className={cx("relative", RADIUS)}>
+}> = ({ t, item, isFavorite, onToggleFavorite, onOpen, onDonate, onBoost, onListen }) => (
+  <div
+    className={cx(
+      CARD,
+      "transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.4)]"
+    )}
+  >
+    <div className={cx("relative", RADIUS)}>
       <img
         src={item.cover}
         alt="cover"
@@ -360,6 +366,18 @@ const WorkCard: React.FC<{
           </span>
         </div>
       )}
+
+      {/* Избранное (сердце) в правом верхнем углу */}
+      <button
+        onClick={() => onToggleFavorite(item)}
+        className={cx(
+          "absolute right-3 top-3 h-9 w-9 flex items-center justify-center rounded-full",
+          "bg-black/40 backdrop-blur border border-white/30 text-lg",isFavorite ? "text-rose-400" : "text-white"
+        )}
+        title={isFavorite ? t.removeFromFavorites : t.addToFavorites}
+      >
+        {isFavorite ? "❤" : "♡"}
+      </button>
     </div>
     <div className="p-4">
       <div className="flex items-start justify-between gap-3">
@@ -415,12 +433,14 @@ const Feed: React.FC<{
   t: any;
   lang: string;
   items: WorkItem[];
+  favorites: string[];
+  onToggleFavorite: (item: WorkItem) => void;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-}> = ({ t, lang, items, onOpen, onDonate, onBoost, onListen }) => {
-  const [tab, setTab] = useState("top");
+}> = ({ t, lang, items, favorites, onToggleFavorite, onOpen, onDonate, onBoost, onListen }) => {
+  const [tab, setTab] = useState<"top" | "new" | "following" | "favorites">("top");
   const [filterOpen, setFilterOpen] = useState(false);
   const [genreFilter, setGenreFilter] = useState<GenreKey | "all">("all");
   const [onlyPromo, setOnlyPromo] = useState(false);
@@ -429,15 +449,22 @@ const Feed: React.FC<{
     { k: "top", label: t.top },
     { k: "new", label: t.new },
     { k: "following", label: t.following },
-  ];
+    { k: "favorites", label: t.favorites },
+  ] as const;
 
-  const hasActiveFilter =
-    genreFilter !== "all" || onlyPromo;
+  const hasActiveFilter = genreFilter !== "all" || onlyPromo;
 
   const filteredItems = useMemo(() => {
     let arr = [...items];
-    if (tab === "new") arr = [...items].reverse();
-    if (tab === "following") arr = items.filter((_, i) => i % 2 === 0);
+
+    if (tab === "new") {
+      arr = [...items].reverse();
+    } else if (tab === "following") {
+      // Простая имитация ленты по подпискам
+      arr = items.filter((_, i) => i % 2 === 0);
+    } else if (tab === "favorites") {
+      arr = items.filter((w) => favorites.includes(w.id));
+    }
 
     if (genreFilter !== "all") {
       arr = arr.filter((w) => w.genre === genreFilter);
@@ -445,8 +472,9 @@ const Feed: React.FC<{
     if (onlyPromo) {
       arr = arr.filter((w) => w.promo);
     }
+
     return arr;
-  }, [items, tab, genreFilter, onlyPromo]);
+  }, [items, tab, favorites, genreFilter, onlyPromo]);
 
   const handleClearFilters = () => {
     setGenreFilter("all");
@@ -456,7 +484,11 @@ const Feed: React.FC<{
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className="flex items-center justify-between mb-4">
-        <Tabs tabs={tabs} current={tab} onChange={setTab} />
+        <Tabs
+          tabs={tabs.map((tObj) => ({ k: tObj.k, label: tObj.label }))}
+          current={tab}
+          onChange={(k) => setTab(k as typeof tab)}
+        />
         <GhostButton onClick={() => setFilterOpen((o) => !o)}>
           {t.filters}
           {hasActiveFilter && <span className="ml-1 text-amber-500">●</span>}
@@ -480,8 +512,7 @@ const Feed: React.FC<{
                   {genreLabel(lang, g as GenreKey)}
                 </option>
               ))}
-            
-</select>
+            </select>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">
@@ -509,6 +540,8 @@ const Feed: React.FC<{
             key={item.id}
             t={t}
             item={item}
+            isFavorite={favorites.includes(item.id)}
+            onToggleFavorite={onToggleFavorite}
             onOpen={onOpen}
             onDonate={onDonate}
             onBoost={onBoost}
@@ -523,9 +556,11 @@ const Feed: React.FC<{
 const Work: React.FC<{
   t: any;
   item: WorkItem | null;
+  isFavorite: boolean;
+  onToggleFavorite: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBack: () => void;
-}> = ({ t, item, onDonate, onBack }) => {
+}> = ({ t, item, isFavorite, onToggleFavorite, onDonate, onBack }) => {
   if (!item) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600 dark:text-neutral-300">
@@ -535,10 +570,21 @@ const Work: React.FC<{
   }
   return (
     <section className="max-w-3xl mx-auto px-4 py-8">
-      <div className="mb-3">
+      <div className="mb-3 flex items-center justify_between gap-3">
         <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
           ← {t.back}
         </GhostButton>
+        <button
+          onClick={() => onToggleFavorite(item)}
+          className={cx(
+            "h-9 w-9 flex items-center justify-center rounded-full",
+            "bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-lg",
+            isFavorite ? "text-rose-500" : "text-neutral-500"
+          )}
+          title={isFavorite ? t.removeFromFavorites : t.addToFavorites}
+        >
+          {isFavorite ? "❤" : "♡"}
+        </button>
       </div>
       <div className={CARD}>
         <img
@@ -644,7 +690,7 @@ const Publish: React.FC<{
   };
 
   return (
-    <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+    <section className="max-w-4xl mx_auto px-3 sm:px-4 py-6 sm:py-8">
       <div className="mb-3">
         <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
           ← {t.back}
@@ -744,11 +790,14 @@ const Publish: React.FC<{
 const Profile: React.FC<{
   t: any;
   items: WorkItem[];
+  favorites: string[];
   stats: { totalLikes: number; totalDonations: number };
   ratingScore: number;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
-}> = ({ t, items, stats, ratingScore, onDelete, onEdit }) => (
+  onOpen: (item: WorkItem) => void;
+  onToggleFavorite: (item: WorkItem) => void;
+}> = ({ t, items, favorites, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite }) => (
   <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
     <div className="grid md:grid-cols-3 gap-5">
       <div className={cx(CARD, "p-5")}>
@@ -783,44 +832,69 @@ const Profile: React.FC<{
         </div>
       </div>
       <div className={cx(CARD, "p-5 md:col-span-2")}>
-        <h3 className="font-semibold mb-3">{t.posts}</h3>
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <h3 className="font-semibold">{t.posts}</h3>
+          <span className="text-xs text-neutral-500">
+            {t.favorites}: {favorites.length}
+          </span>
+        </div>
         <div className="grid sm:grid-cols-2 gap-3">
-          {items.map((w) => (
-            <div
-              key={w.id}
-              className="border rounded-xl overflow-hidden dark:border-neutral-700"
-            >
-              <img
-                src={w.cover}
-                className="w-full aspect-[3/2] object-cover"
-                loading="lazy"
-              />
-              <div className="p-3 flex items-start justify-between gap-2">
-                <div>
-                  <div className="font-medium">{w.title}</div>
-                  <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
-                    ❤ {num(w.likes)} · ★ {num(w.donations)}
+          {items.map((w) => {
+            const isFav = favorites.includes(w.id);
+            return (
+              <div
+                key={w.id}
+                className="border rounded-xl overflow-hidden dark:border-neutral-700"
+              >
+                <button
+                  onClick={() => onOpen(w)}
+                  className="block w-full text-left"
+                >
+                  <img
+                    src={w.cover}
+                    className="w-full aspect-[3/2] object-cover"
+                    loading="lazy"
+                  />
+                </button>
+                <div className="p-3 flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-medium flex items-center gap-1">
+                      {w.title}
+                    </div>
+                    <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
+                      ❤ {num(w.likes)} · ★ {num(w.donations)}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <button
+                      onClick={() => onToggleFavorite(w)}
+                      className={cx(
+                        "text-lg leading-none",
+                        isFav ? "text-rose-500" : "text-neutral-400"
+                      )}
+                      title={isFav ? t.removeFromFavorites : t.addToFavorites}
+                    >
+                      {isFav ? "❤" : "♡"}
+                    </button>
+                    <button
+                      onClick={() => onEdit(w.id)}
+                      className="text-xs text-neutral-400 hover:text-amber-500 transition"
+                      title={t.edit}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => onDelete(w.id)}
+                      className="text-xs text-neutral-400 hover:text-red-500 transition"
+                      title="Delete"
+                    >
+                      🗑
+                    </button>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <button
-                    onClick={() => onEdit(w.id)}
-                    className="text-xs text-neutral-400 hover:text-amber-500 transition"
-                    title={t.edit}
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    onClick={() => onDelete(w.id)}
-                    className="text-xs text-neutral-400 hover:text-red-500 transition"
-                    title="Delete"
-                  >
-                    🗑
-                  </button>
-                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -971,26 +1045,22 @@ const EditWorkModal: React.FC<{
     <Modal open={open} onClose={onClose} title={t.edit}>
       <div className="flex flex-col gap-3">
         <div>
-          <label className="text-xs sm:text-sm text-neutral-600 
-dark:text-neutral-300">
+          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
             {t.title}
           </label>
           <input
-            className="w-full mt-1 px-3 py-2 text-[15px] border 
-rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
         <div>
-          <label className="text-xs sm:text-sm text-neutral-600 
-dark:text-neutral-300">
+          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
             {t.genre}
           </label>
           <select
-            className="w-full mt-1 px-3 py-2 text-[15px] border 
-rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
             value={genre}
             onChange={(e) => setGenre(e.target.value as GenreKey)}
           >
@@ -1004,14 +1074,12 @@ rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
 
         {!isMusic && (
           <div>
-            <label className="text-xs sm:text-sm text-neutral-600 
-dark:text-neutral-300">
+            <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
               {t.text}
             </label>
             <textarea
               rows={4}
-              className="w-full mt-1 px-3 py-2 text-[15px] border 
-rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               placeholder={t.startWriting}
@@ -1019,8 +1087,7 @@ rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
           </div>
         )}
 
-        <div className="mt-2 flex flex-col sm:flex-row gap-2 
-sm:justify-end">
+        <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
           <GhostButton onClick={onClose} className="w-full sm:w-auto">
             {t.cancel}
           </GhostButton>
@@ -1028,33 +1095,6 @@ sm:justify-end">
             {t.save}
           </Button>
         </div>
-      </div>
-    </Modal>
-  );
-}; 
-const DeleteConfirmModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  t: any;
-  lang: string;
-  item: WorkItem | null;
-  onConfirm: () => void;
-}> = ({ open, onClose, t, lang, item, onConfirm }) => {
-  if (!open || !item) return null;
-  const message = getDeleteConfirmMessage(lang);
-
-  return (
-    <Modal open={open} onClose={onClose} title={item.title}>
-      <p className="text-sm text-neutral-700 dark:text-neutral-200 mb-4">
-        {message}
-      </p>
-      <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
-        <GhostButton onClick={onClose} className="w-full sm:w-auto">
-          {t.cancel}
-        </GhostButton>
-        <Button onClick={onConfirm} className="w-full sm:w-auto">
-          🗑
-        </Button>
       </div>
     </Modal>
   );
@@ -1079,27 +1119,22 @@ export default function App() {
     }
   });
 
-  const [page, setPage] = useState("landing");
-  const [prevPage, setPrevPage] = useState<string | null>(null);
+  const [page, setPage] = useState<"landing" | "feed" | "publish" | "profile" | "work">("landing");
+  const [prevPage, setPrevPage] = useState<"landing" | "feed" | "publish" | "profile" | "work" | null>(null);
 
-  const goTo = (next: string) => {
-    setPrevPage(page);
-    setPage(next);
-  };
-
-  const goBack = () => {
-    if (prevPage) {
-      setPage(prevPage);
-      setPrevPage(null);
-    } else {
-      setPage("feed");
-    }
-  };
- const 
-[current, setCurrent] = useState<WorkItem | null>(
+  const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
   const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("wriread:favorites");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [stats] = useState(() => {
     let totalLikes = 0;
     let totalDonations = 0;
@@ -1113,8 +1148,6 @@ export default function App() {
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<WorkItem | null>(null);
 
   const currentLangKey = (
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
@@ -1139,13 +1172,43 @@ export default function App() {
     }
   }, [theme]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:favorites", JSON.stringify(favorites));
+    } catch {}
+  }, [favorites]);
+
+  const goTo = (next: typeof page) => {
+    setPrevPage(page);
+    setPage(next);
+  };
+
+  const goBack = () => {
+    if (prevPage) {
+      setPage(prevPage);
+      setPrevPage(null);
+    } else {
+      setPage("feed");
+    }
+  };
+
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
     goTo("work");
   };
 
+  const handleToggleFavorite = (item: WorkItem) => {
+    setFavorites((prev) => {
+      if (prev.includes(item.id)) {
+        return prev.filter((id) => id !== item.id);
+      }
+      return [...prev, item.id];
+    });
+  };
+
   const handleDeleteWork = (id: string) => {
     setWorks((prev) => prev.filter((w) => w.id !== id));
+    setFavorites((prev) => prev.filter((fid) => fid !== id));
     setCurrent((prev) => (prev && prev.id === id ? null : prev));
     // рейтинг не трогаем — считается по всем лайкам/донатам за жизнь автора
   };
@@ -1181,12 +1244,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/40 via-white to-rose-50/40 text-neutral-900 dark:bg-gradient-to-b dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900 dark:text-neutral-100 pb-16 sm:pb-0">
-
+    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
       <Header
         t={t}
         current={page}
-        onNav={goTo}
+        onNav={(k) => goTo(k as typeof page)}
         theme={theme}
         onToggleTheme={() =>
           setTheme((prev) => (prev === "dark" ? "light" : "dark"))
@@ -1196,13 +1258,15 @@ export default function App() {
       />
 
       {page === "landing" && (
-        <Landing t={t} onGetStarted={goTo} />
+        <Landing t={t} onGetStarted={(p) => goTo(p as typeof page)} />
       )}
       {page === "feed" && (
         <Feed
           t={t}
           lang={lang}
           items={works}
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
@@ -1219,6 +1283,8 @@ export default function App() {
         <Work
           t={t}
           item={current}
+          isFavorite={current ? favorites.includes(current.id) : false}
+          onToggleFavorite={handleToggleFavorite}
           onDonate={(it) => {
             setCurrent(it);
             setDonateOpen(true);
@@ -1226,24 +1292,31 @@ export default function App() {
           onBack={goBack}
         />
       )}
-      {page === "publish" && 
-<Publish 
-t={t} 
-lang={lang} onPublish={handleCreateWork}onBack={goBack} />}
+      {page === "publish" && (
+        <Publish
+          t={t}
+          lang={lang}
+          onPublish={handleCreateWork}
+          onBack={goBack}
+        />
+      )}
       {page === "profile" && (
         <Profile
           t={t}
           items={works}
+          favorites={favorites}
           stats={stats}
           ratingScore={ratingScore}
           onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
+          onOpen={handleOpen}
+          onToggleFavorite={handleToggleFavorite}
         />
       )}
 
       <div className="h-16 sm:hidden" />
       <Footer t={t} />
-      <MobileTabBar t={t} page={page} onNav={setPage} />
+      <MobileTabBar t={t} page={page} onNav={(p) => goTo(p as typeof page)} />
 
       <DonateModal
         open={donateOpen}
@@ -1257,23 +1330,6 @@ lang={lang} onPublish={handleCreateWork}onBack={goBack} />}
         t={t}
         item={current}
       />
-      <DeleteConfirmModal
-        open={deleteOpen}
-        onClose={() => {
-          setDeleteOpen(false);
-          setDeleteTarget(null);
-        }}
-        t={t}
-        lang={lang}
-        item={deleteTarget}
-        onConfirm={() => {
-          if (deleteTarget) {
-            handleDeleteWork(deleteTarget.id);
-          }
-          setDeleteOpen(false);
-          setDeleteTarget(null);
-        }}
-      />
       <EditWorkModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -1285,3 +1341,4 @@ lang={lang} onPublish={handleCreateWork}onBack={goBack} />}
     </div>
   );
 }
+
