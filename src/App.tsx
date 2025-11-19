@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from 
+"react";
 import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
 import { Logo } from "./components/Logo";
@@ -336,26 +337,22 @@ const Tabs: React.FC<{
     ))}
   </div>
 );
- const WorkCard: React.FC<{
+const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
   isFavorite: boolean;
-  onToggleFavorite: (item: WorkItem) => void;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-}> = ({
-  t,
-  item,
-  isFavorite,
-  onToggleFavorite,
-  onOpen,
-  onDonate,
-  onBoost,
-  onListen,
-}) => (
-  <div className={CARD}>
+  onToggleFavorite: (item: WorkItem) => void;
+}> = ({ t, item, isFavorite, onOpen, onDonate, onBoost, onListen, onToggleFavorite }) => (
+  <div
+    className={cx(
+      CARD,
+      "transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.40)]"
+    )}
+  >
     <div className={cx("relative", RADIUS)}>
       <img
         src={item.cover}
@@ -373,12 +370,14 @@ const Tabs: React.FC<{
     <div className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
+          <h3 className="text-lg font-semibold leading-tight">
+            {item.title}
+          </h3>
           <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 items-center">
           <Pill>❤ {num(item.likes)}</Pill>
           <button
             type="button"
@@ -386,7 +385,7 @@ const Tabs: React.FC<{
             className="focus:outline-none"
           >
             <Pill>
-              {isFavorite ? "★" : "☆"} {num(item.donations)}
+              {isFavorite ? "⭐" : "☆"} {num(item.donations)}
             </Pill>
           </button>
         </div>
@@ -562,14 +561,25 @@ const Feed: React.FC<{
   );
 };
 
-const Work: React.FC<{
+type WorkProps = {
   t: any;
   item: WorkItem | null;
-  isFavorite: boolean;
-  onToggleFavorite: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBack: () => void;
-}> = ({ t, item, isFavorite, onToggleFavorite, onDonate, onBack }) => {
+  isFavorite: boolean;
+  onToggleFavorite: (item: WorkItem) => void;
+};
+
+const Work: React.FC<WorkProps> = ({
+  t,
+  item,
+  onDonate,
+  onBack,
+  isFavorite,
+  onToggleFavorite,
+}) => {
+  const [showTranslation, setShowTranslation] = useState(false);
+
   if (!item) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-10 text-neutral-600 dark:text-neutral-300">
@@ -577,24 +587,40 @@ const Work: React.FC<{
       </div>
     );
   }
+
+  const handleShare = () => {
+    try {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: item.title,
+            text: item.excerpt || "",
+            url: window.location.href,
+          })
+          .catch(() => {});
+      } else {
+        alert("Поделиться можно будет позже — сейчас это заглушка 🙂");
+      }
+    } catch {
+      // просто молча игнорируем
+    }
+  };
+
   return (
     <section className="max-w-3xl mx-auto px-4 py-8">
-      <div className="mb-3 flex items-center justify_between gap-3">
+      <div className="mb-3 flex items-center justify-between gap-2">
         <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
           ← {t.back}
         </GhostButton>
         <button
           onClick={() => onToggleFavorite(item)}
-          className={cx(
-            "h-9 w-9 flex items-center justify-center rounded-full",
-            "bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-lg",
-            isFavorite ? "text-rose-500" : "text-neutral-500"
-          )}
-          title={isFavorite ? t.removeFromFavorites : t.addToFavorites}
+          className="text-xl"
+          title="Избранное"
         >
-          {isFavorite ? "❤" : "♡"}
+          {isFavorite ? "⭐" : "☆"}
         </button>
       </div>
+
       <div className={CARD}>
         <img
           src={item.cover}
@@ -612,26 +638,41 @@ const Work: React.FC<{
           )}
           {item.audioUrl && (
             <div className="mt-4">
-              <audio
-                controls
-                className="w-full"
-                src={item.audioUrl ?? ""}
-              />
+              <audio controls className="w-full" src={item.audioUrl ?? ""} />
             </div>
           )}
+
           <div className="mt-5 flex flex-wrap gap-2">
             <GhostButton onClick={() => onDonate(item)}>
               {t.donate}
             </GhostButton>
-            <GhostButton>{t.share}</GhostButton>
+            <GhostButton onClick={handleShare}>
+              {t.share ?? "Поделиться"}
+            </GhostButton>
+            <GhostButton
+              onClick={() => setShowTranslation((v) => !v)}
+            >
+              {showTranslation ? "Скрыть перевод" : "Показать перевод"}
+            </GhostButton>
           </div>
+
+          {showTranslation && (
+            <div className="mt-4 p-3 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-sm text-neutral-700 dark:text-neutral-200">
+              <div className="font-semibold mb-1">
+                Перевод (пока заглушка)
+              </div>
+              <p>
+                {item.excerpt ||
+                  "Позже здесь появится автоматический перевод текста публикации."}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 };
-
-const Publish: React.FC<{
+ const Publish: React.FC<{
   t: any;
   lang: string;
   onPublish: (work: WorkItem) => void;
@@ -1289,20 +1330,19 @@ export default function App() {
           onToggleFavorite={handleToggleFavorite}
         />
       )}
-      {page === "work" && 
-(
-        <Work
-          t={t}
-          item={current}
-          isFavorite={current ? favorites.includes(current.id) : false}
-          onToggleFavorite={handleToggleFavorite}
-          onDonate={(it) => {
-            setCurrent(it);
-            setDonateOpen(true);
-          }}
-          onBack={goBack}
-        />
-      )}
+{page === "work" && (
+  <Work
+    t={t}
+    item={current}
+    onDonate={(it) => {
+      setCurrent(it);
+      setDonateOpen(true);
+    }}
+    onBack={goBack}
+    isFavorite={!!(current && favorites.includes(current.id))}
+    onToggleFavorite={handleToggleFavorite}
+  />
+)}
       {page === "publish" && (
         <Publish
           t={t}
