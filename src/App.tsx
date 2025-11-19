@@ -341,12 +341,21 @@ const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
   isFavorite: boolean;
-  onToggleFavorite: (item: WorkItem) => void;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-}> = ({ t, item, isFavorite, onToggleFavorite, onOpen, onDonate, onBoost, onListen }) => (
+  onToggleFavorite: () => void;
+}> = ({
+  t,
+  item,
+  isFavorite,
+  onOpen,
+  onDonate,
+  onBoost,
+  onListen,
+  onToggleFavorite,
+}) => (
   <div
     className={cx(
       CARD,
@@ -366,23 +375,13 @@ const WorkCard: React.FC<{
           </span>
         </div>
       )}
-
-      {/* Избранное (сердце) в правом верхнем углу */}
-      <button
-        onClick={() => onToggleFavorite(item)}
-        className={cx(
-          "absolute right-3 top-3 h-9 w-9 flex items-center justify-center rounded-full",
-          "bg-black/40 backdrop-blur border border-white/30 text-lg",isFavorite ? "text-rose-400" : "text-white"
-        )}
-        title={isFavorite ? t.removeFromFavorites : t.addToFavorites}
-      >
-        {isFavorite ? "❤" : "♡"}
-      </button>
     </div>
     <div className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
+          <h3 className="text-lg font-semibold leading-tight">
+            {item.title}
+          </h3>
           <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
@@ -395,35 +394,53 @@ const WorkCard: React.FC<{
       <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
         {item.excerpt}
       </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {item.genre === "music" ? (
-          <>
-            {item.audioUrl && (
+
+      <div className="mt-4 flex items-end justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          {item.genre === "music" ? (
+            <>
+              {item.audioUrl && (
+                <Button
+                  onClick={() => onListen(item)}
+                  className="px-4 py-2 text-sm"
+                >
+                  {t.listen}
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
               <Button
-                onClick={() => onListen(item)}
+                onClick={() => onOpen(item)}
                 className="px-4 py-2 text-sm"
               >
-                {t.listen}
+                {t.cta_read}
               </Button>
-            )}
-          </>
-        ) : (
-          <>
-            <Button
-              onClick={() => onOpen(item)}
-              className="px-4 py-2 text-sm"
-            >
-              {t.cta_read}
-            </Button>
-            {item.audioUrl && (
-              <GhostButton onClick={() => onListen(item)}>
-                {t.listen}
-              </GhostButton>
-            )}
-          </>
-        )}
-        <GhostButton onClick={() => onDonate(item)}>{t.donate}</GhostButton>
-        <GhostButton onClick={() => onBoost(item)}>{t.boost}</GhostButton>
+              {item.audioUrl && (
+                <GhostButton onClick={() => onListen(item)}>
+                  {t.listen}
+                </GhostButton>
+              )}
+            </>
+          )}
+          <GhostButton onClick={() => onDonate(item)}>
+            {t.donate}
+          </GhostButton>
+          <GhostButton onClick={() => onBoost(item)}>
+            {t.boost}
+          </GhostButton>
+        </div>
+
+        {/* Звезда избранного в правом нижнем углу карточки */}
+        <button
+          onClick={onToggleFavorite}
+          className="ml-auto text-2xl leading-none hover:scale-110 transition-transform"
+          title={
+            isFavorite ? "Убрать из избранного" : "Добавить в избранное"
+          }
+        >
+          {isFavorite ? "⭐️" : "☆"}
+        </button>
       </div>
     </div>
   </div>
@@ -433,14 +450,24 @@ const Feed: React.FC<{
   t: any;
   lang: string;
   items: WorkItem[];
-  favorites: string[];
-  onToggleFavorite: (item: WorkItem) => void;
+  favoriteIds: string[];
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-}> = ({ t, lang, items, favorites, onToggleFavorite, onOpen, onDonate, onBoost, onListen }) => {
-  const [tab, setTab] = useState<"top" | "new" | "following" | "favorites">("top");
+  onToggleFavorite: (item: WorkItem) => void;
+}> = ({
+  t,
+  lang,
+  items,
+  favoriteIds,
+  onOpen,
+  onDonate,
+  onBoost,
+  onListen,
+  onToggleFavorite,
+}) => {
+  const [tab, setTab] = useState("top");
   const [filterOpen, setFilterOpen] = useState(false);
   const [genreFilter, setGenreFilter] = useState<GenreKey | "all">("all");
   const [onlyPromo, setOnlyPromo] = useState(false);
@@ -449,21 +476,17 @@ const Feed: React.FC<{
     { k: "top", label: t.top },
     { k: "new", label: t.new },
     { k: "following", label: t.following },
-    { k: "favorites", label: t.favorites },
-  ] as const;
+    { k: "favorites", label: "★ Избранное" },
+  ];
 
   const hasActiveFilter = genreFilter !== "all" || onlyPromo;
 
   const filteredItems = useMemo(() => {
     let arr = [...items];
-
-    if (tab === "new") {
-      arr = [...items].reverse();
-    } else if (tab === "following") {
-      // Простая имитация ленты по подпискам
-      arr = items.filter((_, i) => i % 2 === 0);
-    } else if (tab === "favorites") {
-      arr = items.filter((w) => favorites.includes(w.id));
+    if (tab === "new") arr = [...items].reverse();
+    if (tab === "following") arr = items.filter((_, i) => i % 2 === 0);
+    if (tab === "favorites") {
+      arr = arr.filter((w) => favoriteIds.includes(w.id));
     }
 
     if (genreFilter !== "all") {
@@ -472,9 +495,8 @@ const Feed: React.FC<{
     if (onlyPromo) {
       arr = arr.filter((w) => w.promo);
     }
-
     return arr;
-  }, [items, tab, favorites, genreFilter, onlyPromo]);
+  }, [items, tab, genreFilter, onlyPromo, favoriteIds]);
 
   const handleClearFilters = () => {
     setGenreFilter("all");
@@ -484,21 +506,26 @@ const Feed: React.FC<{
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className="flex items-center justify-between mb-4">
-        <Tabs
-          tabs={tabs.map((tObj) => ({ k: tObj.k, label: tObj.label }))}
-          current={tab}
-          onChange={(k) => setTab(k as typeof tab)}
-        />
+        <Tabs tabs={tabs} current={tab} onChange={setTab} />
         <GhostButton onClick={() => setFilterOpen((o) => !o)}>
           {t.filters}
-          {hasActiveFilter && <span className="ml-1 text-amber-500">●</span>}
+          {hasActiveFilter && (
+            <span className="ml-1 text-amber-500">●</span>
+          )}
         </GhostButton>
       </div>
 
       {filterOpen && (
-        <div className={cx(CARD, "mb-4 p-4 flex flex-wrap gap-4 items-center")}>
+        <div
+          className={cx(
+            CARD,
+            "mb-4 p-4 flex flex-wrap gap-4 items-center"
+          )}
+        >
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-neutral-500">{t.genre}</span>
+            <span className="text-xs text-neutral-500">
+              {t.genre}
+            </span>
             <select
               className="px-3 py-2 border rounded-xl text-sm dark:bg-neutral-900 dark:border-neutral-700"
               value={genreFilter}
@@ -507,7 +534,7 @@ const Feed: React.FC<{
               }
             >
               <option value="all">{t.allGenres}</option>
-              {GENRE_KEYS.filter((g) => g !== "music").map((g) => (
+              {GENRE_KEYS.map((g) => (
                 <option key={g} value={g}>
                   {genreLabel(lang, g as GenreKey)}
                 </option>
@@ -540,12 +567,12 @@ const Feed: React.FC<{
             key={item.id}
             t={t}
             item={item}
-            isFavorite={favorites.includes(item.id)}
-            onToggleFavorite={onToggleFavorite}
+            isFavorite={favoriteIds.includes(item.id)}
             onOpen={onOpen}
             onDonate={onDonate}
             onBoost={onBoost}
             onListen={onListen}
+            onToggleFavorite={() => onToggleFavorite(item)}
           />
         ))}
       </div>
@@ -1126,7 +1153,9 @@ export default function App() {
     MOCK_WORKS[0] || null
   );
   const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
-  const [favorites, setFavorites] = useState<string[]>(() => {
+  // ID избранных публикаций
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [favorites] = useState<string[]>(() => {
     try {
       const raw = localStorage.getItem("wriread:favorites");
       return raw ? JSON.parse(raw) : [];
@@ -1195,21 +1224,20 @@ export default function App() {
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
     goTo("work");
-  };
-
+  };                                                                           
   const handleToggleFavorite = (item: WorkItem) => {
-    setFavorites((prev) => {
-      if (prev.includes(item.id)) {
-        return prev.filter((id) => id !== item.id);
-      }
-      return [...prev, item.id];
-    });
+    setFavoriteIds((prev) =>
+      prev.includes(item.id)
+        ? prev.filter((id) => id !== item.id)
+        : [...prev, item.id]
+    );
   };
 
   const handleDeleteWork = (id: string) => {
     setWorks((prev) => prev.filter((w) => w.id !== id));
-    setFavorites((prev) => prev.filter((fid) => fid !== id));
     setCurrent((prev) => (prev && prev.id === id ? null : prev));
+    // если пост был в избранном — убираем его
+    setFavoriteIds((prev) => prev.filter((fid) => fid !== id));
     // рейтинг не трогаем — считается по всем лайкам/донатам за жизнь автора
   };
 
@@ -1265,8 +1293,7 @@ export default function App() {
           t={t}
           lang={lang}
           items={works}
-          favorites={favorites}
-          onToggleFavorite={handleToggleFavorite}
+          favoriteIds={favoriteIds}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
@@ -1277,9 +1304,11 @@ export default function App() {
             setCurrent(it);
             setListenOpen(true);
           }}
+          onToggleFavorite={handleToggleFavorite}
         />
       )}
-      {page === "work" && (
+      {page === "work" && 
+(
         <Work
           t={t}
           item={current}
