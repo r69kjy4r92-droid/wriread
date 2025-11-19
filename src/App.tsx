@@ -341,27 +341,22 @@ const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
   isFavorite: boolean;
+  onToggleFavorite: (item: WorkItem) => void;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
-  onToggleFavorite: () => void;
 }> = ({
   t,
   item,
   isFavorite,
+  onToggleFavorite,
   onOpen,
   onDonate,
   onBoost,
   onListen,
-  onToggleFavorite,
 }) => (
-  <div
-    className={cx(
-      CARD,
-      "transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-15px_rgba(0,0,0,0.4)]"
-    )}
-  >
+  <div className={CARD}>
     <div className={cx("relative", RADIUS)}>
       <img
         src={item.cover}
@@ -379,68 +374,56 @@ const WorkCard: React.FC<{
     <div className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold leading-tight">
-            {item.title}
-          </h3>
+          <h3 className="text-lg font-semibold leading-tight">{item.title}</h3>
           <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
           <Pill>❤ {num(item.likes)}</Pill>
-          <Pill>★ {num(item.donations)}</Pill>
+          <button
+            type="button"
+            onClick={() => onToggleFavorite(item)}
+            className="focus:outline-none"
+          >
+            <Pill>
+              {isFavorite ? "★" : "☆"} {num(item.donations)}
+            </Pill>
+          </button>
         </div>
       </div>
       <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
         {item.excerpt}
       </p>
-
-      <div className="mt-4 flex items-end justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
-          {item.genre === "music" ? (
-            <>
-              {item.audioUrl && (
-                <Button
-                  onClick={() => onListen(item)}
-                  className="px-4 py-2 text-sm"
-                >
-                  {t.listen}
-                </Button>
-              )}
-            </>
-          ) : (
-            <>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {item.genre === "music" ? (
+          <>
+            {item.audioUrl && (
               <Button
-                onClick={() => onOpen(item)}
+                onClick={() => onListen(item)}
                 className="px-4 py-2 text-sm"
               >
-                {t.cta_read}
+                {t.listen}
               </Button>
-              {item.audioUrl && (
-                <GhostButton onClick={() => onListen(item)}>
-                  {t.listen}
-                </GhostButton>
-              )}
-            </>
-          )}
-          <GhostButton onClick={() => onDonate(item)}>
-            {t.donate}
-          </GhostButton>
-          <GhostButton onClick={() => onBoost(item)}>
-            {t.boost}
-          </GhostButton>
-        </div>
-
-        {/* Звезда избранного в правом нижнем углу карточки */}
-        <button
-          onClick={onToggleFavorite}
-          className="ml-auto text-2xl leading-none hover:scale-110 transition-transform"
-          title={
-            isFavorite ? "Убрать из избранного" : "Добавить в избранное"
-          }
-        >
-          {isFavorite ? "⭐️" : "☆"}
-        </button>
+            )}
+          </>
+        ) : (
+          <>
+            <Button
+              onClick={() => onOpen(item)}
+              className="px-4 py-2 text-sm"
+            >
+              {t.cta_read}
+            </Button>
+            {item.audioUrl && (
+              <GhostButton onClick={() => onListen(item)}>
+                {t.listen}
+              </GhostButton>
+            )}
+          </>
+        )}
+        <GhostButton onClick={() => onDonate(item)}>{t.donate}</GhostButton>
+        <GhostButton onClick={() => onBoost(item)}>{t.boost}</GhostButton>
       </div>
     </div>
   </div>
