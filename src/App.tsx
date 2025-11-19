@@ -317,13 +317,13 @@ const Tabs: React.FC<{
   current: string;
   onChange: (k: string) => void;
 }> = ({ tabs, current, onChange }) => (
-  <div className="flex gap-2">
+  <div className="flex gap-2 overflow-x-auto sm:overflow-visible -mx-1 px-1">
     {tabs.map((t) => (
       <button
         key={t.k}
         onClick={() => onChange(t.k)}
         className={cx(
-          "px-4 py-2 text-sm font-medium",
+          "px-3 py-1.5 text-xs sm:text-sm font-medium whitespace-nowrap",
           RADIUS,
           "border",
           current === t.k
@@ -336,8 +336,7 @@ const Tabs: React.FC<{
     ))}
   </div>
 );
-
-const WorkCard: React.FC<{
+ const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
   isFavorite: boolean;
@@ -488,15 +487,15 @@ const Feed: React.FC<{
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-      <div className="flex items-center justify-between mb-4">
-        <Tabs tabs={tabs} current={tab} onChange={setTab} />
-        <GhostButton onClick={() => setFilterOpen((o) => !o)}>
-          {t.filters}
-          {hasActiveFilter && (
-            <span className="ml-1 text-amber-500">●</span>
-          )}
-        </GhostButton>
-      </div>
+<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+  <Tabs tabs={tabs} current={tab} onChange={setTab} />
+  <div className="flex-shrink-0">
+    <GhostButton onClick={() => setFilterOpen((o) => !o)}>
+      {t.filters}
+      {hasActiveFilter && <span className="ml-1 text-amber-500">●</span>}
+    </GhostButton>
+  </div>
+</div>
 
       {filterOpen && (
         <div
