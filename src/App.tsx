@@ -384,7 +384,19 @@ const WorkCard: React.FC<{
           </div>
         </div>
         <div className="flex gap-2 shrink-0 items-center">
+          {/* Лайки */}
           <Pill>❤ {num(item.likes)}</Pill>
+
+          {/* Комментарии – новый пузырь */}
+          <button
+            type="button"
+            onClick={() => onOpen(item)}
+            className="focus:outline-none"
+          >
+            <Pill>💬 {num(item.comments ?? 0)}</Pill>
+          </button>
+
+          {/* Избранное (звезда) + счётчик донатов, как было */}
           <button
             type="button"
             onClick={() => onToggleFavorite(item)}
@@ -397,7 +409,8 @@ const WorkCard: React.FC<{
         </div>
       </div>
       <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
-        {item.excerpt}
+        
+{item.excerpt}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {item.genre === "music" ? (
@@ -584,7 +597,7 @@ const Work: React.FC<WorkProps> = ({
   comments,
   onAddComment,
 }) => {
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [commentText, setCommentText] = useState("");
 
   if (!item) {
     return (
@@ -594,31 +607,21 @@ const Work: React.FC<WorkProps> = ({
     );
   }
 
-  const handleShare = () => {
-    try {
-      if (navigator.share) {
-        navigator
-          .share({
-            title: item.title,
-            text: item.excerpt || "",
-            url: window.location.href,
-          })
-          .catch(() => {});
-      } else {
-        alert("Поделиться можно будет позже — сейчас это заглушка 🙂");
-      }
-    } catch {
-      // просто молча игнорируем
-    }
+  const handleSubmitComment = () => {
+    const trimmed = commentText.trim();
+    if (!trimmed) return;
+
+    onAddComment(trimmed);
+    setCommentText("");
   };
 
   return (
     <section className="max-w-3xl mx-auto px-4 py-8">
-     <div className="mb-3">
-      <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
-       ← {t.back}
-     </GhostButton>
-   </div>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
+          ← {t.back}
+        </GhostButton>
+      </div>
 
       <div className={CARD}>
         <img
@@ -630,11 +633,13 @@ const Work: React.FC<WorkProps> = ({
           <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
             {t.byAuthor} {item.author} · {item.genre} · {item.date}
           </div>
+
           {!item.audioUrl && (
             <p className="mt-4 text-neutral-800 dark:text-neutral-100">
               <strong>{t.excerpt}:</strong> {item.excerpt}
             </p>
           )}
+
           {item.audioUrl && (
             <div className="mt-4">
               <audio controls className="w-full" src={item.audioUrl ?? ""} />
@@ -645,97 +650,58 @@ const Work: React.FC<WorkProps> = ({
             <GhostButton onClick={() => onDonate(item)}>
               {t.donate}
             </GhostButton>
-            <GhostButton onClick={handleShare}>
-              {t.share ?? "Поделиться"}
-            </GhostButton>
-            <GhostButton
-              onClick={() => setShowTranslation((v) => !v)}
-            >
-              {showTranslation ? "Скрыть перевод" : "Показать перевод"}
-            </GhostButton>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <GhostButton onClick={() => onDonate(item)}>
-              {t.donate}
-            </GhostButton>
             <GhostButton>{t.share}</GhostButton>
-            {/* тут может быть ещё кнопка перевода и т.д. */}
           </div>
 
-          {/* Комментарии */}
-          <div className="mt-8 border-t border-neutral-200 dark:border-neutral-800 pt-5">
-            <h3 className="text-base sm:text-lg font-semibold">
-              {t.commentsTitle ?? "Комментарии"}
-            </h3>
+          {/* Блок комментариев */}
+          <div className="mt-6 pt-5 border-t border-neutral-200 dark:border-neutral-800">
+            <h2 className="text-lg font-semibold mb-3">{t.commentsTitle}</h2>
 
-            {/* Форма добавления комментария */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const textarea = form.elements.namedItem(
-                  "comment"
-                ) as HTMLTextAreaElement | null;
-                if (!textarea) return;
-                const value = textarea.value.trim();
-                if (!value) return;
-                onAddComment(value);
-                textarea.value = "";
-              }}
-              className="mt-3 flex flex-col sm:flex-row gap-2"
-            >
+            <div className="flex flex-col gap-3 mb-4">
               <textarea
-                name="comment"
-                rows={2}
-                className="flex-1 w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-                placeholder={t.addCommentPlaceholder ?? "Напишите комментарий..."}
+                className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+                placeholder={t.commentPlaceholder}
+                rows={3}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
               />
-              <Button className="px-4 py-2 text-sm sm:text-base w-full sm:w-auto">
-                {t.sendComment ?? "Отправить"}
-              </Button>
-            </form>
-
-            {/* Список комментариев */}
-            <div className="mt-4 flex flex-col gap-3">
-              {comments.length === 0 && (
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  {t.noCommentsYet ?? "Пока нет комментариев. Будьте первым!"}
-                </p>
-              )}
-
-              {comments.map((c) => (
-                <div
-                  key={c.id}
-                  className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 px-3 py-2"
+              <div className="flex justify-end">
+                <Button
+                  className="px-6 py-2 text-sm sm:text-base"
+                  onClick={handleSubmitComment}
                 >
-                  <div className="text-sm text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap">
-                    {c.text}
-                  </div>
-                  <div className="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
-                    {c.createdAt}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-         </div>
-
-          {showTranslation && (
-            <div className="mt-4 p-3 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-sm text-neutral-700 dark:text-neutral-200">
-              <div className="font-semibold mb-1">
-                Перевод (пока заглушка)
+                  {t.sendComment}
+                </Button>
               </div>
-              <p>
-                {item.excerpt ||
-                  "Позже здесь появится автоматический перевод текста публикации."}
-              </p>
             </div>
-          )}
+
+            {comments.length === 0 ? (
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                {t.noCommentsYet}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {comments.map((c) => (
+                  <div
+                    key={c.id}
+                    className="px-3 py-2 rounded-2xl bg-neutral-900/40 border border-neutral-800"
+                  >
+                    <div className="text-xs text-neutral-500 mb-1">
+                      {c.createdAt}
+                    </div>
+                    <div>{c.text}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
   );
 };
- const Publish: React.FC<{
+ 
+const Publish: React.FC<{
   t: any;
   lang: string;
   onPublish: (work: WorkItem) => void;
@@ -1418,7 +1384,7 @@ export default function App() {
     }}
     onBack={goBack}
     comments={comments.filter((c) => c.workId === current.id)}
-    onAddComment={(text) => handleAddComment(current.id, text)}
+    onAddComment={(text: string) => handleAddComment(current.id, text)}
   />
 )}
       {page === "publish" && (
