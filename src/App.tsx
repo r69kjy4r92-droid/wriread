@@ -566,8 +566,6 @@ type WorkProps = {
   item: WorkItem | null;
   onDonate: (item: WorkItem) => void;
   onBack: () => void;
-  isFavorite: boolean;
-  onToggleFavorite: (item: WorkItem) => void;
 };
 
 const Work: React.FC<WorkProps> = ({
@@ -575,8 +573,6 @@ const Work: React.FC<WorkProps> = ({
   item,
   onDonate,
   onBack,
-  isFavorite,
-  onToggleFavorite,
 }) => {
   const [showTranslation, setShowTranslation] = useState(false);
 
@@ -608,18 +604,11 @@ const Work: React.FC<WorkProps> = ({
 
   return (
     <section className="max-w-3xl mx-auto px-4 py-8">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
-          ← {t.back}
-        </GhostButton>
-        <button
-          onClick={() => onToggleFavorite(item)}
-          className="text-xl"
-          title="Избранное"
-        >
-          {isFavorite ? "⭐" : "☆"}
-        </button>
-      </div>
+     <div className="mb-3">
+      <GhostButton onClick={onBack} className="px-3 py-1.5 text-sm">
+       ← {t.back}
+     </GhostButton>
+   </div>
 
       <div className={CARD}>
         <img
@@ -1339,8 +1328,6 @@ export default function App() {
       setDonateOpen(true);
     }}
     onBack={goBack}
-    isFavorite={!!(current && favorites.includes(current.id))}
-    onToggleFavorite={handleToggleFavorite}
   />
 )}
       {page === "publish" && (
