@@ -3,6 +3,12 @@ import React, { useEffect, useMemo, useState } from
 import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
 import { Logo } from "./components/Logo";
+type Comment = {
+  id: string;
+  workId: string;
+  text: string;
+  createdAt: string;
+};
 
 // ===== Helpers =====
 const ACCENT = "from-rose-400 via-orange-300 to-amber-300";
@@ -566,6 +572,8 @@ type WorkProps = {
   item: WorkItem | null;
   onDonate: (item: WorkItem) => void;
   onBack: () => void;
+  comments: Comment[];
+  onAddComment: (text: string) => void;
 };
 
 const Work: React.FC<WorkProps> = ({
@@ -573,6 +581,8 @@ const Work: React.FC<WorkProps> = ({
   item,
   onDonate,
   onBack,
+  comments,
+  onAddComment,
 }) => {
   const [showTranslation, setShowTranslation] = useState(false);
 
@@ -643,7 +653,71 @@ const Work: React.FC<WorkProps> = ({
             >
               {showTranslation ? "Скрыть перевод" : "Показать перевод"}
             </GhostButton>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <GhostButton onClick={() => onDonate(item)}>
+              {t.donate}
+            </GhostButton>
+            <GhostButton>{t.share}</GhostButton>
+            {/* тут может быть ещё кнопка перевода и т.д. */}
           </div>
+
+          {/* Комментарии */}
+          <div className="mt-8 border-t border-neutral-200 dark:border-neutral-800 pt-5">
+            <h3 className="text-base sm:text-lg font-semibold">
+              {t.commentsTitle ?? "Комментарии"}
+            </h3>
+
+            {/* Форма добавления комментария */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const textarea = form.elements.namedItem(
+                  "comment"
+                ) as HTMLTextAreaElement | null;
+                if (!textarea) return;
+                const value = textarea.value.trim();
+                if (!value) return;
+                onAddComment(value);
+                textarea.value = "";
+              }}
+              className="mt-3 flex flex-col sm:flex-row gap-2"
+            >
+              <textarea
+                name="comment"
+                rows={2}
+                className="flex-1 w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+                placeholder={t.addCommentPlaceholder ?? "Напишите комментарий..."}
+              />
+              <Button className="px-4 py-2 text-sm sm:text-base w-full sm:w-auto">
+                {t.sendComment ?? "Отправить"}
+              </Button>
+            </form>
+
+            {/* Список комментариев */}
+            <div className="mt-4 flex flex-col gap-3">
+              {comments.length === 0 && (
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  {t.noCommentsYet ?? "Пока нет комментариев. Будьте первым!"}
+                </p>
+              )}
+
+              {comments.map((c) => (
+                <div
+                  key={c.id}
+                  className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 px-3 py-2"
+                >
+                  <div className="text-sm text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap">
+                    {c.text}
+                  </div>
+                  <div className="mt-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                    {c.createdAt}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+         </div>
 
           {showTranslation && (
             <div className="mt-4 p-3 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-sm text-neutral-700 dark:text-neutral-200">
@@ -1160,6 +1234,7 @@ export default function App() {
 
   const [page, setPage] = useState<"landing" | "feed" | "publish" | "profile" | "work">("landing");
   const [prevPage, setPrevPage] = useState<"landing" | "feed" | "publish" | "profile" | "work" | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
@@ -1189,6 +1264,20 @@ export default function App() {
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
+  const handleAddComment = (workId: string, text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    const now = new Date();
+    const newComment: Comment = {
+      id: "c-" + now.getTime() + "-" + Math.random().toString(36).slice(2, 8),
+      workId,
+      text: trimmed,
+      createdAt: now.toLocaleString(),
+    };
+
+    setComments((prev) => [...prev, newComment]);
+  };
 
   const currentLangKey = (
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
@@ -1319,7 +1408,7 @@ export default function App() {
           onToggleFavorite={handleToggleFavorite}
         />
       )}
-{page === "work" && (
+{page === "work" && current && (
   <Work
     t={t}
     item={current}
@@ -1328,6 +1417,8 @@ export default function App() {
       setDonateOpen(true);
     }}
     onBack={goBack}
+    comments={comments.filter((c) => c.workId === current.id)}
+    onAddComment={(text) => handleAddComment(current.id, text)}
   />
 )}
       {page === "publish" && (
