@@ -396,9 +396,14 @@ const WorkCard: React.FC<{
         </div>
         <div className="flex gap-2 shrink-0 items-center">
           {/* Лайки */}
-          <Pill>❤ {num(item.likes)}</Pill>
+          <button
+            type="button"
+            className="focus:outline-none"
+          >
+            <Pill>❤ {num(item.likes)}</Pill>
+          </button>
 
-          {/* Комментарии – используем статичные + новые */}
+          {/* Комментарии – суммируем статические + новые и скрываем 0 */}
           <button
             type="button"
             onClick={() => onOpen(item)}
@@ -416,7 +421,7 @@ const WorkCard: React.FC<{
             </Pill>
           </button>
 
-          {/* Избранное (звезда) + счётчик донатов, как было */}
+          {/* Избранное (звезда) + счётчик донатов */}
           <button
             type="button"
             onClick={() => onToggleFavorite(item)}
@@ -427,6 +432,7 @@ const WorkCard: React.FC<{
             </Pill>
           </button>
         </div>
+
       </div>
       <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
         {item.excerpt}
