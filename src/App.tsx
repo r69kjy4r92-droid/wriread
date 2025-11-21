@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 
-"react";
+
+import React, { useEffect, useMemo, useState } from "react";
 import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
 import { Logo } from "./components/Logo";
@@ -353,6 +353,7 @@ const WorkCard: React.FC<{
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
   onToggleFavorite: (item: WorkItem) => void;
+  onLike: (item: WorkItem) => void;
 }> = ({
   t,
   item,
@@ -363,6 +364,7 @@ const WorkCard: React.FC<{
   onBoost,
   onListen,
   onToggleFavorite,
+  onLike,
 }) => (
   <div
     className={cx(
@@ -398,10 +400,12 @@ const WorkCard: React.FC<{
           {/* Лайки */}
           <button
             type="button"
+            onClick={() => onLike(item)}
             className="focus:outline-none"
           >
             <Pill>❤ {num(item.likes)}</Pill>
           </button>
+
 
           {/* Комментарии – суммируем статические + новые и скрываем 0 */}
           <button
@@ -482,6 +486,7 @@ const Feed: React.FC<{
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
   onToggleFavorite: (item: WorkItem) => void;
+  onLike: (item: WorkItem) => void;
 }> = ({
   t,
   lang,
@@ -493,6 +498,7 @@ const Feed: React.FC<{
   onBoost,
   onListen,
   onToggleFavorite,
+  onLike,
 }) => {
   const [tab, setTab] = useState("top");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -601,6 +607,7 @@ const Feed: React.FC<{
             onBoost={onBoost}
             onListen={onListen}
             onToggleFavorite={() => onToggleFavorite(item)}
+            onLike={onLike}
           />
         ))}
       </div>
@@ -907,7 +914,8 @@ const Profile: React.FC<{
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
   onToggleFavorite: (item: WorkItem) => void;
-}> = ({ t, items, favorites, commentCounts, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite }) => (
+  onLike: (item: WorkItem) => void;
+}> = ({ t, items, favorites, commentCounts, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite, onLike }) => (
   <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
     <div className="grid md:grid-cols-3 gap-5">
       <div className={cx(CARD, "p-5")}>
@@ -974,8 +982,14 @@ const Profile: React.FC<{
                     <div className="font-medium flex items-centre gap-1">
                       {w.title}
                     </div>
-                   <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
-                      ❤ {num(w.likes)}
+                     <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
+                      <button
+                        type="button"
+                        onClick={() => onLike(w)}
+                        className="inline-flex items-center gap-0.5"
+                      >
+                        ❤ {num(w.likes)}
+                      </button>
                       {totalComments > 0 && (
                         <>
                           {" · "}💬 {num(totalComments)}
@@ -983,6 +997,7 @@ const Profile: React.FC<{
                       )}
                       {" · "}★ {num(w.donations)}
                     </div>
+
 
                   </div>
                   <div className="flex flex-col items-end gap-1">
@@ -1340,7 +1355,16 @@ export default function App() {
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
     goTo("work");
-  };                                                                           
+  };  
+  
+    const handleLike = (item: WorkItem) => {
+    setWorks((prev) =>
+      prev.map((w) =>
+        w.id === item.id ? { ...w, likes: w.likes + 1 } : w
+      )
+    );
+  };
+                                                                         
   const handleToggleFavorite = (item: WorkItem) => {
     setFavoriteIds((prev) =>
       prev.includes(item.id)
@@ -1422,6 +1446,7 @@ export default function App() {
             setListenOpen(true);
           }}
           onToggleFavorite={handleToggleFavorite}
+          onLike={handleLike}
         />
       )}
 {page === "work" && current && (
@@ -1457,6 +1482,7 @@ export default function App() {
           onEdit={handleEditWorkClick}
           onOpen={handleOpen}
           onToggleFavorite={handleToggleFavorite}
+          onLike={handleLike}
         />
       )}
 
