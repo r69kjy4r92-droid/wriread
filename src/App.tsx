@@ -693,13 +693,26 @@ const Work: React.FC<WorkProps> = ({
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
               />
-              <div className="flex justify-end">
-                <Button
-                  className="px-6 py-2 text-sm sm:text-base"
-                  onClick={handleSubmitComment}
-                >
-                  {t.sendComment}
-                </Button>
+                           <div className="flex justify-end">
+                <div className="flex flex-col items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handleSubmitComment}
+                    disabled={!commentText.trim()}
+                    className={cx(
+                      "h-10 w-10 sm:h-11 sm:w-11 rounded-full flex items-center justify-center",
+                      "bg-gradient-to-r",
+                      ACCENT,
+                      "shadow-md",
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
+                    )}
+                  >
+                    <span className="text-base sm:text-lg">📨</span>
+                  </button>
+                  <span className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400">
+                    {t.sendComment}
+                  </span>
+                </div>
               </div>
             </div>
 
