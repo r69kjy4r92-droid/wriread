@@ -900,13 +900,14 @@ const Profile: React.FC<{
   t: any;
   items: WorkItem[];
   favorites: string[];
+  commentCounts: Record<string, number>;
   stats: { totalLikes: number; totalDonations: number };
   ratingScore: number;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
   onToggleFavorite: (item: WorkItem) => void;
-}> = ({ t, items, favorites, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite }) => (
+}> = ({ t, items, favorites, commentCounts, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite }) => (
   <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
     <div className="grid md:grid-cols-3 gap-5">
       <div className={cx(CARD, "p-5")}>
@@ -950,6 +951,9 @@ const Profile: React.FC<{
         <div className="grid sm:grid-cols-2 gap-3">
           {items.map((w) => {
             const isFav = favorites.includes(w.id);
+            const baseComments = (w as any).comments ?? 0;
+            const totalComments = baseComments + (commentCounts[w.id] ?? 0);
+
             return (
               <div
                 key={w.id}
@@ -971,7 +975,7 @@ const Profile: React.FC<{
                       {w.title}
                     </div>
                     <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
-                      ❤ {num(w.likes)} · ★ {num(w.donations)}
+                      ❤ {num(w.likes)} · 💬 {num(totalComments)} · ★ {num(w.donations)}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
@@ -1439,6 +1443,7 @@ export default function App() {
           t={t}
           items={works}
           favorites={favorites}
+          commentCounts={commentsCountByWork}
           stats={stats}
           ratingScore={ratingScore}
           onDelete={handleDeleteWorkClick}
