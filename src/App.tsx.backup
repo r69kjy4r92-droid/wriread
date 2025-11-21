@@ -347,23 +347,12 @@ const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
   isFavorite: boolean;
-  commentsCount: number;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
   onListen: (item: WorkItem) => void;
   onToggleFavorite: (item: WorkItem) => void;
-}> = ({
-  t,
-  item,
-  isFavorite,
-  commentsCount,
-  onOpen,
-  onDonate,
-  onBoost,
-  onListen,
-  onToggleFavorite,
-}) => (
+}> = ({ t, item, isFavorite, onOpen, onDonate, onBoost, onListen, onToggleFavorite }) => (
   <div
     className={cx(
       CARD,
@@ -398,22 +387,13 @@ const WorkCard: React.FC<{
           {/* Лайки */}
           <Pill>❤ {num(item.likes)}</Pill>
 
-          {/* Комментарии – используем статичные + новые */}
+          {/* Комментарии – новый пузырь */}
           <button
             type="button"
             onClick={() => onOpen(item)}
             className="focus:outline-none"
           >
-            <Pill>
-              💬
-              {(() => {
-                const base = item.comments ?? 0;
-                const total = base + (commentsCount ?? 0);
-                return total > 0 ? (
-                  <span className="ml-1">{num(total)}</span>
-                ) : null;
-              })()}
-            </Pill>
+            <Pill>💬 {num(item.comments ?? 0)}</Pill>
           </button>
 
           {/* Избранное (звезда) + счётчик донатов, как было */}
@@ -429,7 +409,8 @@ const WorkCard: React.FC<{
         </div>
       </div>
       <p className="text-neutral-700 dark:text-neutral-200 mt-3 line-clamp-2">
-        {item.excerpt}
+        
+{item.excerpt}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {item.genre === "music" ? (
@@ -470,7 +451,6 @@ const Feed: React.FC<{
   lang: string;
   items: WorkItem[];
   favoriteIds: string[];
-  commentCounts: Record<string, number>;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
@@ -481,7 +461,6 @@ const Feed: React.FC<{
   lang,
   items,
   favoriteIds,
-  commentCounts,
   onOpen,
   onDonate,
   onBoost,
@@ -582,14 +561,13 @@ const Feed: React.FC<{
         </div>
       )}
 
-       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredItems.map((item) => (
           <WorkCard
             key={item.id}
             t={t}
             item={item}
             isFavorite={favoriteIds.includes(item.id)}
-            commentsCount={commentCounts[item.id] ?? 0}
             onOpen={onOpen}
             onDonate={onDonate}
             onBoost={onBoost}
@@ -1224,14 +1202,6 @@ export default function App() {
   const [prevPage, setPrevPage] = useState<"landing" | "feed" | "publish" | "profile" | "work" | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const commentsCountByWork = useMemo(() => {
-    const map: Record<string, number> = {};
-    for (const c of comments) {
-      map[c.workId] = (map[c.workId] || 0) + 1;
-    }
-    return map;
-  }, [comments]);
-
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
@@ -1391,7 +1361,6 @@ export default function App() {
           lang={lang}
           items={works}
           favoriteIds={favoriteIds}
-          commentCounts={commentsCountByWork}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
