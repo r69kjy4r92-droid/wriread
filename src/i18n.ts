@@ -109,6 +109,7 @@ export const DICT: Record<
     history: string;
     edit: string;
     save: string;
+    sendComment: string;
   }
 > = {
   ru: {
@@ -160,6 +161,8 @@ export const DICT: Record<
     theme: "Тема",
     light: "Светлая",
     dark: "Тёмная",
+    sendComment: "Отправить",
+
 
     chooseFile: "Выбрать файл",
     fileRequired: "Нужно загрузить аудиофайл.",
@@ -221,6 +224,8 @@ export const DICT: Record<
     theme: "Theme",
     light: "Light",
     dark: "Dark",
+    sendComment: "Send",
+
 
     chooseFile: "Choose file",
     fileRequired: "Audio file is required.",
@@ -282,6 +287,8 @@ export const DICT: Record<
     theme: "Tema",
     light: "Açık",
     dark: "Koyu",
+    sendComment: "Gönder",
+
 
     chooseFile: "Dosya seç",
     fileRequired: "Ses dosyası gerekli.",
@@ -343,6 +350,8 @@ export const DICT: Record<
     theme: "Tema",
     light: "Claro",
     dark: "Oscuro",
+    sendComment: "Enviar",
+
 
     chooseFile: "Elegir archivo",
     fileRequired: "Se requiere archivo de audio.",
@@ -404,6 +413,8 @@ export const DICT: Record<
     theme: "Theme",
     light: "Hell",
     dark: "Dunkel",
+    sendComment: "Senden",
+
 
     chooseFile: "Datei wählen",
     fileRequired: "Audiodatei erforderlich.",
@@ -465,6 +476,8 @@ export const DICT: Record<
     theme: "Thème",
     light: "Clair",
     dark: "Sombre",
+    sendComment: "Envoyer",
+
 
     chooseFile: "Choisir un fichier",
     fileRequired: "Le fichier audio est requis.",
@@ -526,6 +539,8 @@ export const DICT: Record<
     theme: "Tema",
     light: "Chiaro",
     dark: "Scuro",
+    sendComment: "Invia",
+
 
     chooseFile: "Scegli file",
     fileRequired: "File audio richiesto.",
@@ -587,6 +602,8 @@ export const DICT: Record<
     theme: "Tema",
     light: "Claro",
     dark: "Escuro",
+    sendComment: "Enviar",
+
 
     chooseFile: "Escolher arquivo",
     fileRequired: "Arquivo de áudio obrigatório.",
@@ -648,6 +665,8 @@ export const DICT: Record<
     theme: "Тема",
     light: "Світла",
     dark: "Темна",
+    sendComment: "Надіслати",
+
 
     chooseFile: "Обрати файл",
     fileRequired: "Потрібно завантажити аудіофайл.",
@@ -709,6 +728,8 @@ export const DICT: Record<
     theme: "Тақырып",
     light: "Ашық",
     dark: "Қараңғы",
+    sendComment: "Жіберу",
+
 
     chooseFile: "Файл таңдау",
     fileRequired: "Аудиофайл қажет.",

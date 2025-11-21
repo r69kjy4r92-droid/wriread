@@ -699,8 +699,9 @@ const Work: React.FC<WorkProps> = ({
                   onClick={handleSubmitComment}
                   disabled={!commentText.trim()}
                 >
-                  Отправить
-                </Button>
+                                  
+                 {t.sendComment}            
+               </Button>
               </div>
             </div>
 
