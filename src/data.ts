@@ -4,16 +4,17 @@ export type WorkItem = {
   id: string;
   title: string;
   author: string;
-  genre: string;
+  genre: GenreKey;
   date: string;
   likes: number;
   donations: number;
+  comments?: number; // количество комментариев (мок)
   cover: string;
   excerpt: string;
   paywalled: boolean;
   price: number;
   promo: boolean;
-  audioUrl: string | null;
+  audioUrl?: string | null;
 };
 
 export function makeMockWorks(): WorkItem[] {
