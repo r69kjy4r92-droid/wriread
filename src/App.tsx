@@ -971,12 +971,19 @@ const Profile: React.FC<{
                 </button>
                 <div className="p-3 flex items-start justify-between gap-2">
                   <div>
-                    <div className="font-medium flex items-center gap-1">
+                    <div className="font-medium flex items-centre gap-1">
                       {w.title}
                     </div>
-                    <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
-                      ❤ {num(w.likes)} · 💬 {num(totalComments)} · ★ {num(w.donations)}
+                   <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
+                      ❤ {num(w.likes)}
+                      {totalComments > 0 && (
+                        <>
+                          {" · "}💬 {num(totalComments)}
+                        </>
+                      )}
+                      {" · "}★ {num(w.donations)}
                     </div>
+
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <button
