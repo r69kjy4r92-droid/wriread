@@ -295,7 +295,10 @@ export default function App() {
     return { totalLikes, totalDonations };
   }, [works]);
 
-  const ratingScore = stats.totalLikes + stats.totalDonations;
+  const favoritesForRating = favoriteIds.length;
+
+  const ratingScore =
+    stats.totalLikes + stats.totalDonations + favoritesForRating;
 
   const commentsCountByWork = useMemo(() => {
     const map: Record<string, number> = {};
