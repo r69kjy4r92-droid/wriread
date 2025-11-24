@@ -1294,8 +1294,7 @@ export default function App() {
   );
   const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
   // ID избранных публикаций
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [favorites] = useState<string[]>(() => {
+   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
     try {
       const raw = localStorage.getItem("wriread:favorites");
       return raw ? JSON.parse(raw) : [];
@@ -1313,15 +1312,19 @@ export default function App() {
     }
   });
 
-  const [stats] = useState(() => {
+  const stats = useMemo(() => {
     let totalLikes = 0;
     let totalDonations = 0;
-    for (const w of MOCK_WORKS) {
+
+    for (const w of works) {
       totalLikes += w.likes;
       totalDonations += w.donations;
     }
+
     return { totalLikes, totalDonations };
-  });
+  }, [works]);
+
+
   const [donateOpen, setDonateOpen] = useState(false);
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -1345,7 +1348,10 @@ export default function App() {
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
   ) as keyof typeof DICT;
   const t = DICT[currentLangKey];
-  const ratingScore = stats.totalLikes + stats.totalDonations;
+  const favoritesCount = favoriteIds.length;
+  const ratingScore =
+    stats.totalLikes + stats.totalDonations * 5 + favoritesCount * 3;
+
 
   useEffect(() => {
     try {
@@ -1364,11 +1370,11 @@ export default function App() {
     }
   }, [theme]);
 
-  useEffect(() => {
+   useEffect(() => {
     try {
-      localStorage.setItem("wriread:favorites", JSON.stringify(favorites));
+      localStorage.setItem("wriread:favorites", JSON.stringify(favoriteIds));
     } catch {}
-  }, [favorites]);
+  }, [favoriteIds]);
 
   useEffect(() => {
     try {
@@ -1525,7 +1531,7 @@ export default function App() {
         <Profile
           t={t}
           items={works}
-          favorites={favorites}
+          favorites={favoriteIds}
           likedIds={likedIds}
           commentCounts={commentsCountByWork}
           stats={stats}
