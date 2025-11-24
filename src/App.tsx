@@ -526,8 +526,7 @@ export default function App() {
           ratingScore={ratingScore}
           onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
-          onOpen={handleOpen}
-          onToggleFavorite={handleToggleFavorite}
+          onOpen={handleOpen}         
           onLike={handleLike}
         />
       )}

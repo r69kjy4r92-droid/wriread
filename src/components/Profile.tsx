@@ -13,7 +13,6 @@ type ProfileProps = {
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
-  onToggleFavorite: (item: WorkItem) => void;
   onLike: (item: WorkItem) => void;
 };
 
@@ -28,7 +27,6 @@ export const Profile: React.FC<ProfileProps> = ({
   onDelete,
   onEdit,
   onOpen,
-  onToggleFavorite,
   onLike,
 }) => (
   <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
@@ -76,7 +74,6 @@ export const Profile: React.FC<ProfileProps> = ({
 
         <div className="grid sm:grid-cols-2 gap-3">
           {items.map((w) => {
-            const isFav = favorites.includes(w.id);
             const isLiked = likedIds.includes(w.id);
             const baseComments = (w as any).comments ?? 0;
             const totalComments =
@@ -125,21 +122,7 @@ export const Profile: React.FC<ProfileProps> = ({
                       {" · "}★ {num(w.donations)}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <button
-                      onClick={() => onToggleFavorite(w)}
-                      className={cx(
-                        "text-lg leading-none",
-                        isFav ? "text-rose-500" : "text-neutral-400"
-                      )}
-                      title={
-                        isFav
-                          ? t.removeFromFavorites
-                          : t.addToFavorites
-                      }
-                    >
-                      {isFav ? "❤" : "♡"}
-                    </button>
+                  <div className="flex flex-col items-end gap-1">              
                     <button
                       onClick={() => onEdit(w.id)}
                       className="text-xs text-neutral-400 hover:text-amber-500 transition"
