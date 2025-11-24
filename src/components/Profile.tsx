@@ -102,6 +102,7 @@ export const Profile: React.FC<ProfileProps> = ({
                     <div className="font-medium flex items-center gap-1">
                       {w.title}
                     </div>
+
                     <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
                       <button
                         type="button"
@@ -119,11 +120,8 @@ export const Profile: React.FC<ProfileProps> = ({
                         </span>
                         <span>{num(w.likes)}</span>
                       </button>
-                      {totalComments > 0 && (
-                        <>
-                          {" · "}💬 {num(totalComments)}
-                        </>
-                      )}
+                      {" · "}💬
+                      {totalComments > 0 && <> {num(totalComments)}</>}
                       {" · "}★ {num(w.donations)}
                     </div>
                   </div>

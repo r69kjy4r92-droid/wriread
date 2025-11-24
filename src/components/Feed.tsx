@@ -38,8 +38,10 @@ const WorkCard: React.FC<WorkCardProps> = ({
   onToggleFavorite,
   onLike,
 }) => {
-  const totalComments = (item as any).comments ?? 0;
-  const combinedComments = totalComments + commentsCount;
+  const baseComments = (item as any).comments ?? 0;
+  const totalComments = baseComments + commentsCount;
+
+  
 
   return (
     <div
@@ -94,18 +96,19 @@ const WorkCard: React.FC<WorkCardProps> = ({
               </Pill>
             </button>
 
-            {/* Комментарии – показываем только если > 0 */}
-            {combinedComments > 0 && (
-              <button
-                type="button"
-                onClick={() => onOpen(item)}
-                className="focus:outline-none"
-              >
-                <Pill>💬 {num(combinedComments)}</Pill>
-              </button>
-            )}
+          {/* Комментарии */}
+          <button
+            type="button"
+            onClick={() => onOpen(item)}
+            className="focus:outline-none"
+          >
+            <Pill>
+              💬
+              {totalComments > 0 && <> {num(totalComments)}</>}
+            </Pill>
+          </button>
 
-            {/* Избранное (звезда) + счётчик донатов */}
+           {/* Избранное (звезда) + счётчик донатов */}
             <button
               type="button"
               onClick={() => onToggleFavorite(item)}
