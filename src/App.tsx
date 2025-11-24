@@ -1,7 +1,7 @@
-
-
 import React, { useEffect, useMemo, useState } from "react";
-import { DICT, LANGS, GENRE_KEYS, genreLabel, type GenreKey } from "./i18n";
+import { DICT, LANGS } from "./i18n";
+import { MOCK_WORKS, type WorkItem } from "./data";
+import { Logo } from "./components/Logo";
 import {
   ACCENT,
   RADIUS,
@@ -10,47 +10,18 @@ import {
   Button,
   GhostButton,
 } from "./components/ui";
-import { MOCK_WORKS, type WorkItem } from "./data";
-import { Logo } from "./components/Logo";
 import { Feed } from "./components/Feed";
 import { Work } from "./components/Work";
 import { Profile } from "./components/Profile";
 import { Publish } from "./components/Publish";
+import { DonateModal, ListenModal, EditWorkModal } from "./components/Modals";
+
 type Comment = {
   id: string;
   workId: string;
   text: string;
   createdAt: string;
 };
-
-// ===== Helpers =====
-
-
-// Локализованный текст подтверждения удаления
-function getDeleteConfirmMessage(lang: string): string {
-  switch (lang) {
-    case "en":
-      return "Delete this publication? This action cannot be undone.";
-    case "tr":
-      return "Bu paylaşımı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.";
-    case "es":
-      return "¿Seguro que quieres eliminar esta publicación? Esta acción no se puede deshacer.";
-    case "de":
-      return "Diese Veröffentlichung wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.";
-    case "fr":
-      return "Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.";
-    case "it":
-      return "Sei sicuro di voler eliminare questa pubblicazione? Questa azione non può essere annullata.";
-    case "pt":
-      return "Tem certeza de que deseja excluir esta publicação? Esta ação não pode ser desfeita.";
-    case "uk":
-      return "Справді видалити публікацію? Цю дію не можна скасувати.";
-    case "kk":
-      return "Жарияланымды шынымен өшіргіңіз келе ме? Бұл әрекетті болдырмау мүмкін емес.";
-    default:
-      return "Удалить публикацию? Это действие нельзя отменить.";
-  }
-}
 
 // ===== Layout: Header / Footer / Mobile Tabs =====
 type HeaderProps = {
@@ -190,8 +161,7 @@ const GradientBar: React.FC = () => (
   <div className={cx("h-8 w-full", "bg-gradient-to-r", ACCENT, RADIUS)} />
 );
 
-
-// ===== Pages =====
+// ===== Pages: Landing =====
 const Landing: React.FC<{
   t: any;
   onGetStarted: (page: string) => void;
@@ -251,205 +221,6 @@ const Landing: React.FC<{
     </div>
   </section>
 );
- 
-// ===== Modals =====
-const Modal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-}> = ({ open, onClose, title, children }) => {
-  useEffect(() => {
-    if (!open) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, [open]);
-
-  if (!open) return null;
-
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center sm:items-center bg-black/40">
-      <div
-        className={cx(
-          "w-full max-w-lg",
-          CARD,
-          isMobile
-            ? "fixed bottom-0 left-0 right-0 rounded-b-none max-h-[85vh]"
-            : "max-h-[90vh]"
-        )}
-      >
-        <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between sticky top-0 bg-white/90 dark:bg-neutral-900/90 backdrop-blur rounded-t-2xl">
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <button
-            onClick={onClose}
-            className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white"
-          >
-            ✕
-          </button>
-        </div>
-        <div className="p-4 overflow-y-auto max-h-[70vh] sm:max-h-[65vh]">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const DonateModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  t: any;
-  item: WorkItem | null;
-}> = ({ open, onClose, t, item }) => {
-  const [amount, setAmount] = useState(5);
-  if (!open || !item) return null;
-
-  return (
-    <Modal open={open} onClose={onClose} title={`${t.donate}: ${item.title}`}>
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
-        {[3, 5, 10, 20].map((v) => (
-          <GhostButton key={v} onClick={() => setAmount(v)}>
-            {`$${v}`}
-          </GhostButton>
-        ))}
-      </div>
-      <div className="flex items-center gap-3 flex-wrap">
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) =>
-            setAmount(parseFloat(e.target.value || "0") || 0)
-          }
-          className="w-32 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700 text-sm"
-        />
-        <Button onClick={onClose}>{t.pay}</Button>
-        <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
-      </div>
-      <p className="text-xs text-neutral-500 mt-3">{t.mockPaymentNote}</p>
-    </Modal>
-  );
-};
-
-const ListenModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  t: any;
-  item: WorkItem | null;
-}> = ({ open, onClose, t, item }) => {
-  if (!open || !item) return null;
-  return (
-    <Modal open={open} onClose={onClose} title={`${t.listen}: ${item.title}`}>
-      {item.audioUrl ? (
-        <audio controls className="w-full" src={item.audioUrl ?? ""} />
-      ) : (
-        <p className="text-sm text-neutral-600 dark:text-neutral-300">
-          {t.audioUnavailable}
-        </p>
-      )}
-      <div className="mt-4 flex gap-3">
-        <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
-      </div>
-    </Modal>
-  );
-};
-
-const EditWorkModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  t: any;
-  lang: string;
-  item: WorkItem | null;
-  onSave: (item: WorkItem) => void;
-}> = ({ open, onClose, t, lang, item, onSave }) => {
-  const [title, setTitle] = useState("");
-  const [genre, setGenre] = useState<GenreKey>("poetry");
-  const [excerpt, setExcerpt] = useState("");
-
-  useEffect(() => {
-    if (item && open) {
-      setTitle(item.title);
-      setGenre((item.genre as GenreKey) || "poetry");
-      setExcerpt(item.excerpt || "");
-    }
-  }, [item, open]);
-
-  if (!open || !item) return null;
-
-  const isMusic = genre === "music";
-
-  const handleSave = () => {
-    onSave({
-      ...item,
-      title,
-      genre,
-      excerpt: isMusic ? "" : excerpt,
-    });
-    onClose();
-  };
-
-  return (
-    <Modal open={open} onClose={onClose} title={t.edit}>
-      <div className="flex flex-col gap-3">
-        <div>
-          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-            {t.title}
-          </label>
-          <input
-            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-            {t.genre}
-          </label>
-          <select
-            className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-            value={genre}
-            onChange={(e) => setGenre(e.target.value as GenreKey)}
-          >
-            {GENRE_KEYS.map((g) => (
-              <option key={g} value={g}>
-                {genreLabel(lang, g as GenreKey)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {!isMusic && (
-          <div>
-            <label className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-              {t.text}
-            </label>
-            <textarea
-              rows={4}
-              className="w-full mt-1 px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              placeholder={t.startWriting}
-            />
-          </div>
-        )}
-
-        <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:justify-end">
-          <GhostButton onClick={onClose} className="w-full sm:w-auto">
-            {t.cancel}
-          </GhostButton>
-          <Button onClick={handleSave} className="w-full sm:w-auto">
-            {t.save}
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  );
-};
 
 // ===== App =====
 export default function App() {
@@ -470,24 +241,28 @@ export default function App() {
     }
   });
 
-  const [page, setPage] = useState<"landing" | "feed" | "publish" | "profile" | "work">("landing");
-  const [prevPage, setPrevPage] = useState<"landing" | "feed" | "publish" | "profile" | "work" | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [page, setPage] = useState<
+    "landing" | "feed" | "publish" | "profile" | "work"
+  >("landing");
+  const [prevPage, setPrevPage] = useState<
+    "landing" | "feed" | "publish" | "profile" | "work" | null
+  >(null);
 
-  const commentsCountByWork = useMemo(() => {
-    const map: Record<string, number> = {};
-    for (const c of comments) {
-      map[c.workId] = (map[c.workId] || 0) + 1;
+  const [comments, setComments] = useState<Comment[]>(() => {
+    try {
+      const raw = localStorage.getItem("wriread:comments");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
     }
-    return map;
-  }, [comments]);
+  });
 
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
   const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
-  // ID избранных публикаций
-   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
+
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
     try {
       const raw = localStorage.getItem("wriread:favorites");
       return raw ? JSON.parse(raw) : [];
@@ -498,53 +273,37 @@ export default function App() {
 
   const [likedIds, setLikedIds] = useState<string[]>(() => {
     try {
-      const raw = localStorage.getItem("wriread:liked");
+      const raw = localStorage.getItem("wriread:likes");
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
     }
   });
 
-  const stats = useMemo(() => {
-    let totalLikes = 0;
-    let totalDonations = 0;
-
-    for (const w of works) {
-      totalLikes += w.likes;
-      totalDonations += w.donations;
-    }
-
-    return { totalLikes, totalDonations };
-  }, [works]);
-
-
   const [donateOpen, setDonateOpen] = useState(false);
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
-  const handleAddComment = (workId: string, text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
 
-    const now = new Date();
-    const newComment: Comment = {
-      id: "c-" + now.getTime() + "-" + Math.random().toString(36).slice(2, 8),
-      workId,
-      text: trimmed,
-      createdAt: now.toLocaleString(),
-    };
+  const stats = useMemo(() => {
+    let totalLikes = 0;
+    let totalDonations = 0;
+    for (const w of works) {
+      totalLikes += w.likes;
+      totalDonations += w.donations;
+    }
+    return { totalLikes, totalDonations };
+  }, [works]);
 
-    setComments((prev) => [...prev, newComment]);
-  };
+  const ratingScore = stats.totalLikes + stats.totalDonations;
 
-  const currentLangKey = (
-    Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
-  ) as keyof typeof DICT;
-  const t = DICT[currentLangKey];
-  const favoritesCount = favoriteIds.length;
-  const ratingScore =
-    stats.totalLikes + stats.totalDonations * 5 + favoritesCount * 3;
-
+  const commentsCountByWork = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const c of comments) {
+      map[c.workId] = (map[c.workId] || 0) + 1;
+    }
+    return map;
+  }, [comments]);
 
   useEffect(() => {
     try {
@@ -563,17 +322,29 @@ export default function App() {
     }
   }, [theme]);
 
-   useEffect(() => {
+  useEffect(() => {
     try {
-      localStorage.setItem("wriread:favorites", JSON.stringify(favoriteIds));
+      localStorage.setItem(
+        "wriread:favorites",
+        JSON.stringify(favoriteIds)
+      );
     } catch {}
   }, [favoriteIds]);
 
   useEffect(() => {
     try {
-      localStorage.setItem("wriread:liked", JSON.stringify(likedIds));
+      localStorage.setItem("wriread:likes", JSON.stringify(likedIds));
     } catch {}
   }, [likedIds]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "wriread:comments",
+        JSON.stringify(comments)
+      );
+    } catch {}
+  }, [comments]);
 
   const goTo = (next: typeof page) => {
     setPrevPage(page);
@@ -592,50 +363,62 @@ export default function App() {
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
     goTo("work");
-  };                                                                                                        
-  
-  const handleLike = (item: WorkItem) => {
-    const isLiked = likedIds.includes(item.id);
+  };
 
-    // Обновляем лайки в works
-    setWorks((prev) =>
-      prev.map((w) => {
-        if (w.id !== item.id) return w;
-        const delta = isLiked ? -1 : 1;
-        return { ...w, likes: Math.max(0, w.likes + delta) };
-      })
-    );
-
-    // Обновляем список лайкнутых id
-    setLikedIds((prev) =>
-      prev.includes(item.id)
-        ? prev.filter((id) => id !== item.id)
-        : [...prev, item.id]
+  const handleToggleFavorite = (item: WorkItem) => {
+    const isFav = favoriteIds.includes(item.id);
+    setFavoriteIds((prev) =>
+      isFav ? prev.filter((id) => id !== item.id) : [...prev, item.id]
     );
   };
-                                                                            
-  const handleToggleFavorite = (item: WorkItem) => {
-    setFavoriteIds((prev) =>
-      prev.includes(item.id)
-        ? prev.filter((id) => id !== item.id)
-        : [...prev, item.id]
+
+  const handleLike = (item: WorkItem) => {
+    const isLiked = likedIds.includes(item.id);
+    setLikedIds((prev) =>
+      isLiked ? prev.filter((id) => id !== item.id) : [...prev, item.id]
     );
+    setWorks((prev) =>
+      prev.map((w) =>
+        w.id === item.id
+          ? { ...w, likes: w.likes + (isLiked ? -1 : 1) }
+          : w
+      )
+    );
+  };
+
+  const handleAddComment = (workId: string, text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    const now = new Date();
+    const newComment: Comment = {
+      id:
+        "c-" +
+        now.getTime() +
+        "-" +
+        Math.random().toString(36).slice(2, 8),
+      workId,
+      text: trimmed,
+      createdAt: now.toLocaleString(),
+    };
+
+    setComments((prev) => [...prev, newComment]);
   };
 
   const handleDeleteWork = (id: string) => {
     setWorks((prev) => prev.filter((w) => w.id !== id));
     setCurrent((prev) => (prev && prev.id === id ? null : prev));
-    // если пост был в избранном — убираем его
     setFavoriteIds((prev) => prev.filter((fid) => fid !== id));
-    // рейтинг не трогаем — считается по всем лайкам/донатам за жизнь автора
+    setComments((prev) => prev.filter((c) => c.workId !== id));
   };
 
   const handleDeleteWorkClick = (id: string) => {
-    const message = getDeleteConfirmMessage(lang);
     if (typeof window === "undefined") {
       handleDeleteWork(id);
       return;
     }
+    const message =
+      "Удалить публикацию? Это действие нельзя отменить.";
     if (window.confirm(message)) {
       handleDeleteWork(id);
     }
@@ -660,6 +443,11 @@ export default function App() {
     setPage("profile");
   };
 
+  const currentLangKey = (
+    Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
+  ) as keyof typeof DICT;
+  const t = DICT[currentLangKey];
+
   return (
     <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
       <Header
@@ -677,6 +465,7 @@ export default function App() {
       {page === "landing" && (
         <Landing t={t} onGetStarted={(p) => goTo(p as typeof page)} />
       )}
+
       {page === "feed" && (
         <Feed
           t={t}
@@ -699,19 +488,21 @@ export default function App() {
           onLike={handleLike}
         />
       )}
-{page === "work" && current && (
-  <Work
-    t={t}
-    item={current}
-    onDonate={(it) => {
-      setCurrent(it);
-      setDonateOpen(true);
-    }}
-    onBack={goBack}
-    comments={comments.filter((c) => c.workId === current.id)}
-    onAddComment={(text: string) => handleAddComment(current.id, text)}
-  />
-)}
+
+      {page === "work" && current && (
+        <Work
+          t={t}
+          item={current}
+          onDonate={(it) => {
+            setCurrent(it);
+            setDonateOpen(true);
+          }}
+          onBack={goBack}
+          comments={comments.filter((c) => c.workId === current.id)}
+          onAddComment={(text: string) => handleAddComment(current.id, text)}
+        />
+      )}
+
       {page === "publish" && (
         <Publish
           t={t}
@@ -720,6 +511,7 @@ export default function App() {
           onBack={goBack}
         />
       )}
+
       {page === "profile" && (
         <Profile
           t={t}
@@ -764,4 +556,3 @@ export default function App() {
     </div>
   );
 }
-
