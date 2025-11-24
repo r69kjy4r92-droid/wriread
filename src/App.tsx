@@ -347,6 +347,7 @@ const WorkCard: React.FC<{
   t: any;
   item: WorkItem;
   isFavorite: boolean;
+  isLiked: boolean;
   commentsCount: number;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
@@ -358,6 +359,7 @@ const WorkCard: React.FC<{
   t,
   item,
   isFavorite,
+  isLiked,
   commentsCount,
   onOpen,
   onDonate,
@@ -403,9 +405,18 @@ const WorkCard: React.FC<{
             onClick={() => onLike(item)}
             className="focus:outline-none"
           >
-            <Pill>❤ {num(item.likes)}</Pill>
+            <Pill>
+              <span
+                className={cx(
+                  "inline-flex items-center",
+                  isLiked ? "text-rose-500" : "text-neutral-400"
+                )}
+              >
+                {isLiked ? "❤" : "♡"}
+                <span className="ml-1">{num(item.likes)}</span>
+              </span>
+            </Pill>
           </button>
-
 
           {/* Комментарии – суммируем статические + новые и скрываем 0 */}
           <button
@@ -480,6 +491,7 @@ const Feed: React.FC<{
   lang: string;
   items: WorkItem[];
   favoriteIds: string[];
+  likedIds: string[];
   commentCounts: Record<string, number>;
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
@@ -492,6 +504,7 @@ const Feed: React.FC<{
   lang,
   items,
   favoriteIds,
+  likedIds,
   commentCounts,
   onOpen,
   onDonate,
@@ -601,6 +614,7 @@ const Feed: React.FC<{
             t={t}
             item={item}
             isFavorite={favoriteIds.includes(item.id)}
+            isLiked={likedIds.includes(item.id)}
             commentsCount={commentCounts[item.id] ?? 0}
             onOpen={onOpen}
             onDonate={onDonate}
@@ -907,6 +921,7 @@ const Profile: React.FC<{
   t: any;
   items: WorkItem[];
   favorites: string[];
+  likedIds: string[];
   commentCounts: Record<string, number>;
   stats: { totalLikes: number; totalDonations: number };
   ratingScore: number;
@@ -915,7 +930,7 @@ const Profile: React.FC<{
   onOpen: (item: WorkItem) => void;
   onToggleFavorite: (item: WorkItem) => void;
   onLike: (item: WorkItem) => void;
-}> = ({ t, items, favorites, commentCounts, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite, onLike }) => (
+}> = ({ t, items, favorites, likedIds, commentCounts, stats, ratingScore, onDelete, onEdit, onOpen, onToggleFavorite, onLike }) => (
   <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
     <div className="grid md:grid-cols-3 gap-5">
       <div className={cx(CARD, "p-5")}>
@@ -959,6 +974,7 @@ const Profile: React.FC<{
         <div className="grid sm:grid-cols-2 gap-3">
           {items.map((w) => {
             const isFav = favorites.includes(w.id);
+            const isLiked = likedIds.includes(w.id);
             const baseComments = (w as any).comments ?? 0;
             const totalComments = baseComments + (commentCounts[w.id] ?? 0);
 
@@ -982,13 +998,20 @@ const Profile: React.FC<{
                     <div className="font-medium flex items-centre gap-1">
                       {w.title}
                     </div>
-                     <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
+                    <div className="text-xs text-neutral-600 dark:text-neutral-300 mt-1">
                       <button
                         type="button"
                         onClick={() => onLike(w)}
                         className="inline-flex items-center gap-0.5"
                       >
-                        ❤ {num(w.likes)}
+                        <span
+                          className={cx(
+                            isLiked ? "text-rose-500" : "text-neutral-400"
+                          )}
+                        >
+                          {isLiked ? "❤" : "♡"}
+                        </span>
+                        <span>{num(w.likes)}</span>
                       </button>
                       {totalComments > 0 && (
                         <>
@@ -1281,6 +1304,15 @@ export default function App() {
     }
   });
 
+  const [likedIds, setLikedIds] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("wriread:liked");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [stats] = useState(() => {
     let totalLikes = 0;
     let totalDonations = 0;
@@ -1338,6 +1370,12 @@ export default function App() {
     } catch {}
   }, [favorites]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:liked", JSON.stringify(likedIds));
+    } catch {}
+  }, [likedIds]);
+
   const goTo = (next: typeof page) => {
     setPrevPage(page);
     setPage(next);
@@ -1355,16 +1393,28 @@ export default function App() {
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
     goTo("work");
-  };  
+  };                                                                                                        
   
-    const handleLike = (item: WorkItem) => {
+  const handleLike = (item: WorkItem) => {
+    const isLiked = likedIds.includes(item.id);
+
+    // Обновляем лайки в works
     setWorks((prev) =>
-      prev.map((w) =>
-        w.id === item.id ? { ...w, likes: w.likes + 1 } : w
-      )
+      prev.map((w) => {
+        if (w.id !== item.id) return w;
+        const delta = isLiked ? -1 : 1;
+        return { ...w, likes: Math.max(0, w.likes + delta) };
+      })
+    );
+
+    // Обновляем список лайкнутых id
+    setLikedIds((prev) =>
+      prev.includes(item.id)
+        ? prev.filter((id) => id !== item.id)
+        : [...prev, item.id]
     );
   };
-                                                                         
+                                                                            
   const handleToggleFavorite = (item: WorkItem) => {
     setFavoriteIds((prev) =>
       prev.includes(item.id)
@@ -1434,6 +1484,7 @@ export default function App() {
           lang={lang}
           items={works}
           favoriteIds={favoriteIds}
+          likedIds={likedIds}
           commentCounts={commentsCountByWork}
           onOpen={handleOpen}
           onDonate={(it) => {
@@ -1475,6 +1526,7 @@ export default function App() {
           t={t}
           items={works}
           favorites={favorites}
+          likedIds={likedIds}
           commentCounts={commentsCountByWork}
           stats={stats}
           ratingScore={ratingScore}
