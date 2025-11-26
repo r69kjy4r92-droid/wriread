@@ -255,6 +255,8 @@ export default function App() {
     "landing" | "feed" | "publish" | "profile" | "work" | null
   >(null);
 
+  const [feedVersion, setFeedVersion] = useState(0);
+
   const [comments, setComments] = useState<Comment[]>(() => {
     try {
       const raw = localStorage.getItem("wriread:comments");
@@ -405,7 +407,12 @@ export default function App() {
     } catch {}
   }, [comments]);
 
-  const goTo = (next: typeof page) => {
+   const goTo = (next: typeof page) => {
+    if (next === "feed") {
+      // каждый раз при нажатии "Лента" мы сбрасываем состояние Feed
+      setFeedVersion((v) => v + 1);
+    }
+
     setPrevPage(page);
     setPage(next);
   };
@@ -565,6 +572,7 @@ export default function App() {
 
       {page === "feed" && (
         <Feed
+          key={feedVersion}
           t={t}
           lang={lang}
           items={works}
