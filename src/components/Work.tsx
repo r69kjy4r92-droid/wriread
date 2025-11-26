@@ -2,6 +2,37 @@ import React, { useState } from "react";
 import { CARD, RADIUS, cx, Button, GhostButton } from "./ui";
 import type { WorkItem } from "../data";
 
+function formatCommentDate(raw: string): string {
+  // Пытаемся распарсить дату
+  const date = new Date(raw);
+  if (isNaN(date.getTime())) {
+    // Если не получилось (старый формат) — показываем как есть
+    return raw;
+  }
+
+  const now = new Date();
+
+  const sameDay =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate();
+
+  const time = date.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  if (sameDay) {
+    // Сегодня — показываем только время
+    return time;
+  }
+
+  const dateStr = date.toLocaleDateString();
+
+  // Вчера и более старые даты — дата + время
+  return `${dateStr} ${time}`;
+}
+
 // Локальный тип комментария, совместимый с тем, что в App.tsx
 type WorkComment = {
   id: string;
@@ -122,7 +153,7 @@ export const Work: React.FC<WorkProps> = ({
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="text-xs text-neutral-500">
-                        {c.createdAt}
+                        {formatCommentDate(c.createdAt)}
                       </div>
                       <button
                         type="button"

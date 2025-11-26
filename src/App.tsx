@@ -402,7 +402,7 @@ export default function App() {
         Math.random().toString(36).slice(2, 8),
       workId,
       text: trimmed,
-      createdAt: now.toLocaleString(),
+      createdAt: now.toISOString(),
     };
 
     setComments((prev) => [...prev, newComment]);
