@@ -17,6 +17,7 @@ type WorkProps = {
   onBack: () => void;
   comments: WorkComment[];
   onAddComment: (text: string) => void;
+  onDeleteComment: (id: string) => void;
 };
 
 export const Work: React.FC<WorkProps> = ({
@@ -26,6 +27,7 @@ export const Work: React.FC<WorkProps> = ({
   onBack,
   comments,
   onAddComment,
+  onDeleteComment,
 }) => {
   const [commentText, setCommentText] = useState("");
 
@@ -118,8 +120,18 @@ export const Work: React.FC<WorkProps> = ({
                     key={c.id}
                     className="px-3 py-2 rounded-2xl bg-neutral-900/40 border border-neutral-800"
                   >
-                    <div className="text-xs text-neutral-500 mb-1">
-                      {c.createdAt}
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <div className="text-xs text-neutral-500">
+                        {c.createdAt}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onDeleteComment(c.id)}
+                        className="text-xs text-neutral-500 hover:text-red-400 transition"
+                        title={t.deleteComment || "Удалить комментарий"}
+                      >
+                        🗑
+                      </button>
                     </div>
                     <div>{c.text}</div>
                   </div>

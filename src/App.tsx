@@ -389,7 +389,7 @@ export default function App() {
     );
   };
 
-  const handleAddComment = (workId: string, text: string) => {
+   const handleAddComment = (workId: string, text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
 
@@ -408,6 +408,10 @@ export default function App() {
     setComments((prev) => [...prev, newComment]);
   };
 
+  const handleDeleteComment = (commentId: string) => {
+    setComments((prev) => prev.filter((c) => c.id !== commentId));
+  };
+
   const handleDeleteWork = (id: string) => {
     setWorks((prev) => prev.filter((w) => w.id !== id));
     setCurrent((prev) => (prev && prev.id === id ? null : prev));
@@ -420,8 +424,7 @@ export default function App() {
       handleDeleteWork(id);
       return;
     }
-    const message =
-      "Удалить публикацию? Это действие нельзя отменить.";
+    const message = "Удалить публикацию? Это действие нельзя отменить.";
     if (window.confirm(message)) {
       handleDeleteWork(id);
     }
@@ -503,6 +506,7 @@ export default function App() {
           onBack={goBack}
           comments={comments.filter((c) => c.workId === current.id)}
           onAddComment={(text: string) => handleAddComment(current.id, text)}
+          onDeleteComment={handleDeleteComment}
         />
       )}
 
