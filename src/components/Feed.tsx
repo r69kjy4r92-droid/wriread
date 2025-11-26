@@ -199,6 +199,7 @@ type FeedProps = {
   favoriteIds: string[];
   likedIds: string[];
   commentCounts: Record<string, number>;
+  followedAuthors: string[];
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
@@ -214,6 +215,7 @@ export const Feed: React.FC<FeedProps> = ({
   favoriteIds,
   likedIds,
   commentCounts,
+  followedAuthors,
   onOpen,
   onDonate,
   onBoost,
@@ -235,11 +237,13 @@ export const Feed: React.FC<FeedProps> = ({
 
   const hasActiveFilter = genreFilter !== "all" || onlyPromo;
 
-  const filteredItems = useMemo(() => {
+    const filteredItems = useMemo(() => {
     let arr = [...items];
 
     if (tab === "new") arr = [...items].reverse();
-    if (tab === "following") arr = items.filter((_, i) => i % 2 === 0);
+    if (tab === "following") {
+      arr = items.filter((w) => followedAuthors.includes(w.author));
+    }
     if (tab === "favorites") {
       arr = arr.filter((w) => favoriteIds.includes(w.id));
     }
@@ -251,7 +255,7 @@ export const Feed: React.FC<FeedProps> = ({
       arr = arr.filter((w) => w.promo);
     }
     return arr;
-  }, [items, tab, genreFilter, onlyPromo, favoriteIds]);
+  }, [items, tab, genreFilter, onlyPromo, favoriteIds, followedAuthors]);
 
   const handleClearFilters = () => {
     setGenreFilter("all");

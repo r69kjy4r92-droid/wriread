@@ -296,6 +296,15 @@ export default function App() {
     }
   });
 
+  const [followedAuthors, setFollowedAuthors] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("wriread:following");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [donateOpen, setDonateOpen] = useState(false);
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -381,6 +390,15 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem(
+        "wriread:following",
+        JSON.stringify(followedAuthors)
+      );
+    } catch {}
+  }, [followedAuthors]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
         "wriread:comments",
         JSON.stringify(comments)
       );
@@ -424,6 +442,14 @@ export default function App() {
           ? { ...w, likes: w.likes + (isLiked ? -1 : 1) }
           : w
       )
+    );
+  };
+
+  const handleToggleFollow = (author: string) => {
+    setFollowedAuthors((prev) =>
+      prev.includes(author)
+        ? prev.filter((a) => a !== author)
+        : [...prev, author]
     );
   };
 
@@ -545,6 +571,7 @@ export default function App() {
           favoriteIds={favoriteIds}
           likedIds={likedIds}
           commentCounts={commentsCountByWork}
+          followedAuthors={followedAuthors}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
@@ -572,6 +599,8 @@ export default function App() {
           comments={comments.filter((c) => c.workId === current.id)}
           onAddComment={(text: string) => handleAddComment(current.id, text)}
           onDeleteComment={handleDeleteComment}
+          isFollowing={followedAuthors.includes(current.author)}
+          onToggleFollow={() => handleToggleFollow(current.author)}
         />
       )}
 

@@ -48,7 +48,9 @@ type WorkProps = {
   onBack: () => void;
   comments: WorkComment[];
   onAddComment: (text: string) => void;
-  onDeleteComment: (id: string) => void;
+  onDeleteComment: (commentId: string) => void;
+  isFollowing: boolean;
+  onToggleFollow: () => void;
 };
 
 export const Work: React.FC<WorkProps> = ({
@@ -59,6 +61,8 @@ export const Work: React.FC<WorkProps> = ({
   comments,
   onAddComment,
   onDeleteComment,
+  isFollowing,
+  onToggleFollow,
 }) => {
   const [commentText, setCommentText] = useState("");
 
@@ -93,8 +97,22 @@ export const Work: React.FC<WorkProps> = ({
         />
         <div className="p-5">
           <h1 className="text-2xl font-bold">{item.title}</h1>
-          <div className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            {t.byAuthor} {item.author} · {item.genre} · {item.date}
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <div className="text-sm text-neutral-600 dark:text-neutral-300">
+              {t.byAuthor} {item.author} · {item.genre} · {item.date}
+            </div>
+            <button
+              type="button"
+              onClick={onToggleFollow}
+              className={cx(
+                "px-3 py-1 text-xs sm:text-sm rounded-full border transition",
+                isFollowing
+                  ? "bg-amber-500 text-white border-amber-500"
+                  : "bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+              )}
+            >
+              {isFollowing ? "Вы подписаны" : "Подписаться"}
+            </button>
           </div>
 
           {!item.audioUrl && (
