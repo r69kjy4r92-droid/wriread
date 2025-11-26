@@ -45,7 +45,9 @@ export const Profile: React.FC<ProfileProps> = ({
         <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
           {t.yourBalance}
         </div>
-        <div className="mt-1 text-3xl font-extrabold">$ 124.50</div>
+        <div className="mt-1 text-3xl font-extrabold">
+          ${stats.totalDonations.toFixed(2)}
+        </div>
 
         <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
           {t.authorRating}
