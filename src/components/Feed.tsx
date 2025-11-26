@@ -237,24 +237,27 @@ export const Feed: React.FC<FeedProps> = ({
 
   const hasActiveFilter = genreFilter !== "all" || onlyPromo;
 
-    const filteredItems = useMemo(() => {
-    let arr = [...items];
+     const filteredItems = useMemo(() => {
+    let base: WorkItem[] = items;
 
-    if (tab === "new") arr = [...items].reverse();
-    if (tab === "following") {
-      arr = items.filter((w) => followedAuthors.includes(w.author));
-    }
-    if (tab === "favorites") {
-      arr = arr.filter((w) => favoriteIds.includes(w.id));
+    if (tab === "new") {
+      base = [...items].reverse();
+    } else if (tab === "following") {
+      // ТОЛЬКО авторы, на кого подписан
+      base = items.filter((w) => followedAuthors.includes(w.author));
+    } else if (tab === "favorites") {
+      // ТОЛЬКО избранные публикации
+      base = items.filter((w) => favoriteIds.includes(w.id));
     }
 
     if (genreFilter !== "all") {
-      arr = arr.filter((w) => w.genre === genreFilter);
+      base = base.filter((w) => w.genre === genreFilter);
     }
     if (onlyPromo) {
-      arr = arr.filter((w) => w.promo);
+      base = base.filter((w) => w.promo);
     }
-    return arr;
+
+    return base;
   }, [items, tab, genreFilter, onlyPromo, favoriteIds, followedAuthors]);
 
   const handleClearFilters = () => {
@@ -315,24 +318,44 @@ export const Feed: React.FC<FeedProps> = ({
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredItems.map((item) => (
-          <WorkCard
-            key={item.id}
-            t={t}
-            item={item}
-            isFavorite={favoriteIds.includes(item.id)}
-            isLiked={likedIds.includes(item.id)}
-            commentsCount={commentCounts[item.id] ?? 0}
-            onOpen={onOpen}
-            onDonate={onDonate}
-            onBoost={onBoost}
-            onListen={onListen}
-            onToggleFavorite={onToggleFavorite}
-            onLike={onLike}
-          />
-        ))}
-      </div>
+            {filteredItems.length === 0 ? (
+        <div className="text-sm text-neutral-500 dark:text-neutral-400">
+          {tab === "following" && "Вы ещё ни на кого не подписаны или у авторов пока нет публикаций."}
+          {tab === "favorites" && "В избранном пока нет публикаций."}
+          {tab !== "following" && tab !== "favorites" && "Публикации не найдены."}
+
+          <div className="mt-3">
+            <GhostButton
+              onClick={() => {
+                setTab("top");
+                handleClearFilters();
+              }}
+            >
+              Вернуться в ленту
+            </GhostButton>
+          </div>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredItems.map((item) => (
+            <WorkCard
+              key={item.id}
+              t={t}
+              item={item}
+              isFavorite={favoriteIds.includes(item.id)}
+              isLiked={likedIds.includes(item.id)}
+              commentsCount={commentCounts[item.id] ?? 0}
+              onOpen={onOpen}
+              onDonate={onDonate}
+              onBoost={onBoost}
+              onListen={onListen}
+              onToggleFavorite={onToggleFavorite}
+              onLike={onLike}
+            />
+          ))}
+        </div>
+      )}
+
     </section>
   );
 };
