@@ -23,6 +23,13 @@ type Comment = {
   createdAt: string;
 };
 
+type Donation = {
+  id: string;
+  workId: string;
+  amount: number;
+  createdAt: string;
+};
+
 // ===== Layout: Header / Footer / Mobile Tabs =====
 type HeaderProps = {
   t: any;
@@ -257,6 +264,15 @@ export default function App() {
     }
   });
 
+  const [donations, setDonations] = useState<Donation[]>(() => {
+    try {
+      const raw = localStorage.getItem("wriread:donations");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
@@ -285,20 +301,33 @@ export default function App() {
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
 
-  const stats = useMemo(() => {
+   const stats = useMemo(() => {
     let totalLikes = 0;
-    let totalDonations = 0;
+    let totalDonationsCount = 0;
+
     for (const w of works) {
       totalLikes += w.likes;
-      totalDonations += w.donations;
+      totalDonationsCount += w.donations ?? 0;
     }
-    return { totalLikes, totalDonations };
-  }, [works]);
 
-  const favoritesForRating = favoriteIds.length;
+    // бонус к лайкам за избранное
+    const favoritesBonus = favoriteIds.length;
 
-  const ratingScore =
-    stats.totalLikes + stats.totalDonations + favoritesForRating;
+    // сумма всех донатов (по деньгам)
+    const totalDonationsAmount = donations.reduce(
+      (sum, d) => sum + (d.amount || 0),
+      0
+    );
+
+    return {
+      // лайки + бонус за избранное
+      totalLikes: totalLikes + favoritesBonus,
+      // общая сумма донатов
+      totalDonations: totalDonationsAmount,
+    };
+  }, [works, favoriteIds, donations]);
+
+  const ratingScore = stats.totalLikes + stats.totalDonations;
 
   const commentsCountByWork = useMemo(() => {
     const map: Record<string, number> = {};
@@ -333,6 +362,15 @@ export default function App() {
       );
     } catch {}
   }, [favoriteIds]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "wriread:donations",
+        JSON.stringify(donations)
+      );
+    } catch {}
+  }, [donations]);
 
   useEffect(() => {
     try {
@@ -384,6 +422,33 @@ export default function App() {
       prev.map((w) =>
         w.id === item.id
           ? { ...w, likes: w.likes + (isLiked ? -1 : 1) }
+          : w
+      )
+    );
+  };
+
+  const handleDonate = (item: WorkItem, amount: number) => {
+    if (!amount || amount <= 0) return;
+
+    const now = new Date();
+    const newDonation: Donation = {
+      id:
+        "d-" +
+        now.getTime() +
+        "-" +
+        Math.random().toString(36).slice(2, 8),
+      workId: item.id,
+      amount,
+      createdAt: now.toISOString(),
+    };
+
+    setDonations((prev) => [...prev, newDonation]);
+
+    // увеличиваем счётчик донатов у работы (кол-во)
+    setWorks((prev) =>
+      prev.map((w) =>
+        w.id === item.id
+          ? { ...w, donations: (w.donations ?? 0) + 1 }
           : w
       )
     );
@@ -544,6 +609,7 @@ export default function App() {
         onClose={() => setDonateOpen(false)}
         t={t}
         item={current}
+        onConfirm={handleDonate}
       />
       <ListenModal
         open={listenOpen}

@@ -62,6 +62,7 @@ type DonateModalProps = {
   onClose: () => void;
   t: any;
   item: WorkItem | null;
+  onConfirm: (item: WorkItem, amount: number) => void;
 };
 
 export const DonateModal: React.FC<DonateModalProps> = ({
@@ -69,9 +70,17 @@ export const DonateModal: React.FC<DonateModalProps> = ({
   onClose,
   t,
   item,
+  onConfirm,
 }) => {
   const [amount, setAmount] = useState(5);
+
   if (!open || !item) return null;
+
+  const handlePay = () => {
+    if (!amount || amount <= 0) return;
+    onConfirm(item, amount);
+    onClose();
+  };
 
   return (
     <Modal open={open} onClose={onClose} title={`${t.donate}: ${item.title}`}>
@@ -91,10 +100,12 @@ export const DonateModal: React.FC<DonateModalProps> = ({
           }
           className="w-32 px-3 py-2 border rounded-xl dark:bg-neutral-900 dark:border-neutral-700 text-sm"
         />
-        <Button onClick={onClose}>{t.pay}</Button>
+        <Button onClick={handlePay}>{t.pay}</Button>
         <GhostButton onClick={onClose}>{t.cancel}</GhostButton>
       </div>
-      <p className="text-xs text-neutral-500 mt-3">{t.mockPaymentNote}</p>
+      <p className="text-xs text-neutral-500 mt-3">
+        {t.mockPaymentNote}
+      </p>
     </Modal>
   );
 };
