@@ -29,7 +29,6 @@ type Donation = {
 };
 
 // ===== Layout: Header / Footer / Mobile Tabs =====
-
 type HeaderProps = {
   t: any;
   onNav: (k: string) => void;
@@ -63,6 +62,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2">
+        {/* Логотип */}
         <button
           onClick={() => onNav("landing")}
           className="flex items-center gap-2 hover:opacity-90 transition"
@@ -70,6 +70,7 @@ const Header: React.FC<HeaderProps> = ({
           <Logo />
         </button>
 
+        {/* Навигация (только на десктопе) */}
         <nav className="ml-4 hidden md:flex gap-2">
           {nav.map((n) => (
             <button
@@ -87,44 +88,51 @@ const Header: React.FC<HeaderProps> = ({
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            onClick={onToggleTheme}
-            className={cx(
-              "px-3 py-1.5 text-xs sm:text-sm rounded-full border flex items-center gap-1",
-              "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900"
-            )}
-          >
-            {theme === "dark" ? "🌙 " + t.dark : "🌞 " + t.light}
-          </button>
-
-          <div className={cx(CARD, "px-2 py-1 flex items-center gap-1")}>
-            <span className="hidden sm:inline text-xs text-neutral-500">
-              {t.language}:
-            </span>
-            <select
-              className="bg-transparent text-xs sm:text-sm outline-none"
-              value={lang}
-              onChange={(e) => onChangeLang(e.target.value)}
+        {/* Правый блок: Тема / Язык / Войти */}
+        <div className="ml-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 max-w-full">
+          {/* Тема + Язык в одной группе, умеют переноситься */}
+          <div className="flex flex-row flex-wrap items-center gap-1 sm:gap-2 justify-end">
+            {/* Переключатель темы */}
+            <button
+              onClick={onToggleTheme}
+              className={cx(
+                "px-3 py-1 text-xs sm:text-sm rounded-full border flex items-center gap-1",
+                "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+              )}
             >
-              {LANGS.map((l) => (
-                <option key={l.k} value={l.k}>
-                  {l.label}
-                </option>
-              ))}
-            </select>
+              {theme === "dark" ? "🌙 " + t.dark : "🌞 " + t.light}
+            </button>
+
+            {/* Язык */}
+            <div className={cx(CARD, "px-2 py-1 flex items-center gap-1")}>
+              <span className="hidden sm:inline text-xs text-neutral-500">
+                {t.language}:
+              </span>
+              <select
+                className="bg-transparent text-xs sm:text-sm outline-none max-w-[120px]"
+                value={lang}
+                onChange={(e) => onChangeLang(e.target.value)}
+              >
+                {LANGS.map((l) => (
+                  <option key={l.k} value={l.k}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
+          {/* Кнопка Войти / имя автора */}
           <button
             onClick={onOpenLogin}
             className={cx(
-              "px-3 py-1.5 text-xs sm:text-sm rounded-full border flex items-center gap-1",
+              "mt-1 sm:mt-0 px-3 py-1 text-xs sm:text-sm rounded-full border flex items-center gap-1 justify-center sm:justify-start max-w-[220px]",
               "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900"
             )}
           >
             <span>👤</span>
-            <span className="max-w-[110px] truncate">
-              {userName || t.headerLoginPlaceholder}
+            <span className="truncate">
+              {userName || t.profileNamePlaceholder || "Войти / имя автора"}
             </span>
           </button>
         </div>
