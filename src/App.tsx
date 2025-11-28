@@ -753,21 +753,20 @@ export default function App() {
       <Modal
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
-        title="Профиль автора"
+        title={t.profile}
       >
         <div className="flex flex-col gap-3">
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
-            Имя и раздел «О себе» будут показываться в профиле и в карточках
-            автора.
+            {t.profileAboutText}
           </p>
 
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
-              Имя автора
+              {t.profileRoleAuthor}
             </label>
             <input
               className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-              placeholder="Например: Михаил"
+              placeholder={t.profileRoleAuthor}
               value={loginDraft}
               onChange={(e) => setLoginDraft(e.target.value)}
             />
@@ -775,7 +774,7 @@ export default function App() {
 
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
-              О себе
+              {t.profileAboutTitle}
             </label>
             <textarea
               className="w-full min-h-[80px] px-3 py-2 text-[15px] border rounded-2xl resize-none dark:bg-neutral-900 dark:border-neutral-700"
