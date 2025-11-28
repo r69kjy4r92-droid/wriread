@@ -1,3 +1,4 @@
+       
 import React from "react";
 import { CARD, cx, Button, GhostButton, Pill, num } from "./ui";
 import type { WorkItem } from "../data";
@@ -58,6 +59,18 @@ export const Profile: React.FC<ProfileProps> = (props) => {
           <div className="flex-shrink-0">
             <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-2xl">
               🖋️
+            <div className="flex flex-col sm:flex-row gap-2 mt-1 sm:mt-2">
+            <div className="w-full sm:w-auto max-w-[260px] mx-auto sm:mx-0">
+              <Button className="w-full text-sm py-2">
+                {t.withdraw}
+              </Button>
+            </div>
+            <div className="w-full sm:w-auto max-w-[260px] mx-auto sm:mx-0">
+              <GhostButton className="w-full text-sm py-2">
+                {t.history}
+              </GhostButton>
+            </div>
+          </div>
             </div>
           </div>
           <div className="min-w-0">
@@ -109,14 +122,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
           </div>
 
           {/* Кнопки */}
-                    <div className="flex flex-col sm:flex-row gap-2 mt-1 sm:mt-2">
-            <Button className="text-sm py-2 px-8 mx-auto sm:mx-0 w-auto">
-              {t.withdraw}
-            </Button>
-            <GhostButton className="text-sm py-2 px-8 mx-auto sm:mx-0 w-auto">
-              {t.history}
-            </GhostButton>
-          </div>
+                    
         </div>
       </div>
 
