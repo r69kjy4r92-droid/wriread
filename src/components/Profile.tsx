@@ -14,27 +14,31 @@ type ProfileProps = {
   };
   ratingScore: number;
   userName: string | null;
+  profileBio: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
   onLike: (item: WorkItem) => void;
 };
 
-export const Profile: React.FC<ProfileProps> = ({
-  t,
-  items,
-  favorites,
-  likedIds,
-  commentCounts,
-  stats,
-  ratingScore,
-  userName,
-  onDelete,
-  onEdit,
-  onOpen,
-  onLike,
-}) => {
-  // Пока считаем, что это профиль одного автора — показываем все работы
+export const Profile: React.FC<ProfileProps> = (props) => {
+  const {
+    t,
+    items,
+    favorites,
+    likedIds,
+    commentCounts,
+    stats,
+    ratingScore,
+    userName,
+    profileBio,
+    onDelete,
+    onEdit,
+    onOpen,
+    onLike,
+  } = props;
+
+  // Все работы текущего автора (пока считаем один автор = весь список)
   const authoredWorks = items;
   const postsCount = authoredWorks.length;
 
@@ -43,12 +47,11 @@ export const Profile: React.FC<ProfileProps> = ({
   const loginLabel = t.login || t.signIn || "Войти";
   const displayName = isSignedIn ? userName!.trim() : loginLabel;
 
-  
   const balance = stats.totalDonations;
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-      {/* ==== Верхний большой блок профиля (как на старом макете) ==== */}
+      {/* ==== Большой верхний блок профиля ==== */}
       <div className={cx(CARD, "p-4 sm:p-5 flex flex-col gap-4")}>
         {/* Аватар + имя + роль */}
         <div className="flex items-center gap-3 sm:gap-4">
@@ -73,7 +76,7 @@ export const Profile: React.FC<ProfileProps> = ({
             {t.profileAboutTitle}
           </div>
           <p className="mt-1 text-sm sm:text-[15px] text-neutral-700 dark:text-neutral-200 leading-snug">
-            {t.profileAboutText}
+            {profileBio || t.profileAboutText}
           </p>
         </div>
 
@@ -120,8 +123,9 @@ export const Profile: React.FC<ProfileProps> = ({
       {/* ==== Список публикаций автора ==== */}
       <div className="mt-6">
         <h2 className="text-base sm:text-lg font-semibold mb-3">
-          {t.posts}{" "}
+          {t.posts}
           <span className="text-xs sm:text-sm font-normal text-neutral-500 dark:text-neutral-400">
+            {" "}
             · {postsCount}
           </span>
         </h2>

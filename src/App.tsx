@@ -285,7 +285,7 @@ export default function App() {
     }
   });
 
-  const [profileBio] = useState<string>(() => {
+    const [profileBio, setProfileBio] = useState<string>(() => {
     try {
       return localStorage.getItem("wriread:profile:bio") || "";
     } catch {
@@ -360,6 +360,7 @@ export default function App() {
   const [editing, setEditing] = useState<WorkItem | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [loginDraft, setLoginDraft] = useState("");
+  const [loginBioDraft, setLoginBioDraft] = useState("");
 
   const stats = useMemo(() => {
     let totalLikes = 0;
@@ -596,15 +597,20 @@ export default function App() {
     setPage("profile");
   };
 
-  const handleOpenLogin = () => {
+   const handleOpenLogin = () => {
     setLoginDraft(userName || "");
+    setLoginBioDraft(profileBio || "");
     setLoginOpen(true);
   };
 
-  const handleSaveLogin = () => {
-    const trimmed = loginDraft.trim();
-    if (!trimmed) return;
-    setUserName(trimmed);
+    const handleSaveLogin = () => {
+    const trimmedName = loginDraft.trim();
+    const trimmedBio = loginBioDraft.trim();
+
+    if (!trimmedName) return;
+
+    setUserName(trimmedName);
+    setProfileBio(trimmedBio);
     setLoginOpen(false);
   };
 
@@ -698,6 +704,7 @@ export default function App() {
           stats={stats}
           ratingScore={ratingScore}
           userName={userName}
+          profileBio={profileBio}
           onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
           onOpen={handleOpen}
@@ -736,7 +743,7 @@ export default function App() {
         onClose={() => setLoginOpen(false)}
         title={t.profileNameModalTitle}
       >
-        <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3">
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
             {t.profileNameModalDescription}
           </p>
@@ -746,6 +753,17 @@ export default function App() {
             value={loginDraft}
             onChange={(e) => setLoginDraft(e.target.value)}
           />
+          <label className="flex flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-300">
+            <span className="font-medium uppercase tracking-wide text-xs">
+              {t.profileAboutTitle}
+            </span>
+            <textarea
+              className="w-full min-h-[80px] px-3 py-2 text-[15px] border rounded-2xl resize-none dark:bg-neutral-900 dark:border-neutral-700"
+              placeholder={t.profileAboutText}
+              value={loginBioDraft}
+              onChange={(e) => setLoginBioDraft(e.target.value)}
+            />
+          </label>
           <div className="mt-1 flex flex-col sm:flex-row gap-2 sm:justify-end">
             <GhostButton
               onClick={() => setLoginOpen(false)}
