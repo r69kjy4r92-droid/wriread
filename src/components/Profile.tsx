@@ -15,6 +15,8 @@ type ProfileProps = {
   ratingScore: number;
   userName: string | null;
   profileBio: string;
+  followingAuthors: string[];
+  lang: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
@@ -31,6 +33,8 @@ export const Profile: React.FC<ProfileProps> = ({
   ratingScore,
   userName,
   profileBio,
+  followingAuthors,
+  lang,
   onDelete,
   onEdit,
   onOpen,
@@ -44,6 +48,42 @@ export const Profile: React.FC<ProfileProps> = ({
   const displayName = isSignedIn ? userName!.trim() : loginLabel;
 
   const balance = stats.totalDonations;
+  // Подписки — реальное количество авторов, на которых текущий пользователь подписан
+  const followingCount = followingAuthors.length;
+
+  // Подписчики — честно пока 0, т.к. нет реальных других пользователей.
+  // Позже, с бэкендом, сюда придёт реальное число подписчиков.
+  const followersCount = 0;
+
+  // Локализованный текст "Подписчики"
+  const followersLabel = (() => {
+    switch (lang) {
+      case "ru":
+        return "Подписчики";
+      case "tr":
+        return "Takipçiler";
+      case "es":
+        return "Seguidores";
+      case "de":
+        return "Follower";
+      case "fr":
+        return "Abonnés";
+      case "it":
+        return "Follower";
+      case "pt":
+        return "Seguidores";
+      case "uk":
+        return "Підписники";
+      case "kk":
+        return "Жазылушылар";
+      default:
+        return "Followers";
+    }
+  })();
+
+  // Лейбл "Подписки" берём из словаря t.following
+  const followingLabel = t.following || "Following";
+
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
@@ -102,6 +142,33 @@ export const Profile: React.FC<ProfileProps> = ({
           <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
             {t.totalLikes}: {num(stats.totalLikes)} · {t.totalDonations}:{" "}
             {num(stats.totalDonations)}
+          </div>
+
+          {/* Подписчики / Подписки — показываем только если > 0 */}
+          {(followersCount > 0 || followingCount > 0) && (
+            <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+              {followersCount > 0 && (
+                <>
+                  {followersLabel}: {num(followersCount)}
+                </>
+              )}
+              {followersCount > 0 && followingCount > 0 && " · "}
+              {followingCount > 0 && (
+                <>
+                  {followingLabel}: {num(followingCount)}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Кнопки: слева, в одну линию */}
+          <div className="flex flex-row flex-wrap gap-2 mt-1 sm:mt-2">
+            <Button className="text-sm py-2 px-6">
+              {t.withdraw}
+            </Button>
+            <GhostButton className="text-sm py-2 px-6">
+              {t.history}
+            </GhostButton>
           </div>
 
           {/* Кнопки: слева, в одну линию */}

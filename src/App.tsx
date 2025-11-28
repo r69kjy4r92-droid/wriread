@@ -713,6 +713,8 @@ export default function App() {
           ratingScore={ratingScore}
           userName={userName}
           profileBio={profileBio}
+          followingAuthors={followingAuthors}
+          lang={lang}
           onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
           onOpen={handleOpen}
