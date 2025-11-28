@@ -284,11 +284,11 @@ export const Profile: React.FC<ProfileProps> = ({
                         {t.edit}
                       </GhostButton>
                       <GhostButton
-                        className="text-xs sm:text-sm px-3 py-1.5 text-red-500 hover:text-red-600"
-                        onClick={() => onDelete(w.id)}
-                      >
-                        {t.deleteLabel ?? "Удалить"}
-                      </GhostButton>
+                       className="text-xs sm:text-sm px-3 py-1.5 text-red-500 hover:text-red-600"
+                       onClick={() => onDelete(w.id)}
+        >
+                       {t.deleteLabel}
+                     </GhostButton>
                     </div>
                   </div>
                 </div>

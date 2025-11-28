@@ -572,12 +572,18 @@ export default function App() {
     setComments((prev) => prev.filter((c) => c.workId !== id));
   };
 
-  const handleDeleteWorkClick = (id: string) => {
+    const handleDeleteWorkClick = (id: string) => {
     if (typeof window === "undefined") {
       handleDeleteWork(id);
       return;
     }
-    const message = "Удалить публикацию? Это действие нельзя отменить.";
+
+    const langKeyForConfirm = (
+      Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
+    ) as keyof typeof DICT;
+
+    const message = DICT[langKeyForConfirm].deleteConfirm;
+
     if (window.confirm(message)) {
       handleDeleteWork(id);
     }

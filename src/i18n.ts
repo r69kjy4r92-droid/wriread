@@ -108,6 +108,8 @@ export const DICT: Record<
     history: string;
     edit: string;
     save: string;
+    deleteLabel: string;
+    deleteConfirm: string;
     sendComment: string;
     login: string;
     logout: string;
@@ -184,6 +186,8 @@ export const DICT: Record<
     history: "История",
     edit: "Редактировать",
     save: "Сохранить",
+    deleteLabel: "Удалить",
+    deleteConfirm: "Удалить публикацию? Это действие нельзя отменить.",
     sendComment: "Отправить",
     login: "Войти",
     logout: "Выйти",
@@ -261,6 +265,8 @@ export const DICT: Record<
     history: "History",
     edit: "Edit",
     save: "Save",
+    deleteLabel: "Delete",
+    deleteConfirm: "Delete this publication? This action cannot be undone.",
     sendComment: "Send",
     login: "Log in",
     logout: "Log out",
@@ -338,6 +344,8 @@ export const DICT: Record<
     history: "Geçmiş",
     edit: "Düzenle",
     save: "Kaydet",
+    deleteLabel: "Sil",
+    deleteConfirm: "Bu paylaşımı silmek istiyor musun? Bu işlem geri alınamaz.",
     sendComment: "Gönder",
     login: "Giriş yap",
     logout: "Çıkış yap",
@@ -415,6 +423,8 @@ export const DICT: Record<
     history: "Historial",
     edit: "Editar",
     save: "Guardar",
+    deleteLabel: "Eliminar",
+    deleteConfirm: "¿Eliminar esta publicación? Esta acción no se puede deshacer.",
     sendComment: "Enviar",
     login: "Iniciar sesión",
     logout: "Cerrar sesión",
@@ -492,6 +502,8 @@ export const DICT: Record<
     history: "Verlauf",
     edit: "Bearbeiten",
     save: "Speichern",
+    deleteLabel: "Löschen",
+    deleteConfirm: "Diesen Beitrag löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
     sendComment: "Senden",
     login: "Anmelden",
     logout: "Abmelden",
@@ -569,6 +581,8 @@ export const DICT: Record<
     history: "Historique",
     edit: "Modifier",
     save: "Enregistrer",
+    deleteLabel: "Supprimer",
+    deleteConfirm: "Supprimer cette publication ? Cette action est irréversible.",
     sendComment: "Envoyer",
     login: "Se connecter",
     logout: "Se déconnecter",
@@ -646,6 +660,8 @@ export const DICT: Record<
     history: "Storico",
     edit: "Modifica",
     save: "Salva",
+    deleteLabel: "Elimina",
+    deleteConfirm: "Eliminare questa pubblicazione? Questa azione non può essere annullata.",
     sendComment: "Invia",
     login: "Accedi",
     logout: "Esci",
@@ -723,6 +739,8 @@ export const DICT: Record<
     history: "Histórico",
     edit: "Editar",
     save: "Salvar",
+    deleteLabel: "Excluir",
+    deleteConfirm: "Excluir esta publicação? Esta ação não pode ser desfeita.",
     sendComment: "Enviar",
     login: "Entrar",
     logout: "Sair",
@@ -800,6 +818,8 @@ export const DICT: Record<
     history: "Історія",
     edit: "Редагувати",
     save: "Зберегти",
+    deleteLabel: "Видалити",
+    deleteConfirm: "Видалити публікацію? Цю дію не можна скасувати.",
     sendComment: "Надіслати",
     login: "Увійти",
     logout: "Вийти",
@@ -877,6 +897,8 @@ export const DICT: Record<
     history: "Тарих",
     edit: "Өңдеу",
     save: "Сақтау",
+    deleteLabel: "Жою",
+    deleteConfirm: "Жарияланымды жойғыңыз келе ме? Бұл әрекетті болдырмауға болмайды.",
     sendComment: "Жіберу",
     login: "Кіру",
     logout: "Шығу",
