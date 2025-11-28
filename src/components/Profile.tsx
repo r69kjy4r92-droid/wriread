@@ -109,11 +109,11 @@ export const Profile: React.FC<ProfileProps> = (props) => {
           </div>
 
           {/* Кнопки */}
-           <div className="flex flex-col sm:flex-row gap-2 mt-1 sm:mt-2">
-            <Button className="text-sm py-2 px-8 mx-auto sm:mx-0">
+                    <div className="flex flex-col sm:flex-row gap-2 mt-1 sm:mt-2">
+            <Button className="text-sm py-2 px-8 mx-auto sm:mx-0 w-auto">
               {t.withdraw}
             </Button>
-            <GhostButton className="text-sm py-2 px-8 mx-auto sm:mx-0">
+            <GhostButton className="text-sm py-2 px-8 mx-auto sm:mx-0 w-auto">
               {t.history}
             </GhostButton>
           </div>
