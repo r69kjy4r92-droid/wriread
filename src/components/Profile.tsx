@@ -48,11 +48,11 @@ export const Profile: React.FC<ProfileProps> = ({
   const displayName = isSignedIn ? userName!.trim() : loginLabel;
 
   const balance = stats.totalDonations;
-  // Подписки — реальное количество авторов, на которых текущий пользователь подписан
+
+  // Реальное количество подписок (на кого ты подписан)
   const followingCount = followingAuthors.length;
 
-  // Подписчики — честно пока 0, т.к. нет реальных других пользователей.
-  // Позже, с бэкендом, сюда придёт реальное число подписчиков.
+  // Подписчики появятся, когда будет бэкенд. Пока честно 0.
   const followersCount = 0;
 
   // Локализованный текст "Подписчики"
@@ -81,9 +81,7 @@ export const Profile: React.FC<ProfileProps> = ({
     }
   })();
 
-  // Лейбл "Подписки" берём из словаря t.following
   const followingLabel = t.following || "Following";
-
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
@@ -162,17 +160,7 @@ export const Profile: React.FC<ProfileProps> = ({
           )}
 
           {/* Кнопки: слева, в одну линию */}
-          <div className="flex flex-row flex-wrap gap-2 mt-1 sm:mt-2">
-            <Button className="text-sm py-2 px-6">
-              {t.withdraw}
-            </Button>
-            <GhostButton className="text-sm py-2 px-6">
-              {t.history}
-            </GhostButton>
-          </div>
-
-          {/* Кнопки: слева, в одну линию */}
-          <div className="flex flex-row flex-wrap gap-2 mt-1 sm:mt-2">
+          <div className="flex flex-row flex-wrap gap-2 mt-2">
             <Button className="text-sm py-2 px-6">
               {t.withdraw}
             </Button>
