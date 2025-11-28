@@ -789,21 +789,21 @@ export default function App() {
               onClick={() => setLoginOpen(false)}
               className="w-full sm:w-auto"
             >
-              Отмена
+              {t.cancel}
             </GhostButton>
             <Button
               onClick={handleSaveLogin}
               className="w-full sm:w-auto"
               disabled={!loginDraft.trim()}
             >
-              Сохранить
+              {t.save}
             </Button>
             {userName && (
               <GhostButton
                 onClick={handleLogout}
                 className="w-full sm:w-auto text-xs sm:text-sm"
               >
-                Выйти
+                {t.logout}
               </GhostButton>
             )}
           </div>

@@ -110,6 +110,7 @@ export const DICT: Record<
     save: string;
     sendComment: string;
     login: string;
+    logout: string;
     profileAboutTitle: string;
     profileAboutText: string;
     profileRoleAuthor: string;
@@ -185,6 +186,7 @@ export const DICT: Record<
     save: "Сохранить",
     sendComment: "Отправить",
     login: "Войти",
+    logout: "Выйти",
     profileAboutTitle: "О себе",
     profileAboutText:
       "Здесь будет ваш творческий профиль. Расскажите немного о себе, своих текстах, музыке и проектах.",
@@ -261,6 +263,7 @@ export const DICT: Record<
     save: "Save",
     sendComment: "Send",
     login: "Log in",
+    logout: "Log out",
     profileAboutTitle: "About me",
     profileAboutText:
       "This is your creative profile. Tell a little about yourself, your texts, music and projects.",
@@ -337,6 +340,7 @@ export const DICT: Record<
     save: "Kaydet",
     sendComment: "Gönder",
     login: "Giriş yap",
+    logout: "Çıkış yap",
     profileAboutTitle: "Hakkımda",
     profileAboutText:
       "Burası yaratıcı profiliniz. Kendinizden, yazılarınızdan, müziğinizден ve projelerinizден kısaca bahsedin.",
@@ -413,6 +417,7 @@ export const DICT: Record<
     save: "Guardar",
     sendComment: "Enviar",
     login: "Iniciar sesión",
+    logout: "Cerrar sesión",
     profileAboutTitle: "Sobre mí",
     profileAboutText:
       "Este es tu perfil creativo. Cuenta un poco sobre ti, tus textos, tu música y tus proyectos.",
@@ -489,6 +494,7 @@ export const DICT: Record<
     save: "Speichern",
     sendComment: "Senden",
     login: "Anmelden",
+    logout: "Abmelden",
     profileAboutTitle: "Über mich",
     profileAboutText:
       "Dies ist dein kreatives Profil. Erzähle kurz von dir, deinen Texten, deiner Musik und deinen Projekten.",
@@ -565,6 +571,7 @@ export const DICT: Record<
     save: "Enregistrer",
     sendComment: "Envoyer",
     login: "Se connecter",
+    logout: "Se déconnecter",
     profileAboutTitle: "À propos de moi",
     profileAboutText:
       "Voici ton profil créatif. Parle un peu de toi, de tes textes, de ta musique et de tes projets.",
@@ -641,6 +648,7 @@ export const DICT: Record<
     save: "Salva",
     sendComment: "Invia",
     login: "Accedi",
+    logout: "Esci",
     profileAboutTitle: "Su di me",
     profileAboutText:
       "Questo è il tuo profilo creativo. Racconta qualcosa di te, dei tuoi testi, della tua musica e dei tuoi progetti.",
@@ -717,6 +725,7 @@ export const DICT: Record<
     save: "Salvar",
     sendComment: "Enviar",
     login: "Entrar",
+    logout: "Sair",
     profileAboutTitle: "Sobre mim",
     profileAboutText:
       "Este é o seu perfil criativo. Fale um pouco sobre você, seus textos, sua música e seus projetos.",
@@ -793,6 +802,7 @@ export const DICT: Record<
     save: "Зберегти",
     sendComment: "Надіслати",
     login: "Увійти",
+    logout: "Вийти",
     profileAboutTitle: "Про мене",
     profileAboutText:
       "Це ваш творчий профіль. Розкажіть трохи про себе, свої тексти, музику та проєкти.",
@@ -869,6 +879,7 @@ export const DICT: Record<
     save: "Сақтау",
     sendComment: "Жіберу",
     login: "Кіру",
+    logout: "Шығу",
     profileAboutTitle: "Өзім туралы",
     profileAboutText:
       "Бұл – сіздің шығармашылық профиліңіз. Өзіңіз, мәтіндеріңіз, музыкаңыз және жобаларыңыз туралы қысқаша жазыңыз.",
