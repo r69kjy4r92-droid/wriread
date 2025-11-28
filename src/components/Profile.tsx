@@ -1,4 +1,3 @@
-       
 import React from "react";
 import { CARD, cx, Button, GhostButton, Pill, num } from "./ui";
 import type { WorkItem } from "../data";
@@ -22,28 +21,24 @@ type ProfileProps = {
   onLike: (item: WorkItem) => void;
 };
 
-export const Profile: React.FC<ProfileProps> = (props) => {
-  const {
-    t,
-    items,
-    favorites,
-    likedIds,
-    commentCounts,
-    stats,
-    ratingScore,
-    userName,
-    profileBio,
-    onDelete,
-    onEdit,
-    onOpen,
-    onLike,
-  } = props;
-
-  // Все работы текущего автора (пока считаем один автор = весь список)
+export const Profile: React.FC<ProfileProps> = ({
+  t,
+  items,
+  favorites,
+  likedIds,
+  commentCounts,
+  stats,
+  ratingScore,
+  userName,
+  profileBio,
+  onDelete,
+  onEdit,
+  onOpen,
+  onLike,
+}) => {
   const authoredWorks = items;
   const postsCount = authoredWorks.length;
 
-  // Автор залогинен, если есть имя
   const isSignedIn = !!(userName && userName.trim().length > 0);
   const loginLabel = t.login || t.signIn || "Войти";
   const displayName = isSignedIn ? userName!.trim() : loginLabel;
@@ -52,25 +47,13 @@ export const Profile: React.FC<ProfileProps> = (props) => {
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-      {/* ==== Большой верхний блок профиля ==== */}
+      {/* ==== Верхний блок профиля ==== */}
       <div className={cx(CARD, "p-4 sm:p-5 flex flex-col gap-4")}>
         {/* Аватар + имя + роль */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex-shrink-0">
             <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-2xl">
               🖋️
-            <div className="flex flex-col sm:flex-row gap-2 mt-1 sm:mt-2">
-            <div className="w-full sm:w-auto max-w-[260px] mx-auto sm:mx-0">
-              <Button className="w-full text-sm py-2">
-                {t.withdraw}
-              </Button>
-            </div>
-            <div className="w-full sm:w-auto max-w-[260px] mx-auto sm:mx-0">
-              <GhostButton className="w-full text-sm py-2">
-                {t.history}
-              </GhostButton>
-            </div>
-          </div>
             </div>
           </div>
           <div className="min-w-0">
@@ -93,7 +76,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
           </p>
         </div>
 
-        {/* Баланс + рейтинг + статистика + кнопки */}
+        {/* Баланс + рейтинг + статистика */}
         <div className="pt-3 sm:pt-4 border-t border-neutral-800/40 dark:border-neutral-700/60 flex flex-col gap-3 sm:gap-4">
           {/* Баланс */}
           <div>
@@ -121,8 +104,15 @@ export const Profile: React.FC<ProfileProps> = (props) => {
             {num(stats.totalDonations)}
           </div>
 
-          {/* Кнопки */}
-                    
+          {/* Кнопки: слева, в одну линию */}
+          <div className="flex flex-row flex-wrap gap-2 mt-1 sm:mt-2">
+            <Button className="text-sm py-2 px-6">
+              {t.withdraw}
+            </Button>
+            <GhostButton className="text-sm py-2 px-6">
+              {t.history}
+            </GhostButton>
+          </div>
         </div>
       </div>
 
@@ -221,7 +211,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
                     </div>
                   </div>
 
-                  {/* Кнопки действий */}
+                  {/* Кнопки действий по посту */}
                   <div className="flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center">
                     <div className="flex flex-wrap gap-2">
                       <Button
