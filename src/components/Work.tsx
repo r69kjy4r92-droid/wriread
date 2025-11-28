@@ -49,7 +49,7 @@ type WorkProps = {
   comments: WorkComment[];
   onAddComment: (text: string) => void;
   onDeleteComment: (commentId: string) => void;
-  isFollowing: boolean;
+  isFollowingAuthor: boolean;
   onToggleFollow: () => void;
 };
 
@@ -61,7 +61,7 @@ export const Work: React.FC<WorkProps> = ({
   comments,
   onAddComment,
   onDeleteComment,
-  isFollowing,
+  isFollowingAuthor,
   onToggleFollow,
 }) => {
   const [commentText, setCommentText] = useState("");
@@ -106,12 +106,12 @@ export const Work: React.FC<WorkProps> = ({
               onClick={onToggleFollow}
               className={cx(
                 "px-3 py-1 text-xs sm:text-sm rounded-full border transition",
-                isFollowing
+                isFollowingAuthor
                   ? "bg-amber-500 text-white border-amber-500"
                   : "bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
               )}
             >
-              {isFollowing ? "Вы подписаны" : "Подписаться"}
+              {isFollowingAuthor ? "Вы подписаны" : "Подписаться"}
             </button>
           </div>
 

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { CARD, cx, Button, GhostButton, num } from "./ui";
+import React, { useMemo } from "react";
+import { CARD, cx, Button, GhostButton, Pill, num } from "./ui";
 import type { WorkItem } from "../data";
 
 type ProfileProps = {
@@ -8,8 +8,12 @@ type ProfileProps = {
   favorites: string[];
   likedIds: string[];
   commentCounts: Record<string, number>;
-  stats: { totalLikes: number; totalDonations: number };
+  stats: {
+    totalLikes: number;
+    totalDonations: number;
+  };
   ratingScore: number;
+  userName: string | null;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
@@ -24,182 +28,256 @@ export const Profile: React.FC<ProfileProps> = ({
   commentCounts,
   stats,
   ratingScore,
+  userName,
   onDelete,
   onEdit,
   onOpen,
   onLike,
 }) => {
-  const [tab, setTab] = useState<"all" | "favorites">("all");
+  // Пока считаем, что это профиль одного автора — показываем все работы
+  const authoredWorks = items;
+  const postsCount = authoredWorks.length;
 
-  const visibleItems =
-    tab === "favorites"
-      ? items.filter((w) => favorites.includes(w.id))
-      : items;
+  // Определяем, залогинен ли пользователь по userName
+  const isSignedIn = !!(userName && userName.trim().length > 0);
+  const loginLabel = t.login || t.signIn || "Войти";
+  const displayName = isSignedIn ? userName!.trim() : loginLabel;
+
+  const totalFavorites = favorites.length;
+
+  const totalComments = useMemo(() => {
+    return authoredWorks.reduce((sum, w) => {
+      return sum + (commentCounts[w.id] ?? 0);
+    }, 0);
+  }, [authoredWorks, commentCounts]);
+
+  const balance = stats.totalDonations;
 
   return (
-    <section className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-      <div className="grid md:grid-cols-3 gap-5">
-        {/* Левая карточка с балансом и рейтингом */}
-        <div className={cx(CARD, "p-5")}>
-          <div className="flex items-center gap-3">
-            <div className="h-14 w-14 bg-gradient-to-br from-amber-300 to-rose-300 rounded-2xl" />
-            <div>
-              <div className="font-semibold">Михаил</div>
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                Автор
+    <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+      {/* ==== Верхний блок: профиль + рейтинг + баланс ==== */}
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        {/* Левая колонка: аватар + имя + О себе */}
+        <div className={cx(CARD, "flex-1 p-4 sm:p-5")}>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            {/* Аватар */}
+            <div className="flex-shrink-0">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-2xl">
+                🖋️
+              </div>
+            </div>
+
+            {/* Имя / Войти + роль + кнопка */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-base sm:text-lg font-semibold truncate">
+                    {displayName}
+                  </div>
+                  <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+                    {t.profileRoleAuthor}
+                  </div>
+                </div>
+
+                <div className="flex-shrink-0">
+                  <Button className="px-4 py-1.5 text-xs sm:text-sm w-full sm:w-auto">
+                    {isSignedIn ? t.edit : loginLabel}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Блок "О себе" */}
+              <div className="mt-3 sm:mt-4">
+                <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+                  {t.profileAboutTitle}
+                </div>
+                <p className="mt-1 text-sm sm:text-[15px] text-neutral-700 dark:text-neutral-200 leading-snug">
+                  {t.profileAboutText}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Правая колонка: рейтинг + баланс (на десктопе справа, на мобиле под) */}
+        <div className="md:w-72 flex flex-col gap-4">
+          {/* Рейтинг автора */}
+          <div className={cx(CARD, "p-4 sm:p-5")}>
+            <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+              {t.authorRating}
+            </div>
+            <div className="mt-2 text-2xl font-bold">
+              {num(ratingScore)}
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-3 text-xs sm:text-sm">
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  {t.totalLikes}
+                </div>
+                <div className="font-semibold">
+                  {num(stats.totalLikes)}
+                </div>
+              </div>
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  {t.totalDonations}
+                </div>
+                <div className="font-semibold">
+                  {num(stats.totalDonations)}
+                </div>
+              </div>
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  {t.posts}
+                </div>
+                <div className="font-semibold">{postsCount}</div>
+              </div>
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  ★ / 💬
+                </div>
+                <div className="font-semibold">
+                  {num(totalFavorites)} ★ · {num(totalComments)} 💬
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
-            {t.yourBalance}
-          </div>
-          <div className="mt-1 text-3xl font-extrabold">
-            $ {num(Math.round(stats.totalDonations))}
-          </div>
-
-          <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
-            {t.authorRating}
-          </div>
-          <div className="mt-1 text-2xl font-semibold">
-            {num(ratingScore)}
-          </div>
-          <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-            {t.totalLikes}: {num(stats.totalLikes)} · {t.totalDonations}:{" "}
-            {num(stats.totalDonations)}
-          </div>
-
-          <div className="mt-4 flex gap-2">
-            <Button className="px-4 py-2 text-sm">{t.withdraw}</Button>
-            <GhostButton>{t.history}</GhostButton>
+          {/* Баланс */}
+          <div className={cx(CARD, "p-4 sm:p-5 flex flex-col gap-3")}>
+            <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+              {t.yourBalance}
+            </div>
+            <div className="text-2xl font-bold">${num(balance)}</div>
+            <div className="flex flex-col sm:flex-row gap-2 mt-1">
+              <Button className="w-full sm:w-auto text-sm py-2">
+                {t.withdraw}
+              </Button>
+              <GhostButton className="w-full sm:w-auto text-sm py-2">
+                {t.history}
+              </GhostButton>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Правая часть: сетка работ + вкладки */}
-        <div className={cx(CARD, "p-5 md:col-span-2")}>
-          <div className="flex items-center justify-between mb-3 gap-2">
-            <h3 className="font-semibold">{t.posts}</h3>
-            <span className="text-xs text-neutral-500">
-              {t.favorites}: {favorites.length}
-            </span>
+      {/* ==== Список публикаций автора ==== */}
+      <div className="mt-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-3">
+          {t.posts}
+        </h2>
+
+        {authoredWorks.length === 0 ? (
+          <div className={cx(CARD, "p-4 text-sm text-neutral-500 dark:text-neutral-400")}>
+            {t.emptyWork}
           </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {authoredWorks.map((w) => {
+              const isFav = favorites.includes(w.id);
+              const isLiked = likedIds.includes(w.id);
+              const commentsForWork = commentCounts[w.id] ?? 0;
 
-          {/* Вкладки "Все работы" / "Избранное" */}
-          <div className="mb-4 flex gap-2 text-xs sm:text-sm">
-            <button
-              onClick={() => setTab("all")}
-              className={cx(
-                "px-3 py-1.5 rounded-full border",
-                tab === "all"
-                  ? "bg-neutral-900 text-white border-neutral-900 dark:bg-amber-400 dark:text-neutral-900 dark:border-amber-400"
-                  : "bg-white hover:bg-neutral-50 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-100"
-              )}
-            >
-              Все работы
-            </button>
-            <button
-              onClick={() => setTab("favorites")}
-              className={cx(
-                "px-3 py-1.5 rounded-full border",
-                tab === "favorites"
-                  ? "bg-neutral-900 text-white border-neutral-900 dark:bg-amber-400 dark:text-neutral-900 dark:border-amber-400"
-                  : "bg-white hover:bg-neutral-50 border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-100"
-              )}
-            >
-              ★ Избранное
-            </button>
-          </div>
+              return (
+                <div
+                  key={w.id}
+                  className={cx(
+                    CARD,
+                    "p-4 sm:p-5 flex flex-col gap-3 sm:gap-4"
+                  )}
+                >
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    {/* Обложка — скрываем на очень маленьких экранах, чтобы не ломать верстку */}
+                    <div className="hidden sm:block w-28 h-20 rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0">
+                      {w.cover && (
+                        <img
+                          src={w.cover}
+                          alt={w.title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
 
-          {visibleItems.length === 0 ? (
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              {tab === "favorites"
-                ? "В избранном пока нет публикаций."
-                : "Публикации ещё не созданы."}
-            </p>
-          ) : (
-            <div className="grid sm:grid-cols-2 gap-3">
-              {visibleItems.map((w) => {
-                const isFav = favorites.includes(w.id);
-                const isLiked = likedIds.includes(w.id);
-                const commentsCount = commentCounts[w.id] ?? 0;
-
-                return (
-                  <div
-                    key={w.id}
-                    className="border rounded-xl overflow-hidden dark:border-neutral-700"
-                  >
-                    <button
-                      onClick={() => onOpen(w)}
-                      className="block w-full text-left"
-                    >
-                      <img
-                        src={w.cover}
-                        className="w-full aspect-[3/2] object-cover"
-                        loading="lazy"
-                      />
-                    </button>
-                    <div className="p-3 flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium flex items-center gap-1 truncate">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col gap-1">
+                        <div className="text-sm font-semibold truncate">
                           {w.title}
                         </div>
-                        <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-neutral-500 dark:text-neutral-400">
-                          <span
-                            className={cx(
-                              "flex items-center gap-1",
-                              isLiked && "text-rose-500"
-                            )}
-                          >
-                            ❤ {num(w.likes)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            💬 {num(commentsCount)}
-                          </span>
-                          <span
-                            className={cx(
-                              "flex items-center gap-1",
-                              isFav && "text-amber-500"
-                            )}
-                          >
-                            ★ {num(w.donations ?? 0)}
-                          </span>
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                          {w.genre} · {w.date}
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-1 ml-2">
-                        <button
-                          onClick={() => onLike(w)}
-                          className={cx(
-                            "text-lg leading-none",
-                            isLiked ? "text-rose-500" : "text-neutral-400"
-                          )}
-                          title={
-                            isLiked ? "Убрать лайк" : "Поставить лайк"
-                          }
-                        >
-                          {isLiked ? "❤" : "♡"}
-                        </button>
-                        <button
-                          onClick={() => onEdit(w.id)}
-                          className="text-xs text-neutral-400 hover:text-amber-500 transition"
-                          title={t.edit}
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => onDelete(w.id)}
-                          className="text-xs text-neutral-400 hover:text-red-500 transition"
-                          title="Delete"
-                        >
-                          🗑
-                        </button>
+
+                      {/* Реакции: ❤ ★ 💬 — в одну строку, адаптивно */}
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <Pill>
+                          <button
+                            type="button"
+                            onClick={() => onLike(w)}
+                            className="inline-flex items-center gap-1 focus:outline-none"
+                          >
+                            <span
+                              className={cx(
+                                "text-sm",
+                                isLiked ? "text-rose-500" : "text-neutral-400"
+                              )}
+                            >
+                              {isLiked ? "❤" : "♡"}
+                            </span>
+                            <span className="text-xs">
+                              {num(w.likes)}
+                            </span>
+                          </button>
+                        </Pill>
+
+                        <Pill>
+                          <span className="inline-flex items-center gap-1 text-xs">
+                            {isFav ? "⭐" : "☆"}
+                            <span>{num(w.donations ?? 0)}</span>
+                          </span>
+                        </Pill>
+
+                        <Pill>
+                          <span className="inline-flex items-center gap-1 text-xs">
+                            💬
+                            <span>{num(commentsForWork)}</span>
+                          </span>
+                        </Pill>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+
+                  {/* Кнопки действий — адаптивно, на мобиле в две строки при необходимости */}
+                  <div className="flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        className="text-xs sm:text-sm px-3 py-1.5"
+                        onClick={() => onOpen(w)}
+                      >
+                        {t.cta_read}
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <GhostButton
+                        className="text-xs sm:text-sm px-3 py-1.5"
+                        onClick={() => onEdit(w.id)}
+                      >
+                        {t.edit}
+                      </GhostButton>
+                      <GhostButton
+                        className="text-xs sm:text-sm px-3 py-1.5 text-red-500 hover:text-red-600"
+                        onClick={() => onDelete(w.id)}
+                      >
+                        {t.deleteLabel ?? "Удалить"}
+                      </GhostButton>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

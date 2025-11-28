@@ -11,16 +11,16 @@ export type LangKey =
   | "kk";
 
 export type GenreKey =
-  | "poetry"    // Стихи
-  | "novel"     // Роман
-  | "poem"      // Поэма
-  | "story"     // Рассказ
+  | "poetry" // Стихи
+  | "novel" // Роман
+  | "poem" // Поэма
+  | "story" // Рассказ
   | "detective" // Детектив
-  | "fantasy"   // Фэнтези
-  | "script"    // Сценарий
-  | "fable"     // Басня
-  | "other"     // Другое
-  | "music";    // Музыка/Биты
+  | "fantasy" // Фэнтези
+  | "script" // Сценарий
+  | "fable" // Басня
+  | "other" // Другое
+  | "music"; // Музыка/Биты
 
 export const GENRE_KEYS: GenreKey[] = [
   "poetry",
@@ -98,7 +98,6 @@ export const DICT: Record<
     light: string;
     dark: string;
 
-    // новые ключи для формы и профиля
     chooseFile: string;
     fileRequired: string;
     startWriting: string;
@@ -110,6 +109,18 @@ export const DICT: Record<
     edit: string;
     save: string;
     sendComment: string;
+    login: string;
+    profileAboutTitle: string;
+    profileAboutText: string;
+    profileRoleAuthor: string;
+
+    headerLoginPlaceholder: string;
+    profileNameModalTitle: string;
+    profileNameModalDescription: string;
+    profileNamePlaceholder: string;
+    profileNameCancel: string;
+    profileNameSave: string;
+    profileNameLogout: string;
   }
 > = {
   ru: {
@@ -161,8 +172,6 @@ export const DICT: Record<
     theme: "Тема",
     light: "Светлая",
     dark: "Тёмная",
-    sendComment: "Отправить",
-
 
     chooseFile: "Выбрать файл",
     fileRequired: "Нужно загрузить аудиофайл.",
@@ -174,6 +183,21 @@ export const DICT: Record<
     history: "История",
     edit: "Редактировать",
     save: "Сохранить",
+    sendComment: "Отправить",
+    login: "Войти",
+    profileAboutTitle: "О себе",
+    profileAboutText:
+      "Здесь будет ваш творческий профиль. Расскажите немного о себе, своих текстах, музыке и проектах.",
+    profileRoleAuthor: "Автор",
+
+    headerLoginPlaceholder: "Войти / имя автора",
+    profileNameModalTitle: "Ваше имя автора",
+    profileNameModalDescription:
+      "Это имя будет отображаться в профиле и в карточках как автор.",
+    profileNamePlaceholder: "Например: Михаил",
+    profileNameCancel: "Отмена",
+    profileNameSave: "Сохранить",
+    profileNameLogout: "Выйти",
   },
   en: {
     slogan: "I’m a creator — this is my space.",
@@ -224,8 +248,6 @@ export const DICT: Record<
     theme: "Theme",
     light: "Light",
     dark: "Dark",
-    sendComment: "Send",
-
 
     chooseFile: "Choose file",
     fileRequired: "Audio file is required.",
@@ -237,6 +259,21 @@ export const DICT: Record<
     history: "History",
     edit: "Edit",
     save: "Save",
+    sendComment: "Send",
+    login: "Log in",
+    profileAboutTitle: "About me",
+    profileAboutText:
+      "This is your creative profile. Tell a little about yourself, your texts, music and projects.",
+    profileRoleAuthor: "Author",
+
+    headerLoginPlaceholder: "Sign in / author name",
+    profileNameModalTitle: "Your author name",
+    profileNameModalDescription:
+      "This name will be shown in your profile and under your works as the author.",
+    profileNamePlaceholder: "For example: Mikhail",
+    profileNameCancel: "Cancel",
+    profileNameSave: "Save",
+    profileNameLogout: "Log out",
   },
   tr: {
     slogan: "Yaratıcıyım — burası benim alanım.",
@@ -251,7 +288,7 @@ export const DICT: Record<
     emptyWork: "Lütfen akıştan bir gönderi seçin.",
     mockPaymentNote: "Deneme ödeme, sonra gerçek sağlayıcı.",
     audioUnavailable: "Ses dosyası kullanılamıyor.",
-    footerLine: "İçerik politikası · Şartlar · İletişim",
+    footerLine: "İçerik politikası · Şartlar · İletişим",
 
     cta_create: "Yayınla",
     cta_read: "En iyileri oku",
@@ -287,8 +324,6 @@ export const DICT: Record<
     theme: "Tema",
     light: "Açık",
     dark: "Koyu",
-    sendComment: "Gönder",
-
 
     chooseFile: "Dosya seç",
     fileRequired: "Ses dosyası gerekli.",
@@ -300,6 +335,21 @@ export const DICT: Record<
     history: "Geçmiş",
     edit: "Düzenle",
     save: "Kaydet",
+    sendComment: "Gönder",
+    login: "Giriş yap",
+    profileAboutTitle: "Hakkımda",
+    profileAboutText:
+      "Burası yaratıcı profiliniz. Kendinizden, yazılarınızdan, müziğinizден ve projelerinizден kısaca bahsedin.",
+    profileRoleAuthor: "Yazar",
+
+    headerLoginPlaceholder: "Giriş / yazar adı",
+    profileNameModalTitle: "Yazar adınız",
+    profileNameModalDescription:
+      "Bu ad profilinizde ve eserlerinizde yazar olarak görünecek.",
+    profileNamePlaceholder: "Örneğin: Mihail",
+    profileNameCancel: "İptal",
+    profileNameSave: "Kaydet",
+    profileNameLogout: "Çıkış yap",
   },
   es: {
     slogan: "Soy creador: este es mi espacio.",
@@ -350,8 +400,6 @@ export const DICT: Record<
     theme: "Tema",
     light: "Claro",
     dark: "Oscuro",
-    sendComment: "Enviar",
-
 
     chooseFile: "Elegir archivo",
     fileRequired: "Se requiere archivo de audio.",
@@ -363,6 +411,21 @@ export const DICT: Record<
     history: "Historial",
     edit: "Editar",
     save: "Guardar",
+    sendComment: "Enviar",
+    login: "Iniciar sesión",
+    profileAboutTitle: "Sobre mí",
+    profileAboutText:
+      "Este es tu perfil creativo. Cuenta un poco sobre ti, tus textos, tu música y tus proyectos.",
+    profileRoleAuthor: "Autor",
+
+    headerLoginPlaceholder: "Entrar / nombre de autor",
+    profileNameModalTitle: "Tu nombre de autor",
+    profileNameModalDescription:
+      "Este nombre se mostrará en tu perfil y bajo tus obras como autor.",
+    profileNamePlaceholder: "Por ejemplo: Mijaíl",
+    profileNameCancel: "Cancelar",
+    profileNameSave: "Guardar",
+    profileNameLogout: "Cerrar sesión",
   },
   de: {
     slogan: "Ich bin Kreative*r – das ist mein Raum.",
@@ -399,7 +462,7 @@ export const DICT: Record<
     cancel: "Abbrechen",
     promoted: "Promoted",
     share: "Teilen",
-    back: "Back",                                                                
+    back: "Back",
     yourBalance: "Dein Guthaben",
     posts: "Beiträge",
     language: "Sprache",
@@ -413,8 +476,6 @@ export const DICT: Record<
     theme: "Theme",
     light: "Hell",
     dark: "Dunkel",
-    sendComment: "Senden",
-
 
     chooseFile: "Datei wählen",
     fileRequired: "Audiodatei erforderlich.",
@@ -426,6 +487,21 @@ export const DICT: Record<
     history: "Verlauf",
     edit: "Bearbeiten",
     save: "Speichern",
+    sendComment: "Senden",
+    login: "Anmelden",
+    profileAboutTitle: "Über mich",
+    profileAboutText:
+      "Dies ist dein kreatives Profil. Erzähle kurz von dir, deinen Texten, deiner Musik und deinen Projekten.",
+    profileRoleAuthor: "Autor",
+
+    headerLoginPlaceholder: "Login / Autorenname",
+    profileNameModalTitle: "Dein Autorenname",
+    profileNameModalDescription:
+      "Dieser Name wird in deinem Profil und unter deinen Werken als Autor angezeigt.",
+    profileNamePlaceholder: "Zum Beispiel: Michail",
+    profileNameCancel: "Abbrechen",
+    profileNameSave: "Speichern",
+    profileNameLogout: "Abmelden",
   },
   fr: {
     slogan: "Je suis créateur·rice — ici c’est mon espace.",
@@ -476,8 +552,6 @@ export const DICT: Record<
     theme: "Thème",
     light: "Clair",
     dark: "Sombre",
-    sendComment: "Envoyer",
-
 
     chooseFile: "Choisir un fichier",
     fileRequired: "Le fichier audio est requis.",
@@ -489,6 +563,21 @@ export const DICT: Record<
     history: "Historique",
     edit: "Modifier",
     save: "Enregistrer",
+    sendComment: "Envoyer",
+    login: "Se connecter",
+    profileAboutTitle: "À propos de moi",
+    profileAboutText:
+      "Voici ton profil créatif. Parle un peu de toi, de tes textes, de ta musique et de tes projets.",
+    profileRoleAuthor: "Auteur",
+
+    headerLoginPlaceholder: "Connexion / nom d’auteur",
+    profileNameModalTitle: "Ton nom d’auteur",
+    profileNameModalDescription:
+      "Ce nom sera affiché dans ton profil et sous tes œuvres comme auteur.",
+    profileNamePlaceholder: "Par exemple : Mikhaïl",
+    profileNameCancel: "Annuler",
+    profileNameSave: "Enregistrer",
+    profileNameLogout: "Se déconnecter",
   },
   it: {
     slogan: "Sono un* creator — questo è il mio spazio.",
@@ -525,7 +614,7 @@ export const DICT: Record<
     cancel: "Annulla",
     promoted: "Promosso",
     share: "Condividi",
-    back: "Back",                                                 
+    back: "Back",
     yourBalance: "Il tuo saldo",
     posts: "Pubblicazioni",
     language: "Lingua",
@@ -539,8 +628,6 @@ export const DICT: Record<
     theme: "Tema",
     light: "Chiaro",
     dark: "Scuro",
-    sendComment: "Invia",
-
 
     chooseFile: "Scegli file",
     fileRequired: "File audio richiesto.",
@@ -552,6 +639,21 @@ export const DICT: Record<
     history: "Storico",
     edit: "Modifica",
     save: "Salva",
+    sendComment: "Invia",
+    login: "Accedi",
+    profileAboutTitle: "Su di me",
+    profileAboutText:
+      "Questo è il tuo profilo creativo. Racconta qualcosa di te, dei tuoi testi, della tua musica e dei tuoi progetti.",
+    profileRoleAuthor: "Autore",
+
+    headerLoginPlaceholder: "Accedi / nome autore",
+    profileNameModalTitle: "Il tuo nome d’autore",
+    profileNameModalDescription:
+      "Questo nome sarà mostrato nel profilo e sotto le tue opere come autore.",
+    profileNamePlaceholder: "Per esempio: Mikhail",
+    profileNameCancel: "Annulla",
+    profileNameSave: "Salva",
+    profileNameLogout: "Esci",
   },
   pt: {
     slogan: "Sou criador — este é o meu espaço.",
@@ -588,7 +690,7 @@ export const DICT: Record<
     cancel: "Cancelar",
     promoted: "Promovido",
     share: "Compartilhar",
-    back: "Back",                                                  
+    back: "Back",
     yourBalance: "Seu saldo",
     posts: "Publicações",
     language: "Idioma",
@@ -602,8 +704,6 @@ export const DICT: Record<
     theme: "Tema",
     light: "Claro",
     dark: "Escuro",
-    sendComment: "Enviar",
-
 
     chooseFile: "Escolher arquivo",
     fileRequired: "Arquivo de áudio obrigatório.",
@@ -615,6 +715,21 @@ export const DICT: Record<
     history: "Histórico",
     edit: "Editar",
     save: "Salvar",
+    sendComment: "Enviar",
+    login: "Entrar",
+    profileAboutTitle: "Sobre mim",
+    profileAboutText:
+      "Este é o seu perfil criativo. Fale um pouco sobre você, seus textos, sua música e seus projetos.",
+    profileRoleAuthor: "Autor",
+
+    headerLoginPlaceholder: "Entrar / nome de autor",
+    profileNameModalTitle: "Seu nome de autor",
+    profileNameModalDescription:
+      "Esse nome será exibido no seu perfil e em suas obras como autor.",
+    profileNamePlaceholder: "Por exemplo: Mikhail",
+    profileNameCancel: "Cancelar",
+    profileNameSave: "Salvar",
+    profileNameLogout: "Sair",
   },
   uk: {
     slogan: "Я творець — це мій простір.",
@@ -651,7 +766,7 @@ export const DICT: Record<
     cancel: "Скасувати",
     promoted: "Промо",
     share: "Поділитися",
-    back: "Назад",                                              
+    back: "Назад",
     yourBalance: "Ваш баланс",
     posts: "Публікації",
     language: "Мова",
@@ -665,8 +780,6 @@ export const DICT: Record<
     theme: "Тема",
     light: "Світла",
     dark: "Темна",
-    sendComment: "Надіслати",
-
 
     chooseFile: "Обрати файл",
     fileRequired: "Потрібно завантажити аудіофайл.",
@@ -678,6 +791,21 @@ export const DICT: Record<
     history: "Історія",
     edit: "Редагувати",
     save: "Зберегти",
+    sendComment: "Надіслати",
+    login: "Увійти",
+    profileAboutTitle: "Про мене",
+    profileAboutText:
+      "Це ваш творчий профіль. Розкажіть трохи про себе, свої тексти, музику та проєкти.",
+    profileRoleAuthor: "Автор",
+
+    headerLoginPlaceholder: "Увійти / ім’я автора",
+    profileNameModalTitle: "Ваше ім’я автора",
+    profileNameModalDescription:
+      "Це ім’я відображатиметься в профілі та під публікаціями як автор.",
+    profileNamePlaceholder: "Наприклад: Михайло",
+    profileNameCancel: "Скасувати",
+    profileNameSave: "Зберегти",
+    profileNameLogout: "Вийти",
   },
   kk: {
     slogan: "Мен шығармашымын — бұл менің кеңістігім.",
@@ -714,7 +842,7 @@ export const DICT: Record<
     cancel: "Бас тарту",
     promoted: "Промо",
     share: "Бөлісу",
-    back: "Артқа",                                                                
+    back: "Артқа",
     yourBalance: "Сіздің балансыңыз",
     posts: "Жарияланымдар",
     language: "Тіл",
@@ -728,8 +856,6 @@ export const DICT: Record<
     theme: "Тақырып",
     light: "Ашық",
     dark: "Қараңғы",
-    sendComment: "Жіберу",
-
 
     chooseFile: "Файл таңдау",
     fileRequired: "Аудиофайл қажет.",
@@ -741,13 +867,25 @@ export const DICT: Record<
     history: "Тарих",
     edit: "Өңдеу",
     save: "Сақтау",
+    sendComment: "Жіберу",
+    login: "Кіру",
+    profileAboutTitle: "Өзім туралы",
+    profileAboutText:
+      "Бұл – сіздің шығармашылық профиліңіз. Өзіңіз, мәтіндеріңіз, музыкаңыз және жобаларыңыз туралы қысқаша жазыңыз.",
+    profileRoleAuthor: "Автор",
+
+    headerLoginPlaceholder: "Кіру / автор аты",
+    profileNameModalTitle: "Сіздің автор атыңыз",
+    profileNameModalDescription:
+      "Бұл ат профиліңізде және шығармаларда автор ретінде көрсетіледі.",
+    profileNamePlaceholder: "Мысалы: Михаил",
+    profileNameCancel: "Бас тарту",
+    profileNameSave: "Сақтау",
+    profileNameLogout: "Шығу",
   },
 };
 
-const GENRE_LABELS: Record<
-  LangKey,
-  Record<GenreKey, string>
-> = {
+const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
   ru: {
     poetry: "Стихи",
     novel: "Роман",

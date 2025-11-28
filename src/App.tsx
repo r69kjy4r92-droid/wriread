@@ -2,19 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { DICT, LANGS } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
 import { Logo } from "./components/Logo";
-import {
-  ACCENT,
-  RADIUS,
-  CARD,
-  cx,
-  Button,
-  GhostButton,
-} from "./components/ui";
+import { ACCENT, RADIUS, CARD, cx, Button, GhostButton } from "./components/ui";
 import { Feed } from "./components/Feed";
 import { Work } from "./components/Work";
 import { Profile } from "./components/Profile";
 import { Publish } from "./components/Publish";
-import { DonateModal, ListenModal, EditWorkModal } from "./components/Modals";
+import {
+  DonateModal,
+  ListenModal,
+  EditWorkModal,
+  Modal,
+} from "./components/Modals";
 
 type Comment = {
   id: string;
@@ -31,6 +29,7 @@ type Donation = {
 };
 
 // ===== Layout: Header / Footer / Mobile Tabs =====
+
 type HeaderProps = {
   t: any;
   onNav: (k: string) => void;
@@ -39,6 +38,8 @@ type HeaderProps = {
   onToggleTheme: () => void;
   lang: string;
   onChangeLang: (value: string) => void;
+  userName: string | null;
+  onOpenLogin: () => void;
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -49,6 +50,8 @@ const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   lang,
   onChangeLang,
+  userName,
+  onOpenLogin,
 }) => {
   const nav = [
     { k: "landing", label: "WriRead" },
@@ -56,6 +59,7 @@ const Header: React.FC<HeaderProps> = ({
     { k: "publish", label: t.publish },
     { k: "profile", label: t.profile },
   ];
+
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/70 backdrop-blur border-b border-neutral-200 dark:border-neutral-800">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-2">
@@ -110,6 +114,19 @@ const Header: React.FC<HeaderProps> = ({
               ))}
             </select>
           </div>
+
+          <button
+            onClick={onOpenLogin}
+            className={cx(
+              "px-3 py-1.5 text-xs sm:text-sm rounded-full border flex items-center gap-1",
+              "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+            )}
+          >
+            <span>👤</span>
+            <span className="max-w-[110px] truncate">
+              {userName || t.headerLoginPlaceholder}
+            </span>
+          </button>
         </div>
       </div>
     </header>
@@ -164,11 +181,13 @@ const MobileTabBar: React.FC<MobileTabBarProps> = ({ t, page, onNav }) => {
 };
 
 // ===== Atoms & small components =====
+
 const GradientBar: React.FC = () => (
   <div className={cx("h-8 w-full", "bg-gradient-to-r", ACCENT, RADIUS)} />
 );
 
 // ===== Pages: Landing =====
+
 const Landing: React.FC<{
   t: any;
   onGetStarted: (page: string) => void;
@@ -230,6 +249,7 @@ const Landing: React.FC<{
 );
 
 // ===== App =====
+
 export default function App() {
   const [lang, setLang] = useState<string>(() => {
     try {
@@ -248,9 +268,35 @@ export default function App() {
     }
   });
 
+  const [userName, setUserName] = useState<string | null>(() => {
+    try {
+      const stored = localStorage.getItem("wriread:userName");
+      return stored || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [profileName] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:name") || "Михаил";
+    } catch {
+      return "Михаил";
+    }
+  });
+
+  const [profileBio] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:bio") || "";
+    } catch {
+      return "";
+    }
+  });
+
   const [page, setPage] = useState<
     "landing" | "feed" | "publish" | "profile" | "work"
   >("landing");
+
   const [prevPage, setPrevPage] = useState<
     "landing" | "feed" | "publish" | "profile" | "work" | null
   >(null);
@@ -278,6 +324,7 @@ export default function App() {
   const [current, setCurrent] = useState<WorkItem | null>(
     MOCK_WORKS[0] || null
   );
+
   const [works, setWorks] = useState<WorkItem[]>(MOCK_WORKS);
 
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
@@ -298,9 +345,9 @@ export default function App() {
     }
   });
 
-  const [followedAuthors, setFollowedAuthors] = useState<string[]>(() => {
+  const [followingAuthors, setFollowingAuthors] = useState<string[]>(() => {
     try {
-      const raw = localStorage.getItem("wriread:following");
+      const raw = localStorage.getItem("wriread:followingAuthors");
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
@@ -311,8 +358,10 @@ export default function App() {
   const [listenOpen, setListenOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [loginDraft, setLoginDraft] = useState("");
 
-   const stats = useMemo(() => {
+  const stats = useMemo(() => {
     let totalLikes = 0;
     let totalDonationsCount = 0;
 
@@ -321,19 +370,15 @@ export default function App() {
       totalDonationsCount += w.donations ?? 0;
     }
 
-    // бонус к лайкам за избранное
     const favoritesBonus = favoriteIds.length;
 
-    // сумма всех донатов (по деньгам)
     const totalDonationsAmount = donations.reduce(
       (sum, d) => sum + (d.amount || 0),
       0
     );
 
     return {
-      // лайки + бонус за избранное
       totalLikes: totalLikes + favoritesBonus,
-      // общая сумма донатов
       totalDonations: totalDonationsAmount,
     };
   }, [works, favoriteIds, donations]);
@@ -347,6 +392,8 @@ export default function App() {
     }
     return map;
   }, [comments]);
+
+  // ===== Effects: persist to localStorage, theme, etc. =====
 
   useEffect(() => {
     try {
@@ -367,19 +414,22 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        "wriread:favorites",
-        JSON.stringify(favoriteIds)
-      );
+      localStorage.setItem("wriread:favorites", JSON.stringify(favoriteIds));
     } catch {}
   }, [favoriteIds]);
 
   useEffect(() => {
     try {
       localStorage.setItem(
-        "wriread:donations",
-        JSON.stringify(donations)
+        "wriread:followingAuthors",
+        JSON.stringify(followingAuthors)
       );
+    } catch {}
+  }, [followingAuthors]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:donations", JSON.stringify(donations));
     } catch {}
   }, [donations]);
 
@@ -391,28 +441,38 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        "wriread:following",
-        JSON.stringify(followedAuthors)
-      );
+      if (userName && userName.trim()) {
+        localStorage.setItem("wriread:userName", userName.trim());
+      } else {
+        localStorage.removeItem("wriread:userName");
+      }
     } catch {}
-  }, [followedAuthors]);
+  }, [userName]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        "wriread:comments",
-        JSON.stringify(comments)
-      );
+      localStorage.setItem("wriread:comments", JSON.stringify(comments));
     } catch {}
   }, [comments]);
 
-   const goTo = (next: typeof page) => {
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:name", profileName);
+    } catch {}
+  }, [profileName]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:bio", profileBio);
+    } catch {}
+  }, [profileBio]);
+
+  // ===== Navigation helpers =====
+
+  const goTo = (next: typeof page) => {
     if (next === "feed") {
-      // каждый раз при нажатии "Лента" мы сбрасываем состояние Feed
       setFeedVersion((v) => v + 1);
     }
-
     setPrevPage(page);
     setPage(next);
   };
@@ -425,6 +485,8 @@ export default function App() {
       setPage("feed");
     }
   };
+
+  // ===== Handlers =====
 
   const handleOpen = (item: WorkItem) => {
     setCurrent(item);
@@ -452,11 +514,9 @@ export default function App() {
     );
   };
 
-  const handleToggleFollow = (author: string) => {
-    setFollowedAuthors((prev) =>
-      prev.includes(author)
-        ? prev.filter((a) => a !== author)
-        : [...prev, author]
+  const handleToggleFollowAuthor = (author: string) => {
+    setFollowingAuthors((prev) =>
+      prev.includes(author) ? prev.filter((a) => a !== author) : [...prev, author]
     );
   };
 
@@ -465,11 +525,7 @@ export default function App() {
 
     const now = new Date();
     const newDonation: Donation = {
-      id:
-        "d-" +
-        now.getTime() +
-        "-" +
-        Math.random().toString(36).slice(2, 8),
+      id: "d-" + now.getTime() + "-" + Math.random().toString(36).slice(2, 8),
       workId: item.id,
       amount,
       createdAt: now.toISOString(),
@@ -477,27 +533,20 @@ export default function App() {
 
     setDonations((prev) => [...prev, newDonation]);
 
-    // увеличиваем счётчик донатов у работы (кол-во)
     setWorks((prev) =>
       prev.map((w) =>
-        w.id === item.id
-          ? { ...w, donations: (w.donations ?? 0) + 1 }
-          : w
+        w.id === item.id ? { ...w, donations: (w.donations ?? 0) + 1 } : w
       )
     );
   };
 
-   const handleAddComment = (workId: string, text: string) => {
+  const handleAddComment = (workId: string, text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
 
     const now = new Date();
     const newComment: Comment = {
-      id:
-        "c-" +
-        now.getTime() +
-        "-" +
-        Math.random().toString(36).slice(2, 8),
+      id: "c-" + now.getTime() + "-" + Math.random().toString(36).slice(2, 8),
       workId,
       text: trimmed,
       createdAt: now.toISOString(),
@@ -547,10 +596,31 @@ export default function App() {
     setPage("profile");
   };
 
+  const handleOpenLogin = () => {
+    setLoginDraft(userName || "");
+    setLoginOpen(true);
+  };
+
+  const handleSaveLogin = () => {
+    const trimmed = loginDraft.trim();
+    if (!trimmed) return;
+    setUserName(trimmed);
+    setLoginOpen(false);
+  };
+
+  const handleLogout = () => {
+    setUserName(null);
+    setLoginOpen(false);
+  };
+
+  // ===== i18n =====
+
   const currentLangKey = (
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
   ) as keyof typeof DICT;
   const t = DICT[currentLangKey];
+
+  // ===== Render =====
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
@@ -564,6 +634,8 @@ export default function App() {
         }
         lang={lang}
         onChangeLang={setLang}
+        userName={userName}
+        onOpenLogin={handleOpenLogin}
       />
 
       {page === "landing" && (
@@ -579,7 +651,7 @@ export default function App() {
           favoriteIds={favoriteIds}
           likedIds={likedIds}
           commentCounts={commentsCountByWork}
-          followedAuthors={followedAuthors}
+          followingAuthors={followingAuthors}
           onOpen={handleOpen}
           onDonate={(it) => {
             setCurrent(it);
@@ -607,18 +679,13 @@ export default function App() {
           comments={comments.filter((c) => c.workId === current.id)}
           onAddComment={(text: string) => handleAddComment(current.id, text)}
           onDeleteComment={handleDeleteComment}
-          isFollowing={followedAuthors.includes(current.author)}
-          onToggleFollow={() => handleToggleFollow(current.author)}
+          isFollowingAuthor={followingAuthors.includes(current.author)}
+          onToggleFollow={() => handleToggleFollowAuthor(current.author)}
         />
       )}
 
       {page === "publish" && (
-        <Publish
-          t={t}
-          lang={lang}
-          onPublish={handleCreateWork}
-          onBack={goBack}
-        />
+        <Publish t={t} lang={lang} onPublish={handleCreateWork} onBack={goBack} />
       )}
 
       {page === "profile" && (
@@ -630,9 +697,10 @@ export default function App() {
           commentCounts={commentsCountByWork}
           stats={stats}
           ratingScore={ratingScore}
+          userName={userName}
           onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
-          onOpen={handleOpen}         
+          onOpen={handleOpen}
           onLike={handleLike}
         />
       )}
@@ -662,6 +730,47 @@ export default function App() {
         item={editing}
         onSave={handleSaveEditedWork}
       />
+
+      <Modal
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        title={t.profileNameModalTitle}
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+            {t.profileNameModalDescription}
+          </p>
+          <input
+            className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+            placeholder={t.profileNamePlaceholder}
+            value={loginDraft}
+            onChange={(e) => setLoginDraft(e.target.value)}
+          />
+          <div className="mt-1 flex flex-col sm:flex-row gap-2 sm:justify-end">
+            <GhostButton
+              onClick={() => setLoginOpen(false)}
+              className="w-full sm:w-auto"
+            >
+              {t.profileNameCancel}
+            </GhostButton>
+            <Button
+              onClick={handleSaveLogin}
+              className="w-full sm:w-auto"
+              disabled={!loginDraft.trim()}
+            >
+              {t.profileNameSave}
+            </Button>
+            {userName && (
+              <GhostButton
+                onClick={handleLogout}
+                className="w-full sm:w-auto text-xs sm:text-sm"
+              >
+                {t.profileNameLogout}
+              </GhostButton>
+            )}
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

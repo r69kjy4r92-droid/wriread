@@ -199,7 +199,7 @@ type FeedProps = {
   favoriteIds: string[];
   likedIds: string[];
   commentCounts: Record<string, number>;
-  followedAuthors: string[];
+  followingAuthors: string[];
   onOpen: (item: WorkItem) => void;
   onDonate: (item: WorkItem) => void;
   onBoost: (item: WorkItem) => void;
@@ -215,7 +215,7 @@ export const Feed: React.FC<FeedProps> = ({
   favoriteIds,
   likedIds,
   commentCounts,
-  followedAuthors,
+  followingAuthors,
   onOpen,
   onDonate,
   onBoost,
@@ -237,14 +237,14 @@ export const Feed: React.FC<FeedProps> = ({
 
   const hasActiveFilter = genreFilter !== "all" || onlyPromo;
 
-     const filteredItems = useMemo(() => {
+       const filteredItems = useMemo(() => {
     let base: WorkItem[] = items;
 
     if (tab === "new") {
       base = [...items].reverse();
     } else if (tab === "following") {
       // ТОЛЬКО авторы, на кого подписан
-      base = items.filter((w) => followedAuthors.includes(w.author));
+      base = items.filter((w) => followingAuthors.includes(w.author));
     } else if (tab === "favorites") {
       // ТОЛЬКО избранные публикации
       base = items.filter((w) => favoriteIds.includes(w.id));
@@ -258,7 +258,7 @@ export const Feed: React.FC<FeedProps> = ({
     }
 
     return base;
-  }, [items, tab, genreFilter, onlyPromo, favoriteIds, followedAuthors]);
+  }, [items, tab, genreFilter, onlyPromo, favoriteIds, followingAuthors]);
 
   const handleClearFilters = () => {
     setGenreFilter("all");
