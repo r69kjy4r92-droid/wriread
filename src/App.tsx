@@ -7,12 +7,7 @@ import { Feed } from "./components/Feed";
 import { Work } from "./components/Work";
 import { Profile } from "./components/Profile";
 import { Publish } from "./components/Publish";
-import {
-  DonateModal,
-  ListenModal,
-  EditWorkModal,
-  Modal,
-} from "./components/Modals";
+import { DonateModal,ListenModal,EditWorkModal,Modal,} from "./components/Modals";
 
 type Comment = {
   id: string;
@@ -293,7 +288,7 @@ export default function App() {
     }
   });
 
-    const [profileBio, setProfileBio] = useState<string>(() => {
+     const [profileBio, setProfileBio] = useState<string>(() => {
     try {
       return localStorage.getItem("wriread:profile:bio") || "";
     } catch {
@@ -368,7 +363,9 @@ export default function App() {
   const [editing, setEditing] = useState<WorkItem | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [loginDraft, setLoginDraft] = useState("");
-  const [loginBioDraft, setLoginBioDraft] = useState("");
+  const [profileBioDraft, setProfileBioDraft] = useState("");
+  
+
 
   const stats = useMemo(() => {
     let totalLikes = 0;
@@ -605,20 +602,20 @@ export default function App() {
     setPage("profile");
   };
 
-   const handleOpenLogin = () => {
+     const handleOpenLogin = () => {
     setLoginDraft(userName || "");
-    setLoginBioDraft(profileBio || "");
+    setProfileBioDraft(profileBio || "");
     setLoginOpen(true);
   };
 
-    const handleSaveLogin = () => {
-    const trimmedName = loginDraft.trim();
-    const trimmedBio = loginBioDraft.trim();
+  const handleSaveLogin = () => {
+    const nameTrimmed = loginDraft.trim();
+    const bioTrimmed = profileBioDraft.trim();
 
-    if (!trimmedName) return;
+    if (!nameTrimmed) return;
 
-    setUserName(trimmedName);
-    setProfileBio(trimmedBio);
+    setUserName(nameTrimmed);
+    setProfileBio(bioTrimmed);
     setLoginOpen(false);
   };
 
@@ -629,12 +626,10 @@ export default function App() {
 
   // ===== i18n =====
 
-  const currentLangKey = (
+   const currentLangKey = (
     Object.prototype.hasOwnProperty.call(DICT, lang) ? lang : "en"
   ) as keyof typeof DICT;
   const t = DICT[currentLangKey];
-
-  // ===== Render =====
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
@@ -699,7 +694,12 @@ export default function App() {
       )}
 
       {page === "publish" && (
-        <Publish t={t} lang={lang} onPublish={handleCreateWork} onBack={goBack} />
+        <Publish
+          t={t}
+          lang={lang}
+          onPublish={handleCreateWork}
+          onBack={goBack}
+        />
       )}
 
       {page === "profile" && (
@@ -733,12 +733,14 @@ export default function App() {
         item={current}
         onConfirm={handleDonate}
       />
+
       <ListenModal
         open={listenOpen}
         onClose={() => setListenOpen(false)}
         t={t}
         item={current}
       />
+
       <EditWorkModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -751,49 +753,58 @@ export default function App() {
       <Modal
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
-        title={t.profileNameModalTitle}
+        title="Профиль автора"
       >
-                <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
-            {t.profileNameModalDescription}
+            Имя и раздел «О себе» будут показываться в профиле и в карточках
+            автора.
           </p>
-          <input
-            className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-            placeholder={t.profileNamePlaceholder}
-            value={loginDraft}
-            onChange={(e) => setLoginDraft(e.target.value)}
-          />
-          <label className="flex flex-col gap-1 text-sm text-neutral-600 dark:text-neutral-300">
-            <span className="font-medium uppercase tracking-wide text-xs">
-              {t.profileAboutTitle}
-            </span>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              Имя автора
+            </label>
+            <input
+              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              placeholder="Например: Михаил"
+              value={loginDraft}
+              onChange={(e) => setLoginDraft(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              О себе
+            </label>
             <textarea
               className="w-full min-h-[80px] px-3 py-2 text-[15px] border rounded-2xl resize-none dark:bg-neutral-900 dark:border-neutral-700"
               placeholder={t.profileAboutText}
-              value={loginBioDraft}
-              onChange={(e) => setLoginBioDraft(e.target.value)}
+              value={profileBioDraft}
+              onChange={(e) => setProfileBioDraft(e.target.value)}
             />
-          </label>
+          </div>
+
           <div className="mt-1 flex flex-col sm:flex-row gap-2 sm:justify-end">
             <GhostButton
               onClick={() => setLoginOpen(false)}
               className="w-full sm:w-auto"
             >
-              {t.profileNameCancel}
+              Отмена
             </GhostButton>
             <Button
               onClick={handleSaveLogin}
               className="w-full sm:w-auto"
               disabled={!loginDraft.trim()}
             >
-              {t.profileNameSave}
+              Сохранить
             </Button>
             {userName && (
               <GhostButton
                 onClick={handleLogout}
                 className="w-full sm:w-auto text-xs sm:text-sm"
               >
-                {t.profileNameLogout}
+                Выйти
               </GhostButton>
             )}
           </div>
