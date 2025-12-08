@@ -11,16 +11,17 @@ export type LangKey =
   | "kk";
 
 export type GenreKey =
-  | "poetry" // Стихи
-  | "novel" // Роман
-  | "poem" // Поэма
-  | "story" // Рассказ
+  | "poetry"    // Стихи
+  | "novel"     // Роман
+  | "poem"      // Поэма
+  | "story"     // Рассказ
   | "detective" // Детектив
-  | "fantasy" // Фэнтези
-  | "script" // Сценарий
-  | "fable" // Басня
-  | "other" // Другое
-  | "music"; // Музыка/Биты
+  | "fantasy"   // Фэнтези
+  | "script"    // Сценарий
+  | "game"      // Игры
+  | "fable"     // Басня
+  | "other"     // Другое
+  | "music";    // Музыка/Биты
 
 export const GENRE_KEYS: GenreKey[] = [
   "poetry",
@@ -30,6 +31,7 @@ export const GENRE_KEYS: GenreKey[] = [
   "detective",
   "fantasy",
   "script",
+  "game",
   "fable",
   "other",
 ];
@@ -919,7 +921,7 @@ export const DICT: Record<
 };
 
 const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
-  ru: {
+    ru: {
     poetry: "Стихи",
     novel: "Роман",
     poem: "Поэма",
@@ -927,11 +929,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Детектив",
     fantasy: "Фэнтези",
     script: "Сценарий",
+    game: "Игры",
     fable: "Басня",
     other: "Другое",
     music: "Музыка/Биты",
   },
-  en: {
+    en: {
     poetry: "Poetry",
     novel: "Novel",
     poem: "Poem",
@@ -939,11 +942,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Detective",
     fantasy: "Fantasy",
     script: "Screenplay",
+    game: "Games",
     fable: "Fable",
     other: "Other",
     music: "Music/Beats",
   },
-  tr: {
+    tr: {
     poetry: "Şiir",
     novel: "Roman",
     poem: "Uzun şiir",
@@ -951,11 +955,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Polisiye",
     fantasy: "Fantastik",
     script: "Senaryo",
+    game: "Oyunlar",
     fable: "Masal/Bilmece",
     other: "Diğer",
     music: "Müzik/Beat",
   },
-  es: {
+   es: {
     poetry: "Poesía",
     novel: "Novela",
     poem: "Poema",
@@ -963,11 +968,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Novela negra",
     fantasy: "Fantasía",
     script: "Guion",
+    game: "Juegos",
     fable: "Fábula",
     other: "Otro",
     music: "Música/Beats",
   },
-  de: {
+    de: {
     poetry: "Lyrik",
     novel: "Roman",
     poem: "Poem",
@@ -975,11 +981,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Krimi",
     fantasy: "Fantasy",
     script: "Drehbuch",
+    game: "Spiele",
     fable: "Fabel",
     other: "Sonstiges",
     music: "Musik/Beats",
   },
-  fr: {
+    fr: {
     poetry: "Poésie",
     novel: "Roman",
     poem: "Poème",
@@ -987,11 +994,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Polar",
     fantasy: "Fantastique",
     script: "Scénario",
+    game: "Jeux",
     fable: "Fable",
     other: "Autre",
     music: "Musique/Beats",
   },
-  it: {
+    it: {
     poetry: "Poesia",
     novel: "Romanzo",
     poem: "Poema",
@@ -999,11 +1007,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Giallo",
     fantasy: "Fantasy",
     script: "Sceneggiatura",
+    game: "Giochi",
     fable: "Favola",
     other: "Altro",
     music: "Musica/Beats",
   },
-  pt: {
+    pt: {
     poetry: "Poesia",
     novel: "Romance",
     poem: "Poema",
@@ -1011,11 +1020,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Policial",
     fantasy: "Fantasia",
     script: "Roteiro",
+    game: "Jogos",
     fable: "Fábula",
     other: "Outro",
     music: "Música/Beats",
   },
-  uk: {
+    uk: {
     poetry: "Вірші",
     novel: "Роман",
     poem: "Поема",
@@ -1023,11 +1033,12 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Детектив",
     fantasy: "Фентезі",
     script: "Сценарій",
+    game: "Ігри",
     fable: "Байка",
     other: "Інше",
     music: "Музика/біти",
   },
-  kk: {
+    kk: {
     poetry: "Өлеңдер",
     novel: "Роман",
     poem: "Поэма",
@@ -1035,6 +1046,7 @@ const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     detective: "Детектив",
     fantasy: "Фэнтези",
     script: "Сценарий",
+    game: "Ойындар",
     fable: "Мысал",
     other: "Басқа",
     music: "Музыка/Биттер",
