@@ -296,6 +296,49 @@ export default function App() {
     }
   });
 
+  const [profileBirthdate, setProfileBirthdate] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:birthdate") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [profileGender, setProfileGender] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:gender") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [profileEmail, setProfileEmail] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:email") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [profileSocials, setProfileSocials] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:socials") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string>(() => {
+    try {
+      return localStorage.getItem("wriread:profile:avatarUrl") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [profileEditorOpen, setProfileEditorOpen] = useState(false);
+
+
   const [page, setPage] = useState<
     "landing" | "feed" | "publish" | "profile" | "work"
   >("landing");
@@ -466,6 +509,36 @@ export default function App() {
       localStorage.setItem("wriread:profile:name", profileName);
     } catch {}
   }, [profileName]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:birthdate", profileBirthdate);
+    } catch {}
+  }, [profileBirthdate]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:gender", profileGender);
+    } catch {}
+  }, [profileGender]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:email", profileEmail);
+    } catch {}
+  }, [profileEmail]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:socials", profileSocials);
+    } catch {}
+  }, [profileSocials]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("wriread:profile:avatarUrl", profileAvatarUrl);
+    } catch {}
+  }, [profileAvatarUrl]);
 
   useEffect(() => {
     try {
@@ -708,7 +781,7 @@ export default function App() {
         />
       )}
 
-      {page === "profile" && (
+            {page === "profile" && (
         <Profile
           t={t}
           items={works}
@@ -719,12 +792,17 @@ export default function App() {
           ratingScore={ratingScore}
           userName={userName}
           profileBio={profileBio}
-          followingAuthors={followingAuthors}
-          lang={lang}
+          profileBirthdate={profileBirthdate}
+          profileGender={profileGender}
+          profileEmail={profileEmail}
+          profileSocials={profileSocials}
+          profileAvatarUrl={profileAvatarUrl || null}
+          followingCount={followingAuthors.length}
           onDelete={handleDeleteWorkClick}
           onEdit={handleEditWorkClick}
           onOpen={handleOpen}
           onLike={handleLike}
+          onEditProfile={() => setProfileEditorOpen(true)}
         />
       )}
 
@@ -755,6 +833,88 @@ export default function App() {
         item={editing}
         onSave={handleSaveEditedWork}
       />
+
+      <Modal
+        open={profileEditorOpen}
+        onClose={() => setProfileEditorOpen(false)}
+        title={t.profile}
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.profileBirthdateLabel}
+            </label>
+            <input
+              type="date"
+              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              value={profileBirthdate}
+              onChange={(e) => setProfileBirthdate(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.profileGenderLabel}
+            </label>
+            <input
+              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              value={profileGender}
+              onChange={(e) => setProfileGender(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.profileEmailLabel}
+            </label>
+            <input
+              type="email"
+              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              value={profileEmail}
+              onChange={(e) => setProfileEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.profileSocialsLabel}
+            </label>
+            <input
+              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              placeholder="https://..."
+              value={profileSocials}
+              onChange={(e) => setProfileSocials(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.profileAvatarLabel}
+            </label>
+            <input
+              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+              placeholder="https://your-image-url..."
+              value={profileAvatarUrl}
+              onChange={(e) => setProfileAvatarUrl(e.target.value)}
+            />
+          </div>
+
+          <div className="mt-1 flex flex-col sm:flex-row gap-2 sm:justify-end">
+            <GhostButton
+              onClick={() => setProfileEditorOpen(false)}
+              className="w-full sm:w-auto"
+            >
+              {t.cancel}
+            </GhostButton>
+            <Button
+              onClick={() => setProfileEditorOpen(false)}
+              className="w-full sm:w-auto"
+            >
+              {t.save}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         open={loginOpen}

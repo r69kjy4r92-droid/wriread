@@ -49,85 +49,7 @@ export const LANGS = [
   { k: "kk", label: "Қазақша" },
 ];
 
-export const DICT: Record<
-  LangKey,
-  {
-    slogan: string;
-    description: string;
-    feedPreview: string;
-    filters: string;
-    allGenres: string;
-    onlyPromoted: string;
-    onlyMusic: string;
-    clearFilters: string;
-    emptyWork: string;
-    mockPaymentNote: string;
-    audioUnavailable: string;
-    footerLine: string;
-
-    cta_create: string;
-    cta_read: string;
-    donate: string;
-    like: string;
-    boost: string;
-    fullAccess: string;
-    excerpt: string;
-    byAuthor: string;
-    publish: string;
-    feed: string;
-    top: string;
-    new: string;
-    following: string;
-    profile: string;
-    signIn: string;
-    price: string;
-    pay: string;
-    cancel: string;
-    promoted: string;
-    share: string;
-    back: string;
-    yourBalance: string;
-    posts: string;
-    language: string;
-    publishWork: string;
-    title: string;
-    genre: string;
-    text: string;
-    audioFile: string;
-    uploadAudio: string;
-    listen: string;
-    theme: string;
-    light: string;
-    dark: string;
-
-    chooseFile: string;
-    fileRequired: string;
-    startWriting: string;
-    authorRating: string;
-    totalLikes: string;
-    totalDonations: string;
-    withdraw: string;
-    history: string;
-    edit: string;
-    save: string;
-    deleteLabel: string;
-    deleteConfirm: string;
-    sendComment: string;
-    login: string;
-    logout: string;
-    profileAboutTitle: string;
-    profileAboutText: string;
-    profileRoleAuthor: string;
-
-    headerLoginPlaceholder: string;
-    profileNameModalTitle: string;
-    profileNameModalDescription: string;
-    profileNamePlaceholder: string;
-    profileNameCancel: string;
-    profileNameSave: string;
-    profileNameLogout: string;
-  }
-> = {
+export const I18N = {
   ru: {
     slogan: "Я творец, это моё пространство.",
     description:
@@ -197,6 +119,11 @@ export const DICT: Record<
     profileAboutText:
       "Здесь будет ваш творческий профиль. Расскажите немного о себе, своих текстах, музыке и проектах.",
     profileRoleAuthor: "Автор",
+    profileBirthdateLabel: "Дата рождения",
+    profileGenderLabel: "Пол",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Соцсети / ссылки",
+    profileAvatarLabel: "Аватар",
 
     headerLoginPlaceholder: "Войти / имя автора",
     profileNameModalTitle: "Ваше имя автора",
@@ -276,6 +203,11 @@ export const DICT: Record<
     profileAboutText:
       "This is your creative profile. Tell a little about yourself, your texts, music and projects.",
     profileRoleAuthor: "Author",
+    profileBirthdateLabel: "Date of birth",
+    profileGenderLabel: "Gender",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Social links",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Sign in / author name",
     profileNameModalTitle: "Your author name",
@@ -353,8 +285,13 @@ export const DICT: Record<
     logout: "Çıkış yap",
     profileAboutTitle: "Hakkımda",
     profileAboutText:
-      "Burası yaratıcı profiliniz. Kendinizden, yazılarınızdan, müziğinizден ve projelerinizден kısaca bahsedin.",
+      "Burası yaratıcı profiliniz. Kendinizden, yazılarınızdan, müziğinizden ve projelerinizden kısaca bahsedin.",
     profileRoleAuthor: "Yazar",
+    profileBirthdateLabel: "Doğum tarihi",
+    profileGenderLabel: "Cinsiyet",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Sosyal bağlantılar",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Giriş / yazar adı",
     profileNameModalTitle: "Yazar adınız",
@@ -434,6 +371,11 @@ export const DICT: Record<
     profileAboutText:
       "Este es tu perfil creativo. Cuenta un poco sobre ti, tus textos, tu música y tus proyectos.",
     profileRoleAuthor: "Autor",
+    profileBirthdateLabel: "Fecha de nacimiento",
+    profileGenderLabel: "Género",
+    profileEmailLabel: "Correo electrónico",
+    profileSocialsLabel: "Redes sociales",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Entrar / nombre de autor",
     profileNameModalTitle: "Tu nombre de autor",
@@ -513,6 +455,11 @@ export const DICT: Record<
     profileAboutText:
       "Dies ist dein kreatives Profil. Erzähle kurz von dir, deinen Texten, deiner Musik und deinen Projekten.",
     profileRoleAuthor: "Autor",
+    profileBirthdateLabel: "Geburtsdatum",
+    profileGenderLabel: "Geschlecht",
+    profileEmailLabel: "E-Mail",
+    profileSocialsLabel: "Soziale Links",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Login / Autorenname",
     profileNameModalTitle: "Dein Autorenname",
@@ -592,6 +539,11 @@ export const DICT: Record<
     profileAboutText:
       "Voici ton profil créatif. Parle un peu de toi, de tes textes, de ta musique et de tes projets.",
     profileRoleAuthor: "Auteur",
+    profileBirthdateLabel: "Date de naissance",
+    profileGenderLabel: "Genre",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Liens sociaux",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Connexion / nom d’auteur",
     profileNameModalTitle: "Ton nom d’auteur",
@@ -671,6 +623,11 @@ export const DICT: Record<
     profileAboutText:
       "Questo è il tuo profilo creativo. Racconta qualcosa di te, dei tuoi testi, della tua musica e dei tuoi progetti.",
     profileRoleAuthor: "Autore",
+    profileBirthdateLabel: "Data di nascita",
+    profileGenderLabel: "Genere",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Link social",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Accedi / nome autore",
     profileNameModalTitle: "Il tuo nome d’autore",
@@ -748,8 +705,13 @@ export const DICT: Record<
     logout: "Sair",
     profileAboutTitle: "Sobre mim",
     profileAboutText:
-      "Este é o seu perfil criativo. Fale um pouco sobre você, seus textos, sua música e seus projetos.",
+      "Este é o seu perfil creativo. Fale um pouco sobre você, seus textos, sua música e seus projetos.",
     profileRoleAuthor: "Autor",
+    profileBirthdateLabel: "Data de nascimento",
+    profileGenderLabel: "Gênero",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Redes sociais",
+    profileAvatarLabel: "Avatar",
 
     headerLoginPlaceholder: "Entrar / nome de autor",
     profileNameModalTitle: "Seu nome de autor",
@@ -829,6 +791,11 @@ export const DICT: Record<
     profileAboutText:
       "Це ваш творчий профіль. Розкажіть трохи про себе, свої тексти, музику та проєкти.",
     profileRoleAuthor: "Автор",
+    profileBirthdateLabel: "Дата народження",
+    profileGenderLabel: "Стать",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Соцмережі / посилання",
+    profileAvatarLabel: "Аватар",
 
     headerLoginPlaceholder: "Увійти / ім’я автора",
     profileNameModalTitle: "Ваше ім’я автора",
@@ -908,6 +875,11 @@ export const DICT: Record<
     profileAboutText:
       "Бұл – сіздің шығармашылық профиліңіз. Өзіңіз, мәтіндеріңіз, музыкаңыз және жобаларыңыз туралы қысқаша жазыңыз.",
     profileRoleAuthor: "Автор",
+    profileBirthdateLabel: "Туған күні",
+    profileGenderLabel: "Жынысы",
+    profileEmailLabel: "E-mail",
+    profileSocialsLabel: "Әлеуметтік желі сілтемелері",
+    profileAvatarLabel: "Аватар",
 
     headerLoginPlaceholder: "Кіру / автор аты",
     profileNameModalTitle: "Сіздің автор атыңыз",
@@ -919,6 +891,8 @@ export const DICT: Record<
     profileNameLogout: "Шығу",
   },
 };
+
+export const DICT = I18N;
 
 const GENRE_LABELS: Record<LangKey, Record<GenreKey, string>> = {
     ru: {

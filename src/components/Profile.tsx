@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { CARD, cx, Button, GhostButton, Pill, num } from "./ui";
 import type { WorkItem } from "../data";
 
@@ -15,12 +15,17 @@ type ProfileProps = {
   ratingScore: number;
   userName: string | null;
   profileBio: string;
-  followingAuthors: string[];
-  lang: string;
+  profileBirthdate?: string;
+  profileGender?: string;
+  profileEmail?: string;
+  profileSocials?: string;
+  profileAvatarUrl?: string | null;
+  followingCount: number;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onOpen: (item: WorkItem) => void;
   onLike: (item: WorkItem) => void;
+  onEditProfile: () => void;
 };
 
 export const Profile: React.FC<ProfileProps> = ({
@@ -33,8 +38,12 @@ export const Profile: React.FC<ProfileProps> = ({
   ratingScore,
   userName,
   profileBio,
-  followingAuthors,
-  lang,
+  profileBirthdate,
+  profileGender,
+  profileEmail,
+  profileSocials,
+  profileAvatarUrl,
+  followingCount,
   onDelete,
   onEdit,
   onOpen,
@@ -43,130 +52,204 @@ export const Profile: React.FC<ProfileProps> = ({
   const authoredWorks = items;
   const postsCount = authoredWorks.length;
 
-  const isSignedIn = !!(userName && userName.trim().length > 0);
+  const isSignedIn = !!userName;
   const loginLabel = t.login || t.signIn || "Войти";
-  const displayName = isSignedIn ? userName!.trim() : loginLabel;
+  const displayName = isSignedIn ? userName! : loginLabel;
+  const aboutText =
+    profileBio && profileBio.trim().length > 0
+      ? profileBio
+      : t.profileAboutText;
+
+  const totalComments = useMemo(() => {
+    return authoredWorks.reduce((sum, w) => {
+      return sum + (commentCounts[w.id] ?? 0);
+    }, 0);
+  }, [authoredWorks, commentCounts]);
 
   const balance = stats.totalDonations;
+  const totalFavorites = favorites.length;
 
-  // Реальное количество подписок (на кого ты подписан)
-  const followingCount = followingAuthors.length;
-
-  // Подписчики появятся, когда будет бэкенд. Пока честно 0.
-  const followersCount = 0;
-
-  // Локализованный текст "Подписчики"
-  const followersLabel = (() => {
-    switch (lang) {
-      case "ru":
-        return "Подписчики";
-      case "tr":
-        return "Takipçiler";
-      case "es":
-        return "Seguidores";
-      case "de":
-        return "Follower";
-      case "fr":
-        return "Abonnés";
-      case "it":
-        return "Follower";
-      case "pt":
-        return "Seguidores";
-      case "uk":
-        return "Підписники";
-      case "kk":
-        return "Жазылушылар";
-      default:
-        return "Followers";
-    }
-  })();
-
-  const followingLabel = t.following || "Following";
+  const onEditProfile = () => {
+  console.log("Edit profile clicked");
+  // сюда потом повесим модалку редактирования
+};
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-      {/* ==== Верхний блок профиля ==== */}
-      <div className={cx(CARD, "p-4 sm:p-5 flex flex-col gap-4")}>
-        {/* Аватар + имя + роль */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="flex-shrink-0">
-            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-2xl">
-              🖋️
+      {/* ==== Верхний блок: профиль + рейтинг + баланс ==== */}
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        {/* Левая колонка: аватар + имя + О себе + доп. поля */}
+        <div className={cx(CARD, "flex-1 p-4 sm:p-5")}>
+          <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+            {/* Аватар */}
+            <div className="flex-shrink-0">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center overflow-hidden">
+                {profileAvatarUrl ? (
+                  <img
+                    src={profileAvatarUrl}
+                    alt={displayName || "Avatar"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl">🖋️</span>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="min-w-0">
-            <div className="text-base sm:text-lg font-semibold truncate">
-              {displayName}
-            </div>
-            <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-              {t.profileRoleAuthor}
+
+            {/* Имя / роль / кнопка редактирования */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-base sm:text-lg font-semibold truncate">
+                    {displayName}
+                  </div>
+                  <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+                    {t.profileRoleAuthor}
+                  </div>
+                </div>
+
+                <div className="flex-shrink-0">
+                  <Button
+                    className="px-4 py-1.5 text-xs sm:text-sm w-full sm:w-auto"
+                    onClick={onEditProfile}
+                  >
+                    {isSignedIn ? t.edit : loginLabel}
+                  </Button>
+                </div>
+              </div>
+
+              {/* О себе */}
+              <div className="mt-3 sm:mt-4">
+                <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+                  {t.profileAboutTitle}
+                </div>
+                <p className="mt-1 text-sm sm:text-[15px] text-neutral-700 dark:text-neutral-200 leading-snug whitespace-pre-line">
+                  {aboutText}
+                </p>
+              </div>
+
+              {/* Дополнительные поля: ДР, пол, email, соцсети */}
+              {(profileBirthdate ||
+                profileGender ||
+                profileEmail ||
+                profileSocials) && (
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
+                  {profileBirthdate && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-500 dark:text-neutral-400">
+                        {t.profileBirthdateLabel}:
+                      </span>
+                      <span className="truncate">{profileBirthdate}</span>
+                    </div>
+                  )}
+                  {profileGender && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-500 dark:text-neutral-400">
+                        {t.profileGenderLabel}:
+                      </span>
+                      <span className="truncate">{profileGender}</span>
+                    </div>
+                  )}
+                  {profileEmail && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-500 dark:text-neutral-400">
+                        {t.profileEmailLabel}:
+                      </span>
+                      <a
+                        href={`mailto:${profileEmail}`}
+                        className="truncate underline decoration-dotted"
+                      >
+                        {profileEmail}
+                      </a>
+                    </div>
+                  )}
+                  {profileSocials && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-500 dark:text-neutral-400">
+                        {t.profileSocialsLabel}:
+                      </span>
+                      <a
+                        href={profileSocials}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="truncate underline decoration-dotted"
+                      >
+                        {profileSocials}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Подписки */}
+              {followingCount > 0 && (
+                <div className="mt-3 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                  {t.following}: {followingCount}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* О себе */}
-        <div className="mt-1">
-          <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
-            {t.profileAboutTitle}
-          </div>
-          <p className="mt-1 text-sm sm:text-[15px] text-neutral-700 dark:text-neutral-200 leading-snug">
-            {profileBio || t.profileAboutText}
-          </p>
-        </div>
-
-        {/* Баланс + рейтинг + статистика */}
-        <div className="pt-3 sm:pt-4 border-t border-neutral-800/40 dark:border-neutral-700/60 flex flex-col gap-3 sm:gap-4">
-          {/* Баланс */}
-          <div>
-            <div className="text-sm text-neutral-400 dark:text-neutral-400">
-              {t.yourBalance}
-            </div>
-            <div className="mt-1 text-3xl font-bold">
-              ${num(balance)}
-            </div>
-          </div>
-
-          {/* Рейтинг */}
-          <div>
-            <div className="text-sm text-neutral-400 dark:text-neutral-400">
+        {/* Правая колонка: рейтинг + баланс */}
+        <div className="md:w-72 flex flex-col gap-4">
+          {/* Рейтинг автора */}
+          <div className={cx(CARD, "p-4 sm:p-5")}>
+            <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
               {t.authorRating}
             </div>
-            <div className="mt-1 text-2xl font-semibold">
+            <div className="mt-2 text-2xl font-bold">
               {num(ratingScore)}
             </div>
-          </div>
 
-          {/* Общая статистика */}
-          <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-            {t.totalLikes}: {num(stats.totalLikes)} · {t.totalDonations}:{" "}
-            {num(stats.totalDonations)}
-          </div>
-
-          {/* Подписчики / Подписки — показываем только если > 0 */}
-          {(followersCount > 0 || followingCount > 0) && (
-            <div className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-              {followersCount > 0 && (
-                <>
-                  {followersLabel}: {num(followersCount)}
-                </>
-              )}
-              {followersCount > 0 && followingCount > 0 && " · "}
-              {followingCount > 0 && (
-                <>
-                  {followingLabel}: {num(followingCount)}
-                </>
-              )}
+            <div className="mt-3 grid grid-cols-2 gap-3 text-xs sm:text-sm">
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  {t.totalLikes}
+                </div>
+                <div className="font-semibold">
+                  {num(stats.totalLikes)}
+                </div>
+              </div>
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  {t.totalDonations}
+                </div>
+                <div className="font-semibold">
+                  {num(stats.totalDonations)}
+                </div>
+              </div>
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  {t.posts}
+                </div>
+                <div className="font-semibold">{postsCount}</div>
+              </div>
+              <div>
+                <div className="text-neutral-500 dark:text-neutral-400">
+                  ★ / 💬
+                </div>
+                <div className="font-semibold">
+                  {num(totalFavorites)} ★ · {num(totalComments)} 💬
+                </div>
+              </div>
             </div>
-          )}
+          </div>
 
-          {/* Кнопки: слева, в одну линию */}
-          <div className="flex flex-row flex-wrap gap-2 mt-2">
-            <Button className="text-sm py-2 px-6">
-              {t.withdraw}
-            </Button>
-            <GhostButton className="text-sm py-2 px-6">
-              {t.history}
-            </GhostButton>
+          {/* Баланс */}
+          <div className={cx(CARD, "p-4 sm:p-5 flex flex-col gap-3")}>
+            <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+              {t.yourBalance}
+            </div>
+            <div className="text-2xl font-bold">${num(balance)}</div>
+            <div className="flex flex-col sm:flex-row gap-2 mt-1">
+              <Button className="w-full sm:w-auto text-sm py-2">
+                {t.withdraw}
+              </Button>
+              <GhostButton className="w-full sm:w-auto text-sm py-2">
+                {t.history}
+              </GhostButton>
+            </div>
           </div>
         </div>
       </div>
@@ -175,10 +258,6 @@ export const Profile: React.FC<ProfileProps> = ({
       <div className="mt-6">
         <h2 className="text-base sm:text-lg font-semibold mb-3">
           {t.posts}
-          <span className="text-xs sm:text-sm font-normal text-neutral-500 dark:text-neutral-400">
-            {" "}
-            · {postsCount}
-          </span>
         </h2>
 
         {authoredWorks.length === 0 ? (
@@ -206,7 +285,6 @@ export const Profile: React.FC<ProfileProps> = ({
                   )}
                 >
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    {/* Обложка — скрыта на очень маленьких экранах */}
                     <div className="hidden sm:block w-28 h-20 rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0">
                       {w.cover && (
                         <img
@@ -227,7 +305,6 @@ export const Profile: React.FC<ProfileProps> = ({
                         </div>
                       </div>
 
-                      {/* Реакции: ❤ ★ 💬 */}
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         <Pill>
                           <button
@@ -238,7 +315,9 @@ export const Profile: React.FC<ProfileProps> = ({
                             <span
                               className={cx(
                                 "text-sm",
-                                isLiked ? "text-rose-500" : "text-neutral-400"
+                                isLiked
+                                  ? "text-rose-500"
+                                  : "text-neutral-400"
                               )}
                             >
                               {isLiked ? "❤" : "♡"}
@@ -266,7 +345,6 @@ export const Profile: React.FC<ProfileProps> = ({
                     </div>
                   </div>
 
-                  {/* Кнопки действий по посту */}
                   <div className="flex flex-col sm:flex-row gap-2 sm:justify-between sm:items-center">
                     <div className="flex flex-wrap gap-2">
                       <Button
@@ -284,11 +362,11 @@ export const Profile: React.FC<ProfileProps> = ({
                         {t.edit}
                       </GhostButton>
                       <GhostButton
-                       className="text-xs sm:text-sm px-3 py-1.5 text-red-500 hover:text-red-600"
-                       onClick={() => onDelete(w.id)}
-        >
-                       {t.deleteLabel}
-                     </GhostButton>
+                        className="text-xs sm:text-sm px-3 py-1.5 text-red-500 hover:text-red-600"
+                        onClick={() => onDelete(w.id)}
+                      >
+                        {t.deleteLabel}
+                      </GhostButton>
                     </div>
                   </div>
                 </div>
