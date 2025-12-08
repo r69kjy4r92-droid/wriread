@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { CARD, cx, Button, GhostButton, Pill, num } from "./ui";
 import type { WorkItem } from "../data";
 
@@ -48,6 +48,7 @@ export const Profile: React.FC<ProfileProps> = ({
   onEdit,
   onOpen,
   onLike,
+  onEditProfile,
 }) => {
   const authoredWorks = items;
   const postsCount = authoredWorks.length;
@@ -60,19 +61,7 @@ export const Profile: React.FC<ProfileProps> = ({
       ? profileBio
       : t.profileAboutText;
 
-  const totalComments = useMemo(() => {
-    return authoredWorks.reduce((sum, w) => {
-      return sum + (commentCounts[w.id] ?? 0);
-    }, 0);
-  }, [authoredWorks, commentCounts]);
-
   const balance = stats.totalDonations;
-  const totalFavorites = favorites.length;
-
-  const onEditProfile = () => {
-  console.log("Edit profile clicked");
-  // сюда потом повесим модалку редактирования
-};
 
   return (
     <section className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
@@ -198,18 +187,14 @@ export const Profile: React.FC<ProfileProps> = ({
             <div className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
               {t.authorRating}
             </div>
-            <div className="mt-2 text-2xl font-bold">
-              {num(ratingScore)}
-            </div>
+            <div className="mt-2 text-2xl font-bold">{num(ratingScore)}</div>
 
             <div className="mt-3 grid grid-cols-2 gap-3 text-xs sm:text-sm">
               <div>
                 <div className="text-neutral-500 dark:text-neutral-400">
                   {t.totalLikes}
                 </div>
-                <div className="font-semibold">
-                  {num(stats.totalLikes)}
-                </div>
+                <div className="font-semibold">{num(stats.totalLikes)}</div>
               </div>
               <div>
                 <div className="text-neutral-500 dark:text-neutral-400">
@@ -224,14 +209,6 @@ export const Profile: React.FC<ProfileProps> = ({
                   {t.posts}
                 </div>
                 <div className="font-semibold">{postsCount}</div>
-              </div>
-              <div>
-                <div className="text-neutral-500 dark:text-neutral-400">
-                  ★ / 💬
-                </div>
-                <div className="font-semibold">
-                  {num(totalFavorites)} ★ · {num(totalComments)} 💬
-                </div>
               </div>
             </div>
           </div>
@@ -322,9 +299,7 @@ export const Profile: React.FC<ProfileProps> = ({
                             >
                               {isLiked ? "❤" : "♡"}
                             </span>
-                            <span className="text-xs">
-                              {num(w.likes)}
-                            </span>
+                            <span className="text-xs">{num(w.likes)}</span>
                           </button>
                         </Pill>
 
