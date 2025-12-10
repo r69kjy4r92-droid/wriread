@@ -2,6 +2,28 @@ import React from "react";
 import { CARD, cx, Button, GhostButton, Pill, num } from "./ui";
 import type { WorkItem } from "../data";
 
+const formatBirthdateForView = (value?: string) => {
+  if (!value) return "";
+  const trimmed = value.trim();
+
+  // Формат из input type="date": 1985-12-17 → 17.12.1985
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    const [y, m, d] = trimmed.split("-");
+    return `${d}.${m}.${y}`;
+  }
+
+  // Формат без точек: 17121985 → 17.12.1985
+  if (/^\d{8}$/.test(trimmed)) {
+    const dd = trimmed.slice(0, 2);
+    const mm = trimmed.slice(2, 4);
+    const yyyy = trimmed.slice(4);
+    return `${dd}.${mm}.${yyyy}`;
+  }
+
+  // Всё остальное показываем как есть
+  return trimmed;
+};
+
 type ProfileProps = {
   t: any;
   items: WorkItem[];
@@ -128,7 +150,9 @@ export const Profile: React.FC<ProfileProps> = ({
                       <span className="text-neutral-500 dark:text-neutral-400">
                         {t.profileBirthdateLabel}:
                       </span>
-                      <span className="truncate">{profileBirthdate}</span>
+                      <span className="truncate"> 
+                        {formatBirthdateForView(profileBirthdate)}
+                      </span>
                     </div>
                   )}
                   {profileGender && (
