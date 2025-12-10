@@ -845,12 +845,15 @@ export default function App() {
               {t.profileBirthdateLabel}
             </label>
             <input
-              type="date"
+              type="text"
+              inputMode="numeric"
+              placeholder="ДД.ММ.ГГГГ"
               className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={profileBirthdate}
               onChange={(e) => setProfileBirthdate(e.target.value)}
             />
           </div>
+
 
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">

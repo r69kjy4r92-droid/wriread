@@ -102,7 +102,7 @@ export const Profile: React.FC<ProfileProps> = ({
                     className="px-4 py-1.5 text-xs sm:text-sm w-full sm:w-auto"
                     onClick={onEditProfile}
                   >
-                    {isSignedIn ? t.edit : loginLabel}
+                    {t.edit}
                   </Button>
                 </div>
               </div>
