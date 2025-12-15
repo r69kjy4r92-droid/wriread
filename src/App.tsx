@@ -850,7 +850,18 @@ export default function App() {
               placeholder="ДД.ММ.ГГГГ"
               className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
               value={profileBirthdate}
-              onChange={(e) => setProfileBirthdate(e.target.value)}
+              onChange={(e) => {
+  const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
+  const dd = digits.slice(0, 2);
+  const mm = digits.slice(2, 4);
+  const yyyy = digits.slice(4, 8);
+
+  let formatted = dd;
+  if (digits.length > 2) formatted = `${dd}.${mm}`;
+  if (digits.length > 4) formatted = `${dd}.${mm}.${yyyy}`;
+
+  setProfileBirthdate(formatted);
+}}
             />
           </div>
 

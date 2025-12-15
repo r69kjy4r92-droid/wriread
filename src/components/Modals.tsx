@@ -49,7 +49,7 @@ export const Modal: React.FC<ModalProps> = ({
             ✕
           </button>
         </div>
-        <div className="p-4 overflow-y-auto max-h:[70vh] sm:max-h-[65vh]">
+        <div className="p-4 overflow-y-auto max-h-[70vh] sm:max-h-[65vh]">
           {children}
         </div>
       </div>
