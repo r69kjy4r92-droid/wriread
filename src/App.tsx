@@ -23,6 +23,27 @@ type Donation = {
   createdAt: string;
 };
 
+const formatBirthdateInput = (value: string) => {
+  const v = (value || "").trim();
+
+  // если вставили ISO дату: 1985-12-17 -> 17.12.1985
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+    const [y, m, d] = v.split("-");
+    return `${d}.${m}.${y}`;
+  }
+
+  // оставляем только цифры, максимум 8 (ddmmyyyy)
+  const digits = v.replace(/\D/g, "").slice(0, 8);
+
+  const dd = digits.slice(0, 2);
+  const mm = digits.slice(2, 4);
+  const yyyy = digits.slice(4, 8);
+
+  if (digits.length <= 2) return dd;
+  if (digits.length <= 4) return `${dd}.${mm}`;
+  return `${dd}.${mm}.${yyyy}`;
+};
+
 // ===== Layout: Header / Footer / Mobile Tabs =====
 type HeaderProps = {
   t: any;
@@ -161,7 +182,7 @@ const MobileTabBar: React.FC<MobileTabBarProps> = ({ t, page, onNav }) => {
     { k: "profile", label: t.profile, icon: "👤" },
   ];
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white/95 dark:bg-neutral-950/95 border-t border-neutral-200 dark:border-neutral-800 backdrop-blur">
+   <nav className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-white/95 dark:bg-neutral-950/95 border-t border-neutral-200 dark:border-neutral-800 backdrop-blur pb-[env(safe-area-inset-bottom)]">
       <div className="max-w-6xl mx-auto px-2 py-1.5 flex justify-around">
         {tabs.map((tab) => (
           <button
@@ -711,7 +732,7 @@ export default function App() {
   const t = DICT[currentLangKey];
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-16 sm:pb-0">
+    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-0">
       <Header
         t={t}
         current={page}
@@ -845,26 +866,16 @@ export default function App() {
               {t.profileBirthdateLabel}
             </label>
             <input
-              type="text"
-              inputMode="numeric"
-              placeholder="ДД.ММ.ГГГГ"
-              className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-              value={profileBirthdate}
-              onChange={(e) => {
-  const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
-  const dd = digits.slice(0, 2);
-  const mm = digits.slice(2, 4);
-  const yyyy = digits.slice(4, 8);
-
-  let formatted = dd;
-  if (digits.length > 2) formatted = `${dd}.${mm}`;
-  if (digits.length > 4) formatted = `${dd}.${mm}.${yyyy}`;
-
-  setProfileBirthdate(formatted);
-}}
-            />
+  type="text"
+  inputMode="numeric"
+  placeholder="ДД.ММ.ГГГГ"
+  className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
+  value={profileBirthdate}
+  onChange={(e) =>
+    setProfileBirthdate(formatBirthdateInput(e.target.value))
+  }
+/>
           </div>
-
 
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
