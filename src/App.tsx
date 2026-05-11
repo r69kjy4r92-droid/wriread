@@ -212,59 +212,78 @@ const Landing: React.FC<{
   onOpenLogin: () => void;
 }> = ({ onOpenLogin }) => (
   <section>
-    <div className="relative overflow-hidden bg-gradient-to-b from-[#fffdf9] via-[#fff8f2] to-[#fffdf9] dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
-      <div className="absolute -top-20 -left-16 w-64 h-64 rounded-full bg-gradient-to-br from-orange-200/65 via-amber-200/50 to-rose-200/25 blur-2xl" />
-      <div className="absolute top-36 -right-20 w-72 h-72 rounded-full bg-gradient-to-br from-rose-200/60 via-orange-200/45 to-amber-100/20 blur-3xl" />
-      <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
-        <div className="grid gap-10 md:grid-cols-2 items-center">
-          <div className="relative z-10">
-            <p className="text-sm tracking-[0.2em] uppercase text-neutral-500 dark:text-neutral-400">WriRead</p>
-            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Пиши. Читай. Вдохновляй.</p>
-            <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight text-neutral-900 dark:text-neutral-50">
-              Пусть творчество
-              <span className="block">увидит <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500">свет.</span></span>
-            </h1>
-            <p className="mt-5 max-w-xl text-[15px] sm:text-base leading-relaxed text-neutral-600 dark:text-neutral-300">
-              WriRead — пространство для авторов и читателей, где слова находят отклик, вдохновение — путь, а творчество становится выражением вас.
+    <div className="relative overflow-hidden bg-gradient-to-b from-[#fffdfa] via-[#fff7ef] to-[#fffdfb] dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[30rem] h-[30rem] rounded-full bg-gradient-to-br from-orange-200/45 via-rose-100/30 to-amber-100/10 blur-3xl" />
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-10 sm:py-14 flex justify-center">
+        <div className="relative w-full max-w-[430px] rounded-[3rem] border-[10px] border-neutral-900/95 dark:border-neutral-700 bg-neutral-900 shadow-[0_35px_80px_-35px_rgba(0,0,0,0.65)]">
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-36 h-8 rounded-full bg-black" />
+          <div className="relative rounded-[2.4rem] overflow-hidden bg-gradient-to-b from-[#fffdf8] via-[#fff7ef] to-[#fffdf9] dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 min-h-[820px] px-6 pt-14 pb-8">
+            <div className="absolute top-5 left-6 text-[10px] text-neutral-500 dark:text-neutral-400">9:41</div>
+            <div className="absolute top-5 right-6 flex items-center gap-1 text-[10px] text-neutral-500 dark:text-neutral-400"><span>◉◉◉</span><span>▮</span></div>
+
+            <div className="text-center">
+              <h1 className="text-[48px] leading-none font-semibold tracking-tight">
+                <span className="text-neutral-800 dark:text-neutral-100">Wri</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-rose-400 to-amber-400">Read</span>
+                <span className="inline-block ml-1 text-xl -translate-y-5">🪶</span>
+              </h1>
+              <p className="mt-2 text-sm tracking-[0.12em] lowercase text-neutral-500 dark:text-neutral-400">пиши. читай. вдохновляй.</p>
+            </div>
+
+            <div className="relative mt-6 h-[265px]">
+              <div className="absolute left-0 top-8 w-28 h-20 rounded-[45%] bg-gradient-to-br from-neutral-200/45 to-neutral-300/20 blur-sm dark:from-neutral-700/50 dark:to-neutral-800/20" />
+              <div className="absolute right-3 top-0 w-24 h-24 rounded-full bg-gradient-to-br from-amber-200/80 to-orange-200/30 blur-[2px]" />
+              <div className="absolute right-0 top-20 text-2xl opacity-60">🥀</div>
+              <div className="absolute left-6 bottom-5 w-64 h-14 rounded-[100%] bg-gradient-to-r from-orange-200/30 via-rose-200/45 to-amber-100/35 rotate-[-8deg]" />
+              <div className="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 w-[250px] h-[165px] rounded-[1.75rem] rotate-[-8deg] bg-gradient-to-b from-[#fdf4e6] via-[#fff6eb] to-[#f7ead7] border border-[#f0dfc8] shadow-[0_16px_35px_-20px_rgba(110,72,35,0.6)]" />
+              <div className="absolute left-1/2 top-[49%] -translate-x-1/2 -translate-y-1/2 w-[236px] h-[155px] rounded-[1.5rem] bg-gradient-to-b from-[#fffaf2] to-[#f7eddc] border border-[#efdfc5] shadow-inner" />
+              <p className="absolute left-1/2 top-[49%] -translate-x-1/2 -translate-y-1/2 text-center text-[28px] leading-tight text-[#7d5b43] [font-family:ui-serif,Georgia,serif]">
+                Мысли становятся<br />историями
+              </p>
+              <div className="absolute left-[53%] top-[58%] text-lg opacity-80">✒️</div>
+              <div className="absolute left-12 top-4 text-amber-300 text-xs">✦ ✧</div>
+              <div className="absolute right-12 bottom-4 text-amber-300 text-xs">✧ ✦</div>
+            </div>
+
+            <h2 className="mt-2 text-center text-[40px] leading-[1.02] font-semibold text-neutral-900 dark:text-neutral-100">
+              Пусть творчество<br />увидит <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500">свет.</span>
+            </h2>
+            <p className="mt-4 text-center text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-300 px-1">
+              WriRead — пространство для авторов и читателей,<br />
+              где слова находят отклик, вдохновение — путь,<br />
+              а творчество становится выражением вас.
             </p>
-            <div className="mt-7 flex flex-col sm:flex-row sm:flex-wrap gap-3">
-              <button onClick={onOpenLogin} className="px-7 py-3 rounded-2xl text-white font-semibold bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 shadow-[0_12px_26px_-10px_rgba(244,114,50,0.55)] hover:brightness-105 transition">Войти</button>
-              <button onClick={onOpenLogin} className="px-7 py-3 rounded-2xl font-semibold border border-orange-100 bg-white/90 text-neutral-800 shadow-[0_10px_22px_-16px_rgba(0,0,0,0.45)] dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100">Создать аккаунт</button>
-              <button onClick={() => document.getElementById("about-wriread")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="px-3 py-3 text-sm font-medium text-neutral-500 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white transition">Подробнее</button>
+
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <button onClick={onOpenLogin} className="w-full max-w-[290px] py-3.5 rounded-[1.1rem] text-white text-base font-semibold bg-gradient-to-r from-[#ff8a5c] via-[#ff7a5d] to-[#f7b55b] shadow-[0_14px_28px_-14px_rgba(246,117,71,0.85)]">Войти</button>
+              <button onClick={onOpenLogin} className="w-full max-w-[290px] py-3.5 rounded-[1.1rem] text-[#ea7b57] text-base font-semibold bg-[#fffdf8] border border-[#f8dcc8] shadow-[0_14px_28px_-18px_rgba(186,118,79,0.7)] dark:bg-neutral-800 dark:border-neutral-700 dark:text-orange-300">Создать аккаунт</button>
+              <button onClick={() => document.getElementById("about-wriread")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="text-sm font-medium text-amber-600 dark:text-amber-400">Подробнее</button>
             </div>
-            <div className="mt-6">
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">или войдите с помощью</p>
-              <div className="mt-3 flex gap-2.5">
-                {['Apple', 'Google', 'Email'].map((provider) => (
-                  <button key={provider} onClick={onOpenLogin} className="w-11 h-11 rounded-full border border-orange-100 bg-white/90 text-xs font-medium text-neutral-700 shadow-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200">{provider[0]}</button>
-                ))}
-              </div>
+
+            <div className="mt-5 flex items-center gap-3 text-neutral-400 dark:text-neutral-500">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-neutral-300 dark:to-neutral-600" />
+              <span className="text-xs">или войдите с помощью</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-neutral-300 dark:to-neutral-600" />
             </div>
-          </div>
-          <div className="relative">
-            <div className={cx(CARD, "relative bg-white/85 dark:bg-neutral-900/85 border-orange-100 dark:border-neutral-700 p-6 sm:p-7 shadow-[0_20px_45px_-30px_rgba(180,90,30,0.55)]")}>
-              <div className="absolute -top-6 left-6 w-16 h-16 rounded-3xl bg-gradient-to-br from-amber-200 to-rose-200 opacity-80 rotate-12" />
-              <div className="absolute -bottom-5 right-7 w-14 h-14 rounded-full bg-gradient-to-br from-orange-200 to-amber-100 opacity-70" />
-              <div className="relative rounded-3xl border border-orange-100/80 dark:border-neutral-700 bg-gradient-to-b from-[#fffefc] to-[#fff7ef] dark:from-neutral-900 dark:to-neutral-900 p-5 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">creative note</span>
-                  <span className="text-2xl text-orange-300 dark:text-amber-300">✒️</span>
-                </div>
-                <p className="mt-8 text-center text-2xl sm:text-3xl font-semibold text-neutral-800 dark:text-neutral-100 leading-tight">Мысли становятся историями</p>
-                <div className="mt-8 grid grid-cols-2 gap-3 opacity-80">
-                  <div className="h-20 rounded-2xl bg-white/80 dark:bg-neutral-800 border border-orange-100 dark:border-neutral-700" />
-                  <div className="h-20 rounded-2xl bg-gradient-to-br from-orange-100 to-amber-50 dark:from-neutral-800 dark:to-neutral-800 border border-orange-100/70 dark:border-neutral-700" />
-                </div>
-              </div>
+            <div className="mt-3 flex justify-center gap-3">
+              {["", "G", "✉"].map((icon) => (
+                <button key={icon} className="w-11 h-11 rounded-full bg-white/90 border border-[#f7dfcd] text-neutral-700 shadow-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200">{icon}</button>
+              ))}
             </div>
+
+            <div className="absolute bottom-8 left-7 text-lg opacity-70">🖋️ ✧</div>
+            <div className="absolute bottom-8 right-7 text-lg opacity-70">📖 ✦</div>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-amber-300">✦ ✧ ✦</div>
           </div>
         </div>
-        <div id="about-wriread" className="mt-10 rounded-3xl border border-orange-100/80 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/70 p-5 sm:p-6 text-sm text-neutral-600 dark:text-neutral-300">
+      </div>
+      <div className="max-w-3xl mx-auto px-4 pb-10">
+        <div id="about-wriread" className={cx(CARD, "rounded-3xl bg-white/85 dark:bg-neutral-900/75 border-orange-100 dark:border-neutral-800 p-5 sm:p-6 text-sm text-neutral-600 dark:text-neutral-300")}>
           <p className="font-medium text-neutral-900 dark:text-neutral-100">WriRead — место, где тексты обретают читателей.</p>
           <p className="mt-2">Публикуйте работы, читайте вдохновляющие истории, поддерживайте авторов комментариями, лайками и донатами.</p>
             </div>
-      </div>
-    </div>
+          </div>
+        </div>
   </section>
 );
 
