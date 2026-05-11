@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { DICT, LANGS } from "./i18n";
 import { MOCK_WORKS, type WorkItem } from "./data";
 import { Logo } from "./components/Logo";
-import { ACCENT, RADIUS, CARD, cx, Button, GhostButton } from "./components/ui";
+import { CARD, cx, Button, GhostButton } from "./components/ui";
 import { Feed } from "./components/Feed";
 import { Work } from "./components/Work";
 import { Profile } from "./components/Profile";
@@ -206,67 +206,63 @@ const MobileTabBar: React.FC<MobileTabBarProps> = ({ t, page, onNav }) => {
 
 // ===== Atoms & small components =====
 
-const GradientBar: React.FC = () => (
-  <div className={cx("h-8 w-full", "bg-gradient-to-r", ACCENT, RADIUS)} />
-);
-
 // ===== Pages: Landing =====
 
 const Landing: React.FC<{
-  t: any;
-  onGetStarted: (page: string) => void;
-}> = ({ t, onGetStarted }) => (
+  onOpenLogin: () => void;
+}> = ({ onOpenLogin }) => (
   <section>
-    <div className="relative overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber-100 via-rose-50 to-white dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950" />
-      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h1 className="text-3xl md:text-5xl font-black leading-tight tracking-tight">
-              WriRead
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-orange-500 mt-1">
-                {t.slogan}
-              </span>
+    <div className="relative overflow-hidden bg-gradient-to-b from-[#fffdf9] via-[#fff8f2] to-[#fffdf9] dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      <div className="absolute -top-20 -left-16 w-64 h-64 rounded-full bg-gradient-to-br from-orange-200/65 via-amber-200/50 to-rose-200/25 blur-2xl" />
+      <div className="absolute top-36 -right-20 w-72 h-72 rounded-full bg-gradient-to-br from-rose-200/60 via-orange-200/45 to-amber-100/20 blur-3xl" />
+      <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
+        <div className="grid gap-10 md:grid-cols-2 items-center">
+          <div className="relative z-10">
+            <p className="text-sm tracking-[0.2em] uppercase text-neutral-500 dark:text-neutral-400">WriRead</p>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Пиши. Читай. Вдохновляй.</p>
+            <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight text-neutral-900 dark:text-neutral-50">
+              Пусть творчество
+              <span className="block">увидит <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500">свет.</span></span>
             </h1>
-            <p className="mt-4 text-neutral-600 dark:text-neutral-300 text-base sm:text-lg max-w-xl">
-              {t.description}
+            <p className="mt-5 max-w-xl text-[15px] sm:text-base leading-relaxed text-neutral-600 dark:text-neutral-300">
+              WriRead — пространство для авторов и читателей, где слова находят отклик, вдохновение — путь, а творчество становится выражением вас.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button
-                onClick={() => onGetStarted("publish")}
-                className="px-6 py-3 text-base"
-              >
-                {t.cta_create}
-              </Button>
-              <GhostButton
-                onClick={() => onGetStarted("feed")}
-                className="px-6 py-3 text-base"
-              >
-                {t.cta_read}
-              </GhostButton>
+            <div className="mt-7 flex flex-col sm:flex-row sm:flex-wrap gap-3">
+              <button onClick={onOpenLogin} className="px-7 py-3 rounded-2xl text-white font-semibold bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 shadow-[0_12px_26px_-10px_rgba(244,114,50,0.55)] hover:brightness-105 transition">Войти</button>
+              <button onClick={onOpenLogin} className="px-7 py-3 rounded-2xl font-semibold border border-orange-100 bg-white/90 text-neutral-800 shadow-[0_10px_22px_-16px_rgba(0,0,0,0.45)] dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-100">Создать аккаунт</button>
+              <button onClick={() => document.getElementById("about-wriread")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="px-3 py-3 text-sm font-medium text-neutral-500 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-white transition">Подробнее</button>
+            </div>
+            <div className="mt-6">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">или войдите с помощью</p>
+              <div className="mt-3 flex gap-2.5">
+                {['Apple', 'Google', 'Email'].map((provider) => (
+                  <button key={provider} onClick={onOpenLogin} className="w-11 h-11 rounded-full border border-orange-100 bg-white/90 text-xs font-medium text-neutral-700 shadow-sm dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200">{provider[0]}</button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className={cx(CARD, "p-4 bg-white/80 dark:bg-neutral-900/80")}>
-            <GradientBar />
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              {MOCK_WORKS.slice(0, 4).map((w) => (
-                <div
-                  key={w.id}
-                  className="rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700"
-                >
-                  <img
-                    src={w.cover}
-                    className="w-full aspect-[3/2] object-cover"
-                    loading="lazy"
-                  />
+          <div className="relative">
+            <div className={cx(CARD, "relative bg-white/85 dark:bg-neutral-900/85 border-orange-100 dark:border-neutral-700 p-6 sm:p-7 shadow-[0_20px_45px_-30px_rgba(180,90,30,0.55)]")}>
+              <div className="absolute -top-6 left-6 w-16 h-16 rounded-3xl bg-gradient-to-br from-amber-200 to-rose-200 opacity-80 rotate-12" />
+              <div className="absolute -bottom-5 right-7 w-14 h-14 rounded-full bg-gradient-to-br from-orange-200 to-amber-100 opacity-70" />
+              <div className="relative rounded-3xl border border-orange-100/80 dark:border-neutral-700 bg-gradient-to-b from-[#fffefc] to-[#fff7ef] dark:from-neutral-900 dark:to-neutral-900 p-5 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">creative note</span>
+                  <span className="text-2xl text-orange-300 dark:text-amber-300">✒️</span>
                 </div>
-              ))}
-            </div>
-            <div className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-              {t.feedPreview}
+                <p className="mt-8 text-center text-2xl sm:text-3xl font-semibold text-neutral-800 dark:text-neutral-100 leading-tight">Мысли становятся историями</p>
+                <div className="mt-8 grid grid-cols-2 gap-3 opacity-80">
+                  <div className="h-20 rounded-2xl bg-white/80 dark:bg-neutral-800 border border-orange-100 dark:border-neutral-700" />
+                  <div className="h-20 rounded-2xl bg-gradient-to-br from-orange-100 to-amber-50 dark:from-neutral-800 dark:to-neutral-800 border border-orange-100/70 dark:border-neutral-700" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <div id="about-wriread" className="mt-10 rounded-3xl border border-orange-100/80 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/70 p-5 sm:p-6 text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="font-medium text-neutral-900 dark:text-neutral-100">WriRead — место, где тексты обретают читателей.</p>
+          <p className="mt-2">Публикуйте работы, читайте вдохновляющие истории, поддерживайте авторов комментариями, лайками и донатами.</p>
+            </div>
       </div>
     </div>
   </section>
@@ -748,7 +744,7 @@ export default function App() {
       />
 
       {page === "landing" && (
-        <Landing t={t} onGetStarted={(p) => goTo(p as typeof page)} />
+        <Landing onOpenLogin={handleOpenLogin} />
       )}
 
       {page === "feed" && (
