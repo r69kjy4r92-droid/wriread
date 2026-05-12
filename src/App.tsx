@@ -23,6 +23,15 @@ type Donation = {
   createdAt: string;
 };
 
+type AuthUser = {
+  name: string;
+  email: string;
+  telegram?: string;
+  role: "author" | "reader";
+  donationMethod: "card" | "crypto" | "later";
+  createdAt: string;
+};
+
 const formatBirthdateInput = (value: string) => {
   const v = (value || "").trim();
 
@@ -210,7 +219,8 @@ const MobileTabBar: React.FC<MobileTabBarProps> = ({ t, page, onNav }) => {
 
 const Landing: React.FC<{
   onOpenLogin: () => void;
-}> = ({ onOpenLogin }) => (
+  onOpenRegister: () => void;
+}> = ({ onOpenLogin, onOpenRegister }) => (
   <section>
     <div className="relative overflow-hidden bg-gradient-to-b from-[#fffdfa] via-[#fff7ef] to-[#fffdfb] dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
       <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[30rem] h-[30rem] rounded-full bg-gradient-to-br from-orange-200/45 via-rose-100/30 to-amber-100/10 blur-3xl" />
@@ -256,7 +266,7 @@ const Landing: React.FC<{
 
             <div className="mt-6 flex flex-col items-center gap-3">
               <button onClick={onOpenLogin} className="w-full max-w-[290px] py-3.5 rounded-[1.1rem] text-white text-base font-semibold bg-gradient-to-r from-[#ff8a5c] via-[#ff7a5d] to-[#f7b55b] shadow-[0_14px_28px_-14px_rgba(246,117,71,0.85)]">Войти</button>
-              <button onClick={onOpenLogin} className="w-full max-w-[290px] py-3.5 rounded-[1.1rem] text-[#ea7b57] text-base font-semibold bg-[#fffdf8] border border-[#f8dcc8] shadow-[0_14px_28px_-18px_rgba(186,118,79,0.7)] dark:bg-neutral-800 dark:border-neutral-700 dark:text-orange-300">Создать аккаунт</button>
+              <button onClick={onOpenRegister} className="w-full max-w-[290px] py-3.5 rounded-[1.1rem] text-[#ea7b57] text-base font-semibold bg-[#fffdf8] border border-[#f8dcc8] shadow-[0_14px_28px_-18px_rgba(186,118,79,0.7)] dark:bg-neutral-800 dark:border-neutral-700 dark:text-orange-300">Создать аккаунт</button>
               <button onClick={() => document.getElementById("about-wriread")?.scrollIntoView({ behavior: "smooth", block: "start" })} className="text-sm font-medium text-amber-600 dark:text-amber-400">Подробнее</button>
             </div>
 
@@ -267,7 +277,7 @@ const Landing: React.FC<{
             </div>
             <div className="mt-3 flex justify-center gap-3">
               {["", "G", "✉"].map((icon) => (
-                <button key={icon} className="w-11 h-11 rounded-full bg-white/90 border border-[#f7dfcd] text-neutral-700 shadow-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200">{icon}</button>
+                <button key={icon} onClick={onOpenLogin} className="w-11 h-11 rounded-full bg-white/90 border border-[#f7dfcd] text-neutral-700 shadow-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200">{icon}</button>
               ))}
             </div>
 
@@ -324,7 +334,7 @@ export default function App() {
     }
   });
 
-     const [profileBio, setProfileBio] = useState<string>(() => {
+     const [profileBio] = useState<string>(() => {
     try {
       return localStorage.getItem("wriread:profile:bio") || "";
     } catch {
@@ -441,8 +451,19 @@ export default function App() {
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<WorkItem | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [loginDraft, setLoginDraft] = useState("");
-  const [profileBioDraft, setProfileBioDraft] = useState("");
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const [loginIdentifier, setLoginIdentifier] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [registerDraft, setRegisterDraft] = useState<AuthUser>({
+    name: "",
+    email: "",
+    telegram: "",
+    role: "author",
+    donationMethod: "later",
+    createdAt: "",
+  });
+  const [registerAccepted, setRegisterAccepted] = useState(false);
+  const [registerErrors, setRegisterErrors] = useState<Record<string, string>>({});
   
 
 
@@ -717,21 +738,63 @@ export default function App() {
     setPage("profile");
   };
 
-     const handleOpenLogin = () => {
-    setLoginDraft(userName || "");
-    setProfileBioDraft(profileBio || "");
+  const readStoredAuth = (): AuthUser | null => {
+    try {
+      const raw = localStorage.getItem("wriread:auth");
+      return raw ? (JSON.parse(raw) as AuthUser) : null;
+    } catch {
+      return null;
+    }
+  };
+  const handleOpenLogin = () => {
+    setLoginIdentifier(userName || "");
+    setLoginError("");
     setLoginOpen(true);
   };
-
-  const handleSaveLogin = () => {
-    const nameTrimmed = loginDraft.trim();
-    const bioTrimmed = profileBioDraft.trim();
-
-    if (!nameTrimmed) return;
-
-    setUserName(nameTrimmed);
-    setProfileBio(bioTrimmed);
+  const handleOpenRegister = () => {
+    setRegisterErrors({});
+    setRegisterAccepted(false);
+    setRegisterDraft({ name: "", email: "", telegram: "", role: "author", donationMethod: "later", createdAt: "" });
+    setRegisterOpen(true);
+  };
+  const handleLogin = () => {
+    const auth = readStoredAuth();
+    const value = loginIdentifier.trim().toLowerCase();
+    if (!auth || !value) {
+      setLoginError("Аккаунт не найден. Зарегистрируйтесь.");
+      return;
+    }
+    if (auth.email.toLowerCase() !== value && auth.name.toLowerCase() !== value) {
+      setLoginError("Аккаунт не найден. Зарегистрируйтесь.");
+      return;
+    }
+    setUserName(auth.name);
+    setProfileEmail(auth.email);
     setLoginOpen(false);
+    goTo("profile");
+  };
+  const handleRegister = () => {
+    const e: Record<string, string> = {};
+    if (!registerDraft.name.trim()) e.name = "Введите имя или псевдоним.";
+    if (!registerDraft.email.trim()) e.email = "Введите email.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerDraft.email.trim())) e.email = "Введите корректный email.";
+    if (!registerDraft.role) e.role = "Выберите роль.";
+    if (!registerAccepted) e.terms = "Нужно принять условия использования.";
+    setRegisterErrors(e);
+    if (Object.keys(e).length) return;
+    const auth: AuthUser = { ...registerDraft, name: registerDraft.name.trim(), email: registerDraft.email.trim(), createdAt: new Date().toISOString() };
+    try {
+      localStorage.setItem("wriread:auth", JSON.stringify(auth));
+      localStorage.setItem("wriread:userName", auth.name);
+      localStorage.setItem("wriread:profile:email", auth.email);
+      localStorage.setItem("wriread:profile:telegram", auth.telegram || "");
+      localStorage.setItem("wriread:profile:role", auth.role);
+      localStorage.setItem("wriread:profile:donationMethod", auth.donationMethod);
+    } catch {}
+    setUserName(auth.name);
+    setProfileEmail(auth.email);
+    setRegisterOpen(false);
+    goTo("profile");
   };
 
   const handleLogout = () => {
@@ -763,7 +826,7 @@ export default function App() {
       />
 
       {page === "landing" && (
-        <Landing onOpenLogin={handleOpenLogin} />
+        <Landing onOpenLogin={handleOpenLogin} onOpenRegister={handleOpenRegister} />
       )}
 
       {page === "feed" && (
@@ -959,36 +1022,20 @@ export default function App() {
       <Modal
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
-        title={t.profile}
+        title="Войти в WriRead"
       >
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
-            {t.profileAboutText}
-          </p>
-
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">Введите email или имя автора, чтобы войти.</p>
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
-              {t.profileRoleAuthor}
-            </label>
+            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Email или имя</label>
             <input
               className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700"
-              placeholder={t.profileRoleAuthor}
-              value={loginDraft}
-              onChange={(e) => setLoginDraft(e.target.value)}
+              placeholder="name@mail.com или псевдоним"
+              value={loginIdentifier}
+              onChange={(e) => setLoginIdentifier(e.target.value)}
             />
           </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
-              {t.profileAboutTitle}
-            </label>
-            <textarea
-              className="w-full min-h-[80px] px-3 py-2 text-[15px] border rounded-2xl resize-none dark:bg-neutral-900 dark:border-neutral-700"
-              placeholder={t.profileAboutText}
-              value={profileBioDraft}
-              onChange={(e) => setProfileBioDraft(e.target.value)}
-            />
-          </div>
+          {loginError && <p className="text-sm text-rose-500">{loginError}</p>}
 
           <div className="mt-1 flex flex-col sm:flex-row gap-2 sm:justify-end">
             <GhostButton
@@ -998,12 +1045,13 @@ export default function App() {
               {t.cancel}
             </GhostButton>
             <Button
-              onClick={handleSaveLogin}
+              onClick={handleLogin}
               className="w-full sm:w-auto"
-              disabled={!loginDraft.trim()}
+              disabled={!loginIdentifier.trim()}
             >
-              {t.save}
+              Войти
             </Button>
+            <GhostButton onClick={handleOpenRegister} className="w-full sm:w-auto">Создать аккаунт</GhostButton>
             {userName && (
               <GhostButton
                 onClick={handleLogout}
@@ -1013,6 +1061,20 @@ export default function App() {
               </GhostButton>
             )}
           </div>
+        </div>
+      </Modal>
+      <Modal open={registerOpen} onClose={() => setRegisterOpen(false)} title="Создать аккаунт">
+        <div className="flex flex-col gap-3">
+          <input className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700" placeholder="Имя или псевдоним" value={registerDraft.name} onChange={(e) => setRegisterDraft((p) => ({ ...p, name: e.target.value }))} />
+          {registerErrors.name && <p className="text-xs text-rose-500 -mt-2">{registerErrors.name}</p>}
+          <input className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700" placeholder="Email" value={registerDraft.email} onChange={(e) => setRegisterDraft((p) => ({ ...p, email: e.target.value }))} />
+          {registerErrors.email && <p className="text-xs text-rose-500 -mt-2">{registerErrors.email}</p>}
+          <input className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700" placeholder="Telegram (необязательно)" value={registerDraft.telegram || ""} onChange={(e) => setRegisterDraft((p) => ({ ...p, telegram: e.target.value }))} />
+          <select className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700" value={registerDraft.role} onChange={(e) => setRegisterDraft((p) => ({ ...p, role: e.target.value as AuthUser['role'] }))}><option value="author">Автор</option><option value="reader">Читатель</option></select>
+          <select className="w-full px-3 py-2 text-[15px] border rounded-2xl dark:bg-neutral-900 dark:border-neutral-700" value={registerDraft.donationMethod} onChange={(e) => setRegisterDraft((p) => ({ ...p, donationMethod: e.target.value as AuthUser['donationMethod'] }))}><option value="card">Банковская карта</option><option value="crypto">Криптокошелёк</option><option value="later">Позже</option></select>
+          <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={registerAccepted} onChange={(e) => setRegisterAccepted(e.target.checked)} /><span>Я принимаю условия использования</span></label>
+          {registerErrors.terms && <p className="text-xs text-rose-500 -mt-2">{registerErrors.terms}</p>}
+          <Button onClick={handleRegister} className="w-full">Зарегистрироваться</Button>
         </div>
       </Modal>
     </div>
